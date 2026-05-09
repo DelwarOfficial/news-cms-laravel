@@ -64,147 +64,78 @@ Follows professional Laravel conventions with clear separation between Admin and
 news-cms/
 │
 ├── app/
-│   ├── Console/
-│   │   └── Commands/
-│   │       ├── GenerateSitemap.php
-│   │       └── PublishScheduledPosts.php
-│   │
-│   ├── Exceptions/
-│   │   └── Handler.php
-│   │
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/
-│   │   │   │   ├── DashboardController.php
-│   │   │   │   ├── PostController.php
-│   │   │   │   ├── CategoryController.php
-│   │   │   │   ├── PageController.php
-│   │   │   │   ├── MediaController.php
-│   │   │   │   ├── MenuController.php
-│   │   │   │   ├── TagController.php
-│   │   │   │   ├── CommentController.php
-│   │   │   │   ├── UserController.php
-│   │   │   │   ├── RoleController.php
 │   │   │   │   ├── AdvertisementController.php
-│   │   │   │   ├── WidgetController.php
-│   │   │   │   ├── LanguageController.php
-│   │   │   │   └── SettingController.php
-│   │   │   │
+│   │   │   │   ├── CommentController.php
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── MediaController.php
+│   │   │   │   ├── PostController.php
+│   │   │   │   ├── SettingController.php
+│   │   │   │   ├── SitemapController.php
+│   │   │   │   ├── TagController.php
+│   │   │   │   └── WidgetController.php
 │   │   │   ├── Api/
-│   │   │   │   ├── PostApiController.php
-│   │   │   │   ├── CategoryApiController.php
-│   │   │   │   ├── SearchApiController.php
-│   │   │   │   └── AuthApiController.php
-│   │   │   │
+│   │   │   │   └── PostApiController.php
 │   │   │   └── Front/
-│   │   │       ├── HomeController.php
-│   │   │       ├── PostController.php
 │   │   │       ├── CategoryController.php
-│   │   │       ├── SearchController.php
-│   │   │       └── PageController.php
-│   │   │
+│   │   │       ├── HomeController.php
+│   │   │       └── PostController.php
 │   │   ├── Middleware/
-│   │   │   ├── AdminMiddleware.php
-│   │   │   ├── LocaleMiddleware.php
-│   │   │   └── ActivityLogMiddleware.php
-│   │   │
 │   │   └── Requests/
-│   │       ├── Admin/
-│   │       │   ├── StorePostRequest.php
-│   │       │   ├── StoreCategoryRequest.php
-│   │       │   ├── StorePageRequest.php
-│   │       │   └── StoreUserRequest.php
-│   │       └── Api/
-│   │           └── SearchRequest.php
-│   │
+│   ├── Jobs/
+│   │   └── ProcessPostPublishing.php
 │   ├── Models/
-│   │   ├── User.php
-│   │   ├── Post.php
-│   │   ├── Category.php
-│   │   ├── Tag.php
-│   │   ├── Page.php
-│   │   ├── Media.php
-│   │   ├── MediaFolder.php
-│   │   ├── Comment.php
-│   │   ├── Menu.php
-│   │   ├── MenuItem.php
 │   │   ├── Advertisement.php
-│   │   ├── Widget.php
-│   │   ├── Language.php
-│   │   ├── Translation.php
-│   │   ├── Setting.php
-│   │   └── Revision.php
-│   │
-│   ├── Services/
-│   │   ├── PostService.php
-│   │   ├── MediaService.php
-│   │   ├── SeoService.php
-│   │   ├── MenuService.php
-│   │   ├── SettingService.php
-│   │   ├── SitemapService.php
-│   │   └── CacheService.php
-│   │
+│   │   ├── Category.php
+│   │   ├── Comment.php
+│   │   ├── Post.php
+│   │   ├── Revision.php
+│   │   ├── Tag.php
+│   │   ├── User.php
+│   │   └── Widget.php
 │   ├── Policies/
-│   │   ├── PostPolicy.php
 │   │   ├── CategoryPolicy.php
+│   │   ├── PostPolicy.php
 │   │   └── UserPolicy.php
-│   │
-│   ├── Resources/
-│   │   └── Api/
-│   │       ├── PostResource.php
-│   │       ├── PostCollection.php
-│   │       ├── CategoryResource.php
-│   │       └── UserResource.php
-│   │
-│   └── Observers/
-│       └── PostObserver.php
+│   └── Resources/
+│       └── Api/
+│           ├── CategoryResource.php
+│           └── PostResource.php
 │
 ├── database/
 │   ├── migrations/        ← All table migrations here
-│   ├── seeders/
-│   │   ├── DatabaseSeeder.php
-│   │   ├── RolePermissionSeeder.php
-│   │   ├── AdminUserSeeder.php
-│   │   ├── CategorySeeder.php
-│   │   └── SettingSeeder.php
-│   └── factories/
+│   └── seeders/
+│       ├── AdminUserSeeder.php
+│       ├── CategorySeeder.php
+│       ├── DatabaseSeeder.php
+│       ├── RolePermissionSeeder.php
+│       └── SettingSeeder.php
 │
 ├── resources/
-│   ├── views/
-│   │   ├── admin/
-│   │   │   ├── layouts/
-│   │   │   │   ├── app.blade.php
-│   │   │   │   ├── sidebar.blade.php
-│   │   │   │   └── header.blade.php
-│   │   │   ├── dashboard/
-│   │   │   ├── posts/
-│   │   │   ├── categories/
-│   │   │   ├── pages/
-│   │   │   ├── media/
-│   │   │   ├── menus/
-│   │   │   ├── users/
-│   │   │   ├── comments/
-│   │   │   ├── advertisements/
-│   │   │   ├── settings/
-│   │   │   └── roles/
-│   │   │
-│   │   ├── front/
-│   │   │   ├── layouts/
-│   │   │   │   ├── app.blade.php
-│   │   │   │   ├── header.blade.php
-│   │   │   │   └── footer.blade.php
-│   │   │   ├── home/
-│   │   │   ├── post/
-│   │   │   ├── category/
-│   │   │   ├── search/
-│   │   │   └── page/
-│   │   │
-│   │   └── components/
-│   │       ├── admin/
-│   │       └── front/
-│   │
-│   ├── css/
-│   └── js/
+│   └── views/
+│       ├── admin/
+│       │   ├── categories/
+│       │   │   └── index.blade.php
+│       │   ├── comments/
+│       │   │   └── index.blade.php
+│       │   ├── media/
+│       │   │   └── index.blade.php
+│       │   ├── posts/
+│       │   │   ├── create.blade.php
+│       │   │   └── index.blade.php
+│       │   ├── settings/
+│       │   │   └── index.blade.php
+│       │   ├── tags/
+│       │   │   ├── create.blade.php
+│       │   │   └── index.blade.php
+│       │   └── dashboard.blade.php
+│       ├── front/
+│       │   ├── category.blade.php
+│       │   ├── home.blade.php
+│       │   └── post.blade.php
+│       └── components/
 │
 ├── routes/
 │   ├── web.php            ← Frontend routes
