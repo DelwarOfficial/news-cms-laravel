@@ -15,43 +15,26 @@
             </div>
             @endif
 
+            @php $locale = app()->getLocale(); @endphp
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">English Title <span class="text-red-500">*</span></label>
-                    <input type="text" name="title_en" value="{{ old('title_en') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Post title..." required>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
+                    <input type="text" name="title_{{ $locale }}" value="{{ old('title_'.$locale) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}" placeholder="{{ $locale === 'bn' ? 'বাংলা শিরোনাম...' : 'Post title...' }}" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bengali Title</label>
-                    <input type="text" name="title_bn" value="{{ old('title_bn') }}" lang="bn" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition font-bengali" placeholder="বাংলা শিরোনাম...">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">English Slug</label>
-                    <input type="text" name="slug_en" value="{{ old('slug_en') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="auto-generated if empty">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Bengali Slug</label>
-                    <input type="text" name="slug_bn" value="{{ old('slug_bn') }}" lang="bn" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition font-bengali" placeholder="খবরের-স্লাগ">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                    <input type="text" name="slug_{{ $locale }}" value="{{ old('slug_'.$locale) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}" placeholder="{{ $locale === 'bn' ? 'খবরের-স্লাগ' : 'auto-generated if empty' }}">
                 </div>
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">English Summary</label>
-                <x-rich-text::input id="summary_en" name="summary_en" :value="old('summary_en')" class="newscore-richtext" />
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Summary</label>
+                <x-rich-text::input id="summary_{{ $locale }}" name="summary_{{ $locale }}" :value="old('summary_'.$locale)" class="newscore-richtext {{ $locale === 'bn' ? 'font-bengali' : '' }}" />
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Bengali Summary</label>
-                <x-rich-text::input id="summary_bn" name="summary_bn" :value="old('summary_bn')" class="newscore-richtext font-bengali" />
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">English Content <span class="text-red-500">*</span></label>
-                <x-rich-text::input id="body_en" name="body_en" :value="old('body_en')" class="newscore-richtext" />
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Bengali Content</label>
-                <x-rich-text::input id="body_bn" name="body_bn" :value="old('body_bn')" class="newscore-richtext font-bengali" />
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Content <span class="text-red-500">*</span></label>
+                <x-rich-text::input id="body_{{ $locale }}" name="body_{{ $locale }}" :value="old('body_'.$locale)" class="newscore-richtext {{ $locale === 'bn' ? 'font-bengali' : '' }}" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -80,24 +63,16 @@
 
             <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title EN</label>
-                    <input type="text" name="meta_title_en" value="{{ old('meta_title_en') }}" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title</label>
+                    <input type="text" name="meta_title_{{ $locale }}" value="{{ old('meta_title_'.$locale) }}" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none {{ $locale === 'bn' ? 'font-bengali' : '' }}">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title BN</label>
-                    <input type="text" name="meta_title_bn" value="{{ old('meta_title_bn') }}" maxlength="70" lang="bn" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bengali">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description EN</label>
-                    <textarea name="meta_description_en" rows="2" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ old('meta_description_en') }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description BN</label>
-                    <textarea name="meta_description_bn" rows="2" maxlength="170" lang="bn" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none font-bengali">{{ old('meta_description_bn') }}</textarea>
-                </div>
-                <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Canonical URL</label>
                     <input type="url" name="canonical_url" value="{{ old('canonical_url') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+                    <textarea name="meta_description_{{ $locale }}" rows="2" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none {{ $locale === 'bn' ? 'font-bengali' : '' }}">{{ old('meta_description_'.$locale) }}</textarea>
                 </div>
             </div>
 

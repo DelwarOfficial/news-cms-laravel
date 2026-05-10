@@ -1518,3 +1518,4 @@
 #74 C:/Program Files/Herd/resources/app.asar.unpacked/resources/valet/server.php(139): require('D://Antigravity//...')
 #75 {main}
 "} 
+[2026-05-10 17:53:16] local.INFO: User logged in successfully {"user_id":1,"ip":"127.0.0.1"} 

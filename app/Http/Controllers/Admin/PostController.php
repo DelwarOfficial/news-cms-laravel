@@ -52,24 +52,26 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', Post::class);
+        $locale = app()->getLocale();
+        $otherLocale = $locale === 'en' ? 'bn' : 'en';
         
         $validated = $request->validate([
-            'title_en' => 'required|max:500',
-            'title_bn' => 'nullable|max:500',
-            'slug_en' => 'nullable|max:500|unique:posts,slug_en',
-            'slug_bn' => 'nullable|max:500|unique:posts,slug_bn',
-            'body_en' => 'required|string',
-            'body_bn' => 'nullable|string',
-            'summary_en' => 'nullable|string|max:5000',
-            'summary_bn' => 'nullable|string|max:5000',
+            "title_{$locale}" => 'required|max:500',
+            "title_{$otherLocale}" => 'nullable|max:500',
+            "slug_{$locale}" => "nullable|max:500|unique:posts,slug_{$locale}",
+            "slug_{$otherLocale}" => "nullable|max:500|unique:posts,slug_{$otherLocale}",
+            "body_{$locale}" => 'required|string',
+            "body_{$otherLocale}" => 'nullable|string',
+            "summary_{$locale}" => 'nullable|string|max:5000',
+            "summary_{$otherLocale}" => 'nullable|string|max:5000',
             'status' => 'required|in:draft,pending,published',
             'category_id' => 'nullable|exists:categories,id',
             'meta_title' => 'nullable|max:60',
             'meta_description' => 'nullable|max:160',
-            'meta_title_en' => 'nullable|max:70',
-            'meta_title_bn' => 'nullable|max:70',
-            'meta_description_en' => 'nullable|max:170',
-            'meta_description_bn' => 'nullable|max:170',
+            "meta_title_{$locale}" => 'nullable|max:70',
+            "meta_title_{$otherLocale}" => 'nullable|max:70',
+            "meta_description_{$locale}" => 'nullable|max:170',
+            "meta_description_{$otherLocale}" => 'nullable|max:170',
             'canonical_url' => 'nullable|url|max:500',
             'featured_image' => 'nullable|image|max:5120',
         ]);
@@ -106,24 +108,26 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $this->authorize('update', $post);
+        $locale = app()->getLocale();
+        $otherLocale = $locale === 'en' ? 'bn' : 'en';
         
         $validated = $request->validate([
-            'title_en' => 'required|max:500',
-            'title_bn' => 'nullable|max:500',
-            'slug_en' => 'nullable|max:500|unique:posts,slug_en,' . $post->id,
-            'slug_bn' => 'nullable|max:500|unique:posts,slug_bn,' . $post->id,
-            'body_en' => 'required|string',
-            'body_bn' => 'nullable|string',
-            'summary_en' => 'nullable|string|max:5000',
-            'summary_bn' => 'nullable|string|max:5000',
+            "title_{$locale}" => 'required|max:500',
+            "title_{$otherLocale}" => 'nullable|max:500',
+            "slug_{$locale}" => "nullable|max:500|unique:posts,slug_{$locale}," . $post->id,
+            "slug_{$otherLocale}" => "nullable|max:500|unique:posts,slug_{$otherLocale}," . $post->id,
+            "body_{$locale}" => 'required|string',
+            "body_{$otherLocale}" => 'nullable|string',
+            "summary_{$locale}" => 'nullable|string|max:5000',
+            "summary_{$otherLocale}" => 'nullable|string|max:5000',
             'status' => 'required|in:draft,pending,published',
             'category_id' => 'nullable|exists:categories,id',
             'meta_title' => 'nullable|max:60',
             'meta_description' => 'nullable|max:160',
-            'meta_title_en' => 'nullable|max:70',
-            'meta_title_bn' => 'nullable|max:70',
-            'meta_description_en' => 'nullable|max:170',
-            'meta_description_bn' => 'nullable|max:170',
+            "meta_title_{$locale}" => 'nullable|max:70',
+            "meta_title_{$otherLocale}" => 'nullable|max:70',
+            "meta_description_{$locale}" => 'nullable|max:170',
+            "meta_description_{$otherLocale}" => 'nullable|max:170',
             'canonical_url' => 'nullable|url|max:500',
         ]);
 
@@ -151,34 +155,44 @@ class PostController extends Controller
 
     private function preparePostData(array $validated, ?Post $post = null): array
     {
-        $titleEn = $validated['title_en'];
-        $titleBn = $validated['title_bn'] ?? null;
-        $bodyEn = $this->richTextSanitizer->sanitize($validated['body_en']);
-        $bodyBn = $this->richTextSanitizer->sanitize($validated['body_bn'] ?? null);
-        $summaryEn = $this->richTextSanitizer->sanitize($validated['summary_en'] ?? null);
-        $summaryBn = $this->richTextSanitizer->sanitize($validated['summary_bn'] ?? null);
+        // We might not receive the other locale's fields if they weren't submitted, 
+        // so we fall back to existing data if this is an update, or null if creation.
+        $titleEn = $validated['title_en'] ?? $post?->title_en;
+        $titleBn = $validated['title_bn'] ?? $post?->title_bn;
+        
+        $bodyEnRaw = $validated['body_en'] ?? null;
+        $bodyBnRaw = $validated['body_bn'] ?? null;
+        
+        $bodyEn = $bodyEnRaw ? $this->richTextSanitizer->sanitize($bodyEnRaw) : $post?->body_en;
+        $bodyBn = $bodyBnRaw ? $this->richTextSanitizer->sanitize($bodyBnRaw) : $post?->body_bn;
+        
+        $summaryEnRaw = $validated['summary_en'] ?? null;
+        $summaryBnRaw = $validated['summary_bn'] ?? null;
+        
+        $summaryEn = $summaryEnRaw ? $this->richTextSanitizer->sanitize($summaryEnRaw) : $post?->summary_en;
+        $summaryBn = $summaryBnRaw ? $this->richTextSanitizer->sanitize($summaryBnRaw) : $post?->summary_bn;
 
         return [
-            'title' => $titleEn,
+            'title' => $titleBn ?: $titleEn, // default to BN title if exists for base title
             'title_en' => $titleEn,
             'title_bn' => $titleBn,
-            'slug' => $this->uniqueSlug($validated['slug_en'] ?? null, $titleEn, 'slug', $post),
+            'slug' => $this->uniqueSlug($validated['slug_bn'] ?? $validated['slug_en'] ?? null, $titleBn ?: $titleEn, 'slug', $post),
             'slug_en' => $this->uniqueSlug($validated['slug_en'] ?? null, $titleEn, 'slug_en', $post),
             'slug_bn' => $this->uniqueSlug($validated['slug_bn'] ?? null, $titleBn, 'slug_bn', $post),
-            'content' => $bodyEn,
-            'excerpt' => Str::limit(strip_tags($summaryEn ?: $bodyEn), 500, ''),
-            'body_en' => $bodyEn,
-            'body_bn' => $bodyBn,
-            'summary_en' => $summaryEn,
-            'summary_bn' => $summaryBn,
+            'content' => $bodyBn ?: $bodyEn,
+            'excerpt' => Str::limit(strip_tags($summaryBn ?: $summaryEn ?: $bodyBn ?: $bodyEn), 500, ''),
+            'body_en' => $bodyEnRaw ? $bodyEn : null, // Let rich text handle existing
+            'body_bn' => $bodyBnRaw ? $bodyBn : null, // Let rich text handle existing
+            'summary_en' => $summaryEnRaw ? $summaryEn : null,
+            'summary_bn' => $summaryBnRaw ? $summaryBn : null,
             'status' => $validated['status'],
-            'meta_title' => $validated['meta_title'] ?? $validated['meta_title_en'] ?? null,
-            'meta_description' => $validated['meta_description'] ?? $validated['meta_description_en'] ?? null,
-            'meta_title_en' => $validated['meta_title_en'] ?? null,
-            'meta_title_bn' => $validated['meta_title_bn'] ?? null,
-            'meta_description_en' => $validated['meta_description_en'] ?? null,
-            'meta_description_bn' => $validated['meta_description_bn'] ?? null,
-            'canonical_url' => $validated['canonical_url'] ?? null,
+            'meta_title' => $validated['meta_title'] ?? $validated['meta_title_bn'] ?? $validated['meta_title_en'] ?? null,
+            'meta_description' => $validated['meta_description'] ?? $validated['meta_description_bn'] ?? $validated['meta_description_en'] ?? null,
+            'meta_title_en' => $validated['meta_title_en'] ?? $post?->meta_title_en,
+            'meta_title_bn' => $validated['meta_title_bn'] ?? $post?->meta_title_bn,
+            'meta_description_en' => $validated['meta_description_en'] ?? $post?->meta_description_en,
+            'meta_description_bn' => $validated['meta_description_bn'] ?? $post?->meta_description_bn,
+            'canonical_url' => $validated['canonical_url'] ?? $post?->canonical_url,
         ];
     }
 
