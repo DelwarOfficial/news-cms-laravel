@@ -12,21 +12,21 @@ class CategoryPolicy
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('categories.manage');
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole(['Super Admin', 'Admin', 'Editor']);
+        return $user->can('categories.manage');
     }
 
     public function update(User $user, Category $category): bool
     {
-        return $user->hasRole(['Super Admin', 'Admin', 'Editor']);
+        return $user->can('categories.manage');
     }
 
     public function delete(User $user, Category $category): bool
     {
-        return $user->hasRole(['Super Admin', 'Admin']);
+        return $user->can('categories.manage');
     }
 }

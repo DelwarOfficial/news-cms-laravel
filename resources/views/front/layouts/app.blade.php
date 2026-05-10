@@ -6,8 +6,10 @@
     <title>@yield('title', 'NewsCore - Latest Updates')</title>
     <meta name="description" content="@yield('meta_description', 'Your source for breaking news, features, and analysis.')">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <x-rich-text::styles theme="richtextlaravel" />
+    @stack('head')
     <script>
         tailwind.config = {
             theme: {
@@ -23,6 +25,11 @@
             }
         }
     </script>
+    <style>
+        [lang="bn"], .font-bengali { font-family: 'Noto Sans Bengali', 'Inter', sans-serif; }
+        .trix-content .text-right { text-align: right; }
+        .trix-content img { height: auto; max-width: 100%; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased flex flex-col min-h-screen">
 

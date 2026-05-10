@@ -3,8 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Media extends Model
 {
-    protected $fillable = ['user_id', 'folder_id', 'filename', 'original_name', 'disk', 'path', 'url', 'mime_type', 'size', 'alt_text', 'caption'];
+    protected $fillable = [
+        'folder_id',
+        'user_id',
+        'name',
+        'file_name',
+        'file_path',
+        'file_url',
+        'file_type',
+        'file_size',
+        'width',
+        'height',
+        'alt_text',
+        'caption',
+        'credit',
+    ];
+
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(MediaFolder::class, 'folder_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

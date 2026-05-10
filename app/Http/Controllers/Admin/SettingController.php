@@ -3,18 +3,65 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class SettingController extends Controller
 {
     public function index()
     {
-        return view('admin.settings.index');
+        $this->authorize('viewAny', Setting::class);
+        
+        $settings = Setting::all()->keyBy('key')->map(function ($setting) {
+            return $setting->value;
+        });
+
+        return view('admin.settings.index', compact('settings'));
     }
 
     public function update(Request $request)
     {
-        // Save settings logic here
+        $this->authorize('update', Setting::class);
+        
+        $validated = $request->validate([
+            'site_name' => 'required|max:255',
+            'site_description' => 'nullable|max:500',
+            'contact_email' => 'required|email',
+            'site_url' => 'nullable|url',
+            'site_logo' => 'nullable|url',
+            'site_favicon' => 'nullable|url',
+            'posts_per_page' => 'required|integer|min:1|max:100',
+            'default_language' => 'required|max:10',
+            'timezone' => 'required|max:100',
+            'meta_title' => 'nullable|max:255',
+            'meta_description' => 'nullable|max:500',
+            'enable_comments' => 'boolean',
+            'require_comment_approval' => 'boolean',
+            'enable_registration' => 'boolean',
+            'smtp_host' => 'nullable|max:255',
+            'smtp_port' => 'nullable|integer|min:1|max:65535',
+            'smtp_username' => 'nullable|max:255',
+            'smtp_password' => 'nullable|max:255',
+            'google_analytics_id' => 'nullable|max:255',
+            'recaptcha_site_key' => 'nullable|max:255',
+            'recaptcha_secret_key' => 'nullable|max:255',
+        ]);
+
+        foreach (['enable_comments', 'require_comment_approval', 'enable_registration'] as $key) {
+            $validated[$key] = $request->boolean($key) ? '1' : '0';
+        }
+
+        foreach ($validated as $key => $value) {
+            Setting::updateOrCreate(
+                ['key' => $key],
+                ['value' => $value]
+            );
+        }
+
+        // Clear settings cache
+        Cache::forget('settings');
+
         return back()->with('success', 'Settings updated successfully!');
     }
 }

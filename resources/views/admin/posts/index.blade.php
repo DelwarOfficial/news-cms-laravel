@@ -8,38 +8,15 @@
 @endsection
 
 @section('content')
-@php
-    $buildSortUrl = function($column) use ($sortBy, $sortDirection) {
-        $direction = ($sortBy === $column && $sortDirection === 'asc') ? 'desc' : 'asc';
-        return request()->fullUrlWithQuery(['sort_by' => $column, 'sort_direction' => $direction]);
-    };
-    $getSortIcon = function($column) use ($sortBy, $sortDirection) {
-        if ($sortBy !== $column) return 'fa-sort text-gray-300 opacity-50 group-hover:opacity-100';
-        return $sortDirection === 'asc' ? 'fa-sort-up text-blue-600' : 'fa-sort-down text-blue-600';
-    };
-@endphp
-
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-gray-50 border-b border-gray-100 select-none">
                 <tr>
-                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
-                        <a href="{{ $buildSortUrl('title') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
-                            Title <i class="fas {{ $getSortIcon('title') }}"></i>
-                        </a>
-                    </th>
+                    @include('admin.partials.sortable-th', ['column' => 'title', 'label' => 'Title', 'sortBy' => $sortBy, 'sortDirection' => $sortDirection])
                     <th class="text-left px-6 py-3.5 font-semibold text-gray-600">Author</th>
-                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
-                        <a href="{{ $buildSortUrl('status') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
-                            Status <i class="fas {{ $getSortIcon('status') }}"></i>
-                        </a>
-                    </th>
-                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
-                        <a href="{{ $buildSortUrl('created_at') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
-                            Date <i class="fas {{ $getSortIcon('created_at') }}"></i>
-                        </a>
-                    </th>
+                    @include('admin.partials.sortable-th', ['column' => 'status', 'label' => 'Status', 'sortBy' => $sortBy, 'sortDirection' => $sortDirection])
+                    @include('admin.partials.sortable-th', ['column' => 'created_at', 'label' => 'Date', 'sortBy' => $sortBy, 'sortDirection' => $sortDirection])
                     <th class="px-6 py-3.5"></th>
                 </tr>
             </thead>
@@ -60,15 +37,19 @@
                     <td class="px-6 py-4 text-gray-500 text-xs">{{ $post->created_at->format('M d, Y') }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2 justify-end">
-                            <a href="{{ route('admin.posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition-colors">
-                                <i class="fas fa-pencil text-xs"></i>
-                            </a>
-                            <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm('Delete this post?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors">
-                                    <i class="fas fa-trash text-xs"></i>
-                                </button>
-                            </form>
+                            @can('update', $post)
+                                <a href="{{ route('admin.posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition-colors">
+                                    <i class="fas fa-pencil text-xs"></i>
+                                </a>
+                            @endcan
+                            @can('delete', $post)
+                                <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm('Delete this post?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
+                                </form>
+                            @endcan
                         </div>
                     </td>
                 </tr>

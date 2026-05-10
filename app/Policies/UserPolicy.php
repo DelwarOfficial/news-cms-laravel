@@ -11,23 +11,33 @@ class UserPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->hasRole(['Super Admin', 'Admin']);
+        return $user->can('users.manage');
     }
 
     public function create(User $user): bool
     {
-        return $user->hasRole(['Super Admin', 'Admin']);
+        return $user->can('users.create');
     }
 
     public function update(User $user, User $target): bool
     {
-        if ($user->hasRole('Super Admin')) return true;
-        if ($user->hasRole('Admin') && !$target->hasRole('Super Admin')) return true;
-        return false;
+        if ($user->can('roles.manage')) {
+            return true;
+        }
+
+        return $user->can('users.manage') && ! $target->hasRole('Super Admin');
     }
 
     public function delete(User $user, User $target): bool
     {
-        return $user->hasRole('Super Admin') && $user->id !== $target->id;
+        if ($user->id === $target->id) {
+            return false;
+        }
+
+        if ($user->can('roles.manage')) {
+            return true;
+        }
+
+        return $user->can('users.manage') && ! $target->hasRole('Super Admin');
     }
 }

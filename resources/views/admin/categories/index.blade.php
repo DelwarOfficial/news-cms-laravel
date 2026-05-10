@@ -11,15 +11,15 @@
     <table class="w-full text-sm">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
-                <th class="text-left px-6 py-3.5 font-semibold text-gray-600">Name</th>
-                <th class="text-left px-6 py-3.5 font-semibold text-gray-600">Slug</th>
+                @include('admin.partials.sortable-th', ['column' => 'name', 'label' => 'Name', 'sortBy' => $sortBy, 'sortDirection' => $sortDirection])
+                @include('admin.partials.sortable-th', ['column' => 'slug', 'label' => 'Slug', 'sortBy' => $sortBy, 'sortDirection' => $sortDirection])
                 <th class="text-left px-6 py-3.5 font-semibold text-gray-600">Parent</th>
                 <th class="px-6 py-3.5"></th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50" id="sortable-tbody">
             @forelse($categories as $category)
-            <tr class="hover:bg-gray-50 group cursor-move bg-white" data-id="{{ $category->id }}" draggable="true">
+            <tr class="hover:bg-gray-50 group {{ $sortBy === 'order' ? 'cursor-move' : '' }} bg-white" data-id="{{ $category->id }}" draggable="{{ $sortBy === 'order' ? 'true' : 'false' }}">
                 <td class="px-6 py-4 font-medium flex items-center gap-3">
                     <i class="fas fa-grip-vertical text-gray-300 opacity-50 group-hover:opacity-100 transition"></i>
                     {{ $category->name }}
@@ -46,9 +46,11 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tbody = document.getElementById('sortable-tbody');
+    const manualOrderingEnabled = @json($sortBy === 'order');
     let draggedRow = null;
 
     tbody.addEventListener('dragstart', function(e) {
+        if (!manualOrderingEnabled) return;
         draggedRow = e.target.closest('tr');
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', draggedRow.innerHTML);
@@ -56,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     tbody.addEventListener('dragover', function(e) {
+        if (!manualOrderingEnabled || !draggedRow) return;
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         const targetRow = e.target.closest('tr');
@@ -67,6 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     tbody.addEventListener('dragend', function(e) {
+        if (!manualOrderingEnabled || !draggedRow) return;
         draggedRow.classList.remove('opacity-50', 'bg-blue-50');
         draggedRow = null;
         saveNewOrder();
