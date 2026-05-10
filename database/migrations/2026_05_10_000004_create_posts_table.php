@@ -47,7 +47,6 @@ return new class extends Migration
             
             $table->index('status');
             $table->index('published_at');
-            $table->fullText(['title', 'excerpt', 'content']);
         });
     }
 

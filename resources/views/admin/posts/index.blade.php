@@ -1,50 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Posts - NewsCore Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 p-8">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex justify-between mb-8">
-            <h1 class="text-4xl font-bold">Posts</h1>
-            <a href="{{ route('admin.posts.create') }}" class="bg-black text-white px-6 py-3 rounded-2xl">+ New Post</a>
-        </div>
+@extends('admin.layouts.app')
+@section('title', 'Posts')
+@section('page-title', 'Posts')
+@section('header-actions')
+    <a href="{{ route('admin.posts.create') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-colors">
+        <i class="fas fa-plus"></i> New Post
+    </a>
+@endsection
 
-        <div class="bg-white rounded-3xl shadow overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-8 py-5 text-left">Title</th>
-                        <th class="px-8 py-5 text-left">Author</th>
-                        <th class="px-8 py-5 text-left">Status</th>
-                        <th class="px-8 py-5 text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y">
-                    @foreach($posts as $post)
-                    <tr>
-                        <td class="px-8 py-5 font-medium">{{ $post->title }}</td>
-                        <td class="px-8 py-5 text-gray-600">{{ $post->author->name ?? 'N/A' }}</td>
-                        <td class="px-8 py-5">
-                            <span class="px-3 py-1 text-xs rounded-full 
-                                {{ $post->status == 'published' ? 'bg-green-100 text-green-700' : 
-                                   ($post->status == 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700') }}">
-                                {{ ucfirst($post->status) }}
-                            </span>
-                        </td>
-                        <td class="px-8 py-5 text-right space-x-4">
-                            <a href="{{ route('admin.posts.edit', $post) }}" class="text-indigo-600">Edit</a>
-                            <form action="{{ route('admin.posts.destroy', $post) }}" method="POST" class="inline">
+@section('content')
+@php
+    $buildSortUrl = function($column) use ($sortBy, $sortDirection) {
+        $direction = ($sortBy === $column && $sortDirection === 'asc') ? 'desc' : 'asc';
+        return request()->fullUrlWithQuery(['sort_by' => $column, 'sort_direction' => $direction]);
+    };
+    $getSortIcon = function($column) use ($sortBy, $sortDirection) {
+        if ($sortBy !== $column) return 'fa-sort text-gray-300 opacity-50 group-hover:opacity-100';
+        return $sortDirection === 'asc' ? 'fa-sort-up text-blue-600' : 'fa-sort-down text-blue-600';
+    };
+@endphp
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-gray-50 border-b border-gray-100 select-none">
+                <tr>
+                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
+                        <a href="{{ $buildSortUrl('title') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
+                            Title <i class="fas {{ $getSortIcon('title') }}"></i>
+                        </a>
+                    </th>
+                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">Author</th>
+                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
+                        <a href="{{ $buildSortUrl('status') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
+                            Status <i class="fas {{ $getSortIcon('status') }}"></i>
+                        </a>
+                    </th>
+                    <th class="text-left px-6 py-3.5 font-semibold text-gray-600">
+                        <a href="{{ $buildSortUrl('created_at') }}" class="group flex items-center gap-2 hover:text-gray-900 transition-colors">
+                            Date <i class="fas {{ $getSortIcon('created_at') }}"></i>
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                @forelse($posts as $post)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-gray-900">{{ Str::limit($post->title, 60) }}</div>
+                        <div class="text-xs text-gray-400 mt-0.5">{{ $post->slug }}</div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">{{ $post->author->name ?? '—' }}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-xs px-2.5 py-1 rounded-full font-medium
+                            {{ $post->status === 'published' ? 'bg-green-100 text-green-700' : ($post->status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600') }}">
+                            {{ ucfirst($post->status) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500 text-xs">{{ $post->created_at->format('M d, Y') }}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2 justify-end">
+                            <a href="{{ route('admin.posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition-colors">
+                                <i class="fas fa-pencil text-xs"></i>
+                            </a>
+                            <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" onsubmit="return confirm('Delete this post?')">
                                 @csrf @method('DELETE')
-                                <button class="text-red-600" onclick="return confirm('Delete?')">Delete</button>
+                                <button type="submit" class="text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                                    <i class="fas fa-trash text-xs"></i>
+                                </button>
                             </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="5" class="px-6 py-12 text-center text-gray-400">No posts yet. <a href="{{ route('admin.posts.create') }}" class="text-blue-600">Create one →</a></td></tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-</body>
-</html>
+    @if($posts->hasPages())
+    <div class="px-6 py-4 border-t border-gray-100">
+        {{ $posts->links() }}
+    </div>
+    @endif
+</div>
+@endsection

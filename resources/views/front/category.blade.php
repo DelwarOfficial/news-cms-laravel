@@ -1,49 +1,50 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $category->name }} | NewsCore</title>
-    <meta name="description" content="{{ $category->meta_description ?? 'Latest news in ' . $category->name }}">
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50">
-    <nav class="bg-white border-b">
-        <div class="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-x-3">
-                <div class="w-10 h-10 bg-black rounded-2xl flex items-center justify-center">
-                    <span class="text-white text-2xl font-bold">N</span>
-                </div>
-                <span class="text-3xl font-bold">NewsCore</span>
-            </a>
-        </div>
-    </nav>
+@extends('front.layouts.app')
+@section('title', $category->name . ' - NewsCore')
 
-    <div class="max-w-7xl mx-auto px-8 py-12">
-        <div class="mb-10">
-            <h1 class="text-5xl font-bold tracking-tighter">{{ $category->name }}</h1>
-            @if($category->description)
-                <p class="text-xl text-gray-600 mt-4 max-w-2xl">{{ $category->description }}</p>
-            @endif
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @forelse($posts as $post)
-                <div class="bg-white rounded-2xl overflow-hidden border hover:shadow-xl transition">
-                    <div class="h-48 bg-gray-200"></div>
-                    <div class="p-6">
-                        <h3 class="font-bold text-xl leading-tight">{{ $post->title }}</h3>
-                        <div class="text-sm text-gray-500 mt-4">{{ $post->created_at->diffForHumans() }}</div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full text-center py-20 text-gray-500">No articles in this category yet.</div>
-            @endforelse
-        </div>
-        
-        <div class="mt-12">
-            {{ $posts->links() }}
-        </div>
+@section('content')
+<div class="bg-black text-white py-20 mb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-5xl md:text-7xl font-serif font-black mb-4">{{ $category->name }}</h1>
+        @if($category->description)
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto">{{ $category->description }}</p>
+        @endif
     </div>
-</body>
-</html>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        @forelse($posts as $post)
+        <article class="group">
+            <a href="{{ route('post.show', $post->slug) }}" class="block overflow-hidden rounded-2xl mb-4 aspect-[4/3]">
+                <img src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </a>
+            <div>
+                <h3 class="text-2xl font-serif font-bold leading-snug mb-3 group-hover:text-blue-600 transition">
+                    <a href="{{ route('post.show', $post->slug) }}">{{ $post->title }}</a>
+                </h3>
+                <p class="text-gray-600 text-base line-clamp-3 mb-4">
+                    {{ Str::limit($post->excerpt ?? strip_tags($post->content), 120) }}
+                </p>
+                <div class="flex items-center gap-3 text-xs text-gray-500 font-medium uppercase tracking-wider">
+                    <span>{{ $post->created_at->format('M d, Y') }}</span>
+                    <span>&middot;</span>
+                    <span>{{ $post->reading_time }} MIN READ</span>
+                </div>
+            </div>
+        </article>
+        @empty
+        <div class="col-span-3 text-center py-20">
+            <i class="fas fa-folder-open text-6xl text-gray-200 mb-4 block"></i>
+            <h3 class="text-2xl font-bold text-gray-600">No posts found</h3>
+            <p class="text-gray-400 mt-2">Check back later for updates in this category.</p>
+        </div>
+        @endforelse
+    </div>
+    
+    @if($posts->hasPages())
+    <div class="mt-12 pt-8 border-t border-gray-200">
+        {{ $posts->links() }}
+    </div>
+    @endif
+</div>
+@endsection

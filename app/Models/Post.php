@@ -38,6 +38,11 @@ class Post extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
+
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'post_categories');
@@ -51,6 +56,26 @@ class Post extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function relatedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'post_related', 'post_id', 'related_post_id');
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(PostTranslation::class);
+    }
+
+    public function revisions()
+    {
+        return $this->hasMany(PostRevision::class);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
     }
 
     public function getReadingTimeAttribute(): int

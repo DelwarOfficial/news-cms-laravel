@@ -10,17 +10,30 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Post::with('author')->latest();
+        
+        $allowedSorts = ['title', 'status', 'created_at'];
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDirection = $request->get('sort_direction', 'desc');
+
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortDirection, ['asc', 'desc'])) {
+            $sortDirection = 'desc';
+        }
+
+        $query = Post::with('author')->orderBy($sortBy, $sortDirection);
 
         if ($user->hasRole('Author')) {
             $query->where('user_id', $user->id);
         }
 
-        $posts = $query->paginate(20);
-        return view('admin.posts.index', compact('posts'));
+        $posts = $query->paginate(20)->withQueryString();
+        
+        return view('admin.posts.index', compact('posts', 'sortBy', 'sortDirection'));
     }
 
     public function create()

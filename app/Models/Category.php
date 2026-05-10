@@ -37,4 +37,9 @@ class Category extends Model
     {
         return $this->belongsToMany(Post::class, 'post_categories');
     }
+
+    public function translations()
+    {
+        return $this->hasMany(CategoryTranslation::class);
+    }
 }
