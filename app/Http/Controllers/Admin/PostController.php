@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Language;
 use App\Support\AdminTableSort;
 use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
@@ -173,6 +174,7 @@ class PostController extends Controller
         $summaryBn = $summaryBnRaw ? $this->richTextSanitizer->sanitize($summaryBnRaw) : $post?->summary_bn;
 
         return [
+            'language_id' => $post?->language_id ?? Language::idForLocale(app()->getLocale()),
             'title' => $titleBn ?: $titleEn, // default to BN title if exists for base title
             'title_en' => $titleEn,
             'title_bn' => $titleBn,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -43,6 +44,7 @@ class AdminPostApiController extends Controller
                 'is_featured' => $validated['is_featured'] ?? false,
                 'is_trending' => $validated['is_trending'] ?? false,
                 'user_id' => $request->user()->id,
+                'language_id' => Language::idForLocale(app()->getLocale()),
             ]);
 
             if (!empty($validated['categories'])) {

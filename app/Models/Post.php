@@ -16,7 +16,7 @@ class Post extends Model
     use HasFactory, SoftDeletes, HasSlug, HasRichText;
 
     protected $fillable = [
-        'user_id', 'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
+        'user_id', 'language_id', 'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
         'excerpt', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn', 'status',
         'published_at', 'is_breaking', 'is_featured', 'is_trending',
         'is_editors_pick', 'urgency_level', 'meta_title', 'meta_title_en',
