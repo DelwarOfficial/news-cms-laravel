@@ -50,4 +50,4 @@ unset($__defined_vars); ?>
     <link <?php echo e($attributes); ?> rel="stylesheet" href="<?php echo e($assets->url('/trix-rich-text-laravel-flux.css')); ?>" />
     <?php endif; ?>
 <?php endif; ?>
-<?php /**PATH D:\Antigravity\news-cms-laravel\vendor\tonysm\rich-text-laravel\resources\views\components/styles.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\websie\news-cms\vendor\tonysm\rich-text-laravel\resources\views\components/styles.blade.php ENDPATH**/ ?>

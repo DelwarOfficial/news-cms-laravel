@@ -1,3 +1,4 @@
+
 <?php $__env->startSection('title', 'NewsCore - Latest Updates'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -87,4 +88,4 @@
     </div>
 </div>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('front.layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\Antigravity\news-cms-laravel\resources\views/front/home.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('front.layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\websie\news-cms\resources\views/front/home.blade.php ENDPATH**/ ?>

@@ -156,4 +156,4 @@
 
 </body>
 </html>
-<?php /**PATH D:\Antigravity\news-cms-laravel\resources\views/front/layouts/app.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\websie\news-cms\resources\views/front/layouts/app.blade.php ENDPATH**/ ?>

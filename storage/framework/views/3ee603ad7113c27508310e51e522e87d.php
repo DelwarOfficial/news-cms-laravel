@@ -48,4 +48,4 @@
     </div>
 </body>
 </html>
-<?php /**PATH D:\Antigravity\news-cms-laravel\resources\views/admin/auth/login.blade.php ENDPATH**/ ?>
+<?php /**PATH D:\websie\news-cms\resources\views/admin/auth/login.blade.php ENDPATH**/ ?>
