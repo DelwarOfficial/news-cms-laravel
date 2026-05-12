@@ -16,3 +16,10 @@ yarn-error.log
 /.vscode
 .DS_Store
 Thumbs.db
+
+# Laravel standard ignores
+/bootstrap/cache/
+/storage/framework/
+/storage/logs/
+*.sqlite
+*.sqlite-journal
