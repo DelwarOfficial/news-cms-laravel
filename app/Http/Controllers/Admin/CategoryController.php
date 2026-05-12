@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Support\AdminTableSort;
+use App\Support\FrontendCache;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -123,6 +124,8 @@ class CategoryController extends Controller
             
             Category::where('id', $item['id'])->update(['order' => $item['order']]);
         }
+
+        FrontendCache::flushCategories();
         
         return response()->json(['success' => true, 'message' => 'Categories reordered successfully']);
     }

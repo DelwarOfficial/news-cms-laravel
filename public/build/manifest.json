@@ -1,0 +1,44 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-BnOqIhfn.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true,
+    "assets": [
+      "assets/NotoSerifBengali-Regular-CMeMyNBi.ttf",
+      "assets/NotoSerifBengali-Thin-B7n8Fmm1.ttf",
+      "assets/NotoSerifBengali-SemiBold-BL_9zJSp.ttf",
+      "assets/NotoSerifBengali-Bold-ZzHo49za.ttf",
+      "assets/NotoSerifBengali-ExtraBold-BnH97gFa.ttf"
+    ]
+  },
+  "resources/fonts/NotoSerifBengali-Bold.ttf": {
+    "file": "assets/NotoSerifBengali-Bold-ZzHo49za.ttf",
+    "src": "resources/fonts/NotoSerifBengali-Bold.ttf"
+  },
+  "resources/fonts/NotoSerifBengali-ExtraBold.ttf": {
+    "file": "assets/NotoSerifBengali-ExtraBold-BnH97gFa.ttf",
+    "src": "resources/fonts/NotoSerifBengali-ExtraBold.ttf"
+  },
+  "resources/fonts/NotoSerifBengali-Regular.ttf": {
+    "file": "assets/NotoSerifBengali-Regular-CMeMyNBi.ttf",
+    "src": "resources/fonts/NotoSerifBengali-Regular.ttf"
+  },
+  "resources/fonts/NotoSerifBengali-SemiBold.ttf": {
+    "file": "assets/NotoSerifBengali-SemiBold-BL_9zJSp.ttf",
+    "src": "resources/fonts/NotoSerifBengali-SemiBold.ttf"
+  },
+  "resources/fonts/NotoSerifBengali-Thin.ttf": {
+    "file": "assets/NotoSerifBengali-Thin-B7n8Fmm1.ttf",
+    "src": "resources/fonts/NotoSerifBengali-Thin.ttf"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-v3KlHhp4.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
+use App\Models\District;
+use App\Models\Division;
 use App\Models\Language;
 use App\Support\AdminTableSort;
 use App\Support\RichTextSanitizer;
@@ -47,7 +49,10 @@ class PostController extends Controller
         $this->authorize('create', Post::class);
 
         $categories = Category::all();
-        return view('admin.posts.create', compact('categories'));
+        $divisions = Division::active()->orderBy('name')->get();
+        $districts = District::active()->with('division')->orderBy('name')->get();
+
+        return view('admin.posts.create', compact('categories', 'divisions', 'districts'));
     }
 
     public function store(Request $request)
@@ -75,6 +80,13 @@ class PostController extends Controller
             "meta_description_{$otherLocale}" => 'nullable|max:170',
             'canonical_url' => 'nullable|url|max:500',
             'featured_image' => 'nullable|image|max:5120',
+            'division_id' => 'nullable|exists:divisions,id',
+            'district_id' => 'nullable|exists:districts,id',
+            'is_breaking' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
+            'is_trending' => 'nullable|boolean',
+            'is_editors_pick' => 'nullable|boolean',
+            'is_sticky' => 'nullable|boolean',
         ]);
 
         $user = Auth::user();
@@ -85,6 +97,7 @@ class PostController extends Controller
         if ($validated['status'] === 'pending' && ! $user->can('posts.submit_review')) {
             abort(403, 'You are not allowed to submit posts for review.');
         }
+        $this->ensureDistrictBelongsToDivision($validated);
 
         $postData = $this->preparePostData($validated);
 
@@ -103,7 +116,10 @@ class PostController extends Controller
         $this->authorize('update', $post);
         
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post', 'categories'));
+        $divisions = Division::active()->orderBy('name')->get();
+        $districts = District::active()->with('division')->orderBy('name')->get();
+
+        return view('admin.posts.edit', compact('post', 'categories', 'divisions', 'districts'));
     }
 
     public function update(Request $request, Post $post)
@@ -130,6 +146,13 @@ class PostController extends Controller
             "meta_description_{$locale}" => 'nullable|max:170',
             "meta_description_{$otherLocale}" => 'nullable|max:170',
             'canonical_url' => 'nullable|url|max:500',
+            'division_id' => 'nullable|exists:divisions,id',
+            'district_id' => 'nullable|exists:districts,id',
+            'is_breaking' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
+            'is_trending' => 'nullable|boolean',
+            'is_editors_pick' => 'nullable|boolean',
+            'is_sticky' => 'nullable|boolean',
         ]);
 
         if ($validated['status'] === 'published' && ! $request->user()->can('posts.publish')) {
@@ -138,6 +161,7 @@ class PostController extends Controller
         if ($validated['status'] === 'pending' && ! $request->user()->can('posts.submit_review')) {
             abort(403, 'You are not allowed to submit posts for review.');
         }
+        $this->ensureDistrictBelongsToDivision($validated);
 
         $post->update($this->preparePostData($validated, $post));
         
@@ -188,6 +212,7 @@ class PostController extends Controller
             'summary_en' => $summaryEnRaw ? $summaryEn : null,
             'summary_bn' => $summaryBnRaw ? $summaryBn : null,
             'status' => $validated['status'],
+            'primary_category_id' => $validated['category_id'] ?? null,
             'meta_title' => $validated['meta_title'] ?? $validated['meta_title_bn'] ?? $validated['meta_title_en'] ?? null,
             'meta_description' => $validated['meta_description'] ?? $validated['meta_description_bn'] ?? $validated['meta_description_en'] ?? null,
             'meta_title_en' => $validated['meta_title_en'] ?? $post?->meta_title_en,
@@ -195,6 +220,13 @@ class PostController extends Controller
             'meta_description_en' => $validated['meta_description_en'] ?? $post?->meta_description_en,
             'meta_description_bn' => $validated['meta_description_bn'] ?? $post?->meta_description_bn,
             'canonical_url' => $validated['canonical_url'] ?? $post?->canonical_url,
+            'division_id' => $validated['division_id'] ?? null,
+            'district_id' => $validated['district_id'] ?? null,
+            'is_breaking' => (bool) ($validated['is_breaking'] ?? false),
+            'is_featured' => (bool) ($validated['is_featured'] ?? false),
+            'is_trending' => (bool) ($validated['is_trending'] ?? false),
+            'is_editors_pick' => (bool) ($validated['is_editors_pick'] ?? false),
+            'is_sticky' => (bool) ($validated['is_sticky'] ?? false),
         ];
     }
 
@@ -228,5 +260,19 @@ class PostController extends Controller
         }
 
         return $candidate;
+    }
+
+    private function ensureDistrictBelongsToDivision(array $validated): void
+    {
+        if (empty($validated['division_id']) || empty($validated['district_id'])) {
+            return;
+        }
+
+        $belongs = District::query()
+            ->whereKey($validated['district_id'])
+            ->where('division_id', $validated['division_id'])
+            ->exists();
+
+        abort_unless($belongs, 422, 'Selected district does not belong to the selected division.');
     }
 }

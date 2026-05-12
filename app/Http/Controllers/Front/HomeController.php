@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
-use Illuminate\Http\Request;
+use App\Services\HomeDataService;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(HomeDataService $homeDataService)
     {
-        $latestPosts = Post::published()->latest()->take(12)->get();
-        return view('front.home', compact('latestPosts'));
+        return view('pages.home', $homeDataService->getHomepageData());
+    }
+
+    public function photoStoryData(HomeDataService $homeDataService)
+    {
+        return response()->json($homeDataService->getPhotoStoryData());
     }
 }

@@ -10,7 +10,19 @@ use Illuminate\Support\Facades\Storage;
 
 class AdvertisementController extends Controller
 {
-    protected $allowedPositions = ['header', 'sidebar', 'content_top', 'content_bottom', 'footer'];
+    protected $allowedPositions = [
+        'header',
+        'sidebar',
+        'content_top',
+        'content_bottom',
+        'footer',
+        'category-top',
+        'category-in-feed',
+        'category-bottom',
+        'sidebar-rectangle-1',
+        'sidebar-half-page',
+        'sidebar-rectangle-2',
+    ];
     protected $allowedTypes = ['image', 'code'];
 
     public function index()
@@ -41,10 +53,9 @@ class AdvertisementController extends Controller
             'image' => 'required_if:type,image|nullable|image|max:5120',
             'code' => 'required_if:type,code|nullable|max:5000',
             'url' => 'nullable|url',
-            'alt_text' => 'nullable|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
-            'enabled' => 'boolean',
+            'is_active' => 'boolean',
         ]);
 
         try {
@@ -53,10 +64,9 @@ class AdvertisementController extends Controller
             $advertisement->position = $validated['position'];
             $advertisement->type = $validated['type'];
             $advertisement->url = $validated['url'] ?? null;
-            $advertisement->alt_text = $validated['alt_text'] ?? null;
             $advertisement->start_date = $validated['start_date'] ?? null;
             $advertisement->end_date = $validated['end_date'] ?? null;
-            $advertisement->enabled = $validated['enabled'] ?? true;
+            $advertisement->is_active = $request->boolean('is_active', true);
 
             if ($validated['type'] === 'image' && $request->hasFile('image')) {
                 $path = $request->file('image')->store('advertisements', 'public');
@@ -95,10 +105,9 @@ class AdvertisementController extends Controller
             'image' => 'nullable|image|max:5120',
             'code' => 'nullable|max:5000',
             'url' => 'nullable|url',
-            'alt_text' => 'nullable|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
-            'enabled' => 'boolean',
+            'is_active' => 'boolean',
         ]);
 
         try {
@@ -106,10 +115,9 @@ class AdvertisementController extends Controller
             $advertisement->position = $validated['position'];
             $advertisement->type = $validated['type'];
             $advertisement->url = $validated['url'] ?? null;
-            $advertisement->alt_text = $validated['alt_text'] ?? null;
             $advertisement->start_date = $validated['start_date'] ?? null;
             $advertisement->end_date = $validated['end_date'] ?? null;
-            $advertisement->enabled = $validated['enabled'] ?? true;
+            $advertisement->is_active = $request->boolean('is_active', true);
 
             if ($validated['type'] === 'image') {
                 if ($request->hasFile('image')) {

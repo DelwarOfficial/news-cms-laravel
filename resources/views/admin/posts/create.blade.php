@@ -76,19 +76,46 @@
                 </div>
             </div>
 
-            <div class="mt-6 flex flex-wrap items-center gap-4">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_breaking" value="1" {{ old('is_breaking') ? 'checked' : '' }} class="rounded">
-                    <span class="text-sm text-gray-700">Breaking News</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }} class="rounded">
-                    <span class="text-sm text-gray-700">Featured</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="is_trending" value="1" {{ old('is_trending') ? 'checked' : '' }} class="rounded">
-                    <span class="text-sm text-gray-700">Trending</span>
-                </label>
+            <div class="mt-8 border-t border-gray-100 pt-6">
+                <h2 class="text-sm font-bold text-gray-900 mb-4">News Flags</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach([
+                        'is_breaking' => 'Breaking News',
+                        'is_featured' => 'Featured',
+                        'is_trending' => 'Trending',
+                        'is_editors_pick' => "Editor's Pick",
+                        'is_sticky' => 'Sticky',
+                    ] as $field => $label)
+                        <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
+                            <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field)) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mt-8 border-t border-gray-100 pt-6">
+                <h2 class="text-sm font-bold text-gray-900 mb-4">Location</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Division</label>
+                        <select name="division_id" id="division_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
+                            <option value="">No Division</option>
+                            @foreach($divisions as $division)
+                                <option value="{{ $division->id }}" @selected((int) old('division_id') === $division->id)>{{ $division->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">District</label>
+                        <select name="district_id" id="district_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
+                            <option value="">No District</option>
+                            @foreach($districts as $district)
+                                <option value="{{ $district->id }}" data-division="{{ $district->division_id }}" @selected((int) old('district_id') === $district->id)>{{ $district->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -102,4 +129,33 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const divisionSelect = document.getElementById('division_id');
+    const districtSelect = document.getElementById('district_id');
+    const districtOptions = Array.from(districtSelect.options);
+
+    function filterDistricts() {
+        const divisionId = divisionSelect.value;
+
+        districtOptions.forEach((option) => {
+            if (!option.value) {
+                option.hidden = false;
+                return;
+            }
+
+            option.hidden = divisionId && option.dataset.division !== divisionId;
+        });
+
+        const selected = districtSelect.selectedOptions[0];
+        if (selected && selected.hidden) {
+            districtSelect.value = '';
+        }
+    }
+
+    divisionSelect.addEventListener('change', filterDistricts);
+    filterDistricts();
+});
+</script>
 @endsection

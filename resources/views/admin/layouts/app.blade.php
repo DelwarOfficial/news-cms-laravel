@@ -92,6 +92,16 @@
                     <i class="fas fa-folder w-4"></i> Categories
                 </a>
             @endcan
+            @can('posts.create')
+                <a href="{{ route('admin.placements.index') }}" class="sidebar-link {{ request()->routeIs('admin.placements*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-layer-group w-4"></i> Placements
+                </a>
+            @endcan
+            @can('categories.manage')
+                <a href="{{ route('admin.locations.index') }}" class="sidebar-link {{ request()->routeIs('admin.locations*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-map-location-dot w-4"></i> Locations
+                </a>
+            @endcan
             @can('tags.manage')
                 <a href="{{ route('admin.tags.index') }}" class="sidebar-link {{ request()->routeIs('admin.tags*') ? 'active' : 'text-white/80' }}">
                     <i class="fas fa-tags w-4"></i> Tags
