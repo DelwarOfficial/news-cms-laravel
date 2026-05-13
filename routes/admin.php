@@ -46,7 +46,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->middleware('permission:ads.manage');
 
     Route::resource('placements', ContentPlacementController::class)
-        ->only(['index', 'store', 'destroy'])
+        ->only(['index', 'store', 'edit', 'update', 'destroy'])
         ->middleware('permission:posts.create');
 
     Route::get('locations', [LocationController::class, 'index'])

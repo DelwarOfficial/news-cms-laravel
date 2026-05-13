@@ -10,11 +10,21 @@ use Illuminate\Http\Request;
 
 class ContentPlacementController extends Controller
 {
+    public const SLOTS = [
+        'home.breaking'     => 'Breaking News Ticker',
+        'home.featured'     => 'Hero Featured Story',
+        'home.sticky'       => 'Sticky / Pinned Post',
+        'home.trending'     => 'Trending Section',
+        'home.editors_pick' => "Editor's Pick",
+        'home.center_grid'  => 'Center Grid',
+        'home.left_column'  => 'Left Column',
+        'home.right_column' => 'Right Column',
+    ];
+
     public function index(Request $request)
     {
-        $placements = ContentPlacement::query()
-            ->with(['post:id,title,slug,status,published_at'])
-            ->when($request->filled('placement_key'), fn ($query) => $query->where('placement_key', $request->string('placement_key')))
+        $placements = ContentPlacement::with(['post:id,title,slug,status,published_at,featured_image'])
+            ->when($request->filled('slot'), fn ($q) => $q->where('placement_key', $request->slot))
             ->orderBy('placement_key')
             ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
             ->orderBy('sort_order')
@@ -22,43 +32,32 @@ class ContentPlacementController extends Controller
             ->paginate(30)
             ->withQueryString();
 
-        $posts = Post::query()
-            ->published()
+        $posts = Post::published()
             ->orderByDesc('published_at')
             ->orderByDesc('id')
             ->limit(200)
-            ->get(['id', 'title', 'slug', 'published_at']);
+            ->get(['id', 'title', 'slug', 'published_at', 'featured_image']);
 
-        $placementKeys = ContentPlacement::query()
-            ->select('placement_key')
-            ->distinct()
-            ->orderBy('placement_key')
-            ->pluck('placement_key');
+        $activeSlots = ContentPlacement::select('placement_key')
+            ->distinct()->orderBy('placement_key')->pluck('placement_key');
 
-        $defaultPlacementKeys = collect([
-            'home.breaking',
-            'home.featured',
-            'home.center_grid',
-            'home.left_column',
-            'home.right_column',
-            'home.sticky',
-            'home.trending',
-            'home.editors_pick',
-        ]);
+        $slots = collect(self::SLOTS);
 
-        $placementOptions = $defaultPlacementKeys
-            ->merge($placementKeys)
-            ->unique()
-            ->values();
+        $stats = [
+            'total' => ContentPlacement::count(),
+            'active' => ContentPlacement::where('is_active', true)->count(),
+            'slots_used' => ContentPlacement::select('placement_key')->distinct()->count(),
+            'slots_total' => count(self::SLOTS),
+        ];
 
-        return view('admin.placements.index', compact('placements', 'posts', 'placementOptions'));
+        return view('admin.placements.index', compact('placements', 'posts', 'slots', 'activeSlots', 'stats'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'post_id' => ['required', 'exists:posts,id'],
-            'placement_key' => ['required', 'string', 'max:100'],
+            'placement_key' => ['required', 'string', 'in:' . implode(',', array_keys(self::SLOTS))],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
@@ -66,10 +65,7 @@ class ContentPlacementController extends Controller
         ]);
 
         ContentPlacement::updateOrCreate(
-            [
-                'post_id' => $validated['post_id'],
-                'placement_key' => $validated['placement_key'],
-            ],
+            ['post_id' => $validated['post_id'], 'placement_key' => $validated['placement_key']],
             [
                 'sort_order' => $validated['sort_order'] ?? null,
                 'starts_at' => $validated['starts_at'] ?? null,
@@ -78,28 +74,63 @@ class ContentPlacementController extends Controller
             ],
         );
 
-        $this->flushFrontendContentCache();
+        FrontendCache::flushContent();
 
         return redirect()
-            ->route('admin.placements.index', ['placement_key' => $validated['placement_key']])
+            ->route('admin.placements.index', ['slot' => $validated['placement_key']])
             ->with('success', 'Content placement saved successfully.');
+    }
+
+    public function update(Request $request, ContentPlacement $placement)
+    {
+        $validated = $request->validate([
+            'sort_order' => ['nullable', 'integer', 'min:0', 'max:65535'],
+            'starts_at' => ['nullable', 'date'],
+            'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'is_active' => ['nullable', 'boolean'],
+            'post_id' => ['nullable', 'exists:posts,id'],
+        ]);
+
+        if (isset($validated['post_id'])) {
+            $placement->post_id = $validated['post_id'];
+        }
+        if ($request->has('sort_order')) {
+            $placement->sort_order = $validated['sort_order'];
+        }
+        if ($request->has('starts_at')) {
+            $placement->starts_at = $validated['starts_at'];
+        }
+        if ($request->has('ends_at')) {
+            $placement->ends_at = $validated['ends_at'];
+        }
+        if ($request->has('is_active')) {
+            $placement->is_active = $request->boolean('is_active');
+        }
+
+        $placement->save();
+        FrontendCache::flushContent();
+
+        return back()->with('success', 'Placement updated.');
+    }
+
+    public function edit(ContentPlacement $placement)
+    {
+        $posts = Post::published()
+            ->orderByDesc('published_at')
+            ->limit(200)
+            ->get(['id', 'title', 'slug', 'published_at', 'featured_image']);
+
+        return view('admin.placements.edit', compact('placement', 'posts'));
     }
 
     public function destroy(ContentPlacement $placement)
     {
-        $placementKey = $placement->placement_key;
-
+        $slot = $placement->placement_key;
         $placement->delete();
-
-        $this->flushFrontendContentCache();
+        FrontendCache::flushContent();
 
         return redirect()
-            ->route('admin.placements.index', ['placement_key' => $placementKey])
-            ->with('success', 'Content placement removed successfully.');
-    }
-
-    private function flushFrontendContentCache(): void
-    {
-        FrontendCache::flushContent();
+            ->route('admin.placements.index', ['slot' => $slot])
+            ->with('success', 'Placement removed.');
     }
 }
