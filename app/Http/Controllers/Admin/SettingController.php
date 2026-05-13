@@ -46,6 +46,11 @@ class SettingController extends Controller
             'google_analytics_id' => 'nullable|max:255',
             'recaptcha_site_key' => 'nullable|max:255',
             'recaptcha_secret_key' => 'nullable|max:255',
+            'backup_disk' => 'nullable|in:local,s3',
+            'backup_retention_days' => 'nullable|integer|min:1|max:365',
+            'backup_auto_enabled' => 'boolean',
+            'backup_frequency' => 'nullable|in:daily,weekly,monthly',
+            'backup_include_media' => 'boolean',
         ]);
 
         foreach (['enable_comments', 'require_comment_approval', 'enable_registration'] as $key) {
@@ -64,5 +69,47 @@ class SettingController extends Controller
         Cache::forget('cms_settings');
 
         return back()->with('success', 'Settings updated successfully!');
+    }
+
+    public function export()
+    {
+        $this->authorize('viewAny', Setting::class);
+
+        $settings = Setting::all()->keyBy('key')->map(fn ($s) => $s->value);
+
+        return response()->json($settings)
+            ->header('Content-Disposition', 'attachment; filename="news-core-settings-' . now()->format('Y-m-d') . '.json"')
+            ->header('Content-Type', 'application/json');
+    }
+
+    public function import(Request $request)
+    {
+        $this->authorize('update', Setting::class);
+
+        $request->validate([
+            'settings_file' => 'required|file|mimes:json|max:512',
+        ]);
+
+        $json = json_decode($request->file('settings_file')->get(), true);
+
+        if (! is_array($json) || $json === []) {
+            return back()->with('error', 'Invalid settings file. Expected a JSON object of key-value pairs.');
+        }
+
+        $count = 0;
+        foreach ($json as $key => $value) {
+            if (is_string($key) && (is_string($value) || is_numeric($value) || is_bool($value))) {
+                Setting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => (string) $value],
+                );
+                $count++;
+            }
+        }
+
+        Cache::forget('settings');
+        Cache::forget('cms_settings');
+
+        return back()->with('success', "Imported {$count} settings successfully.");
     }
 }

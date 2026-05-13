@@ -8,6 +8,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->middleware('permission:dashboard.view')->name('dashboard');
 
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->middleware('permission:posts.create');
+    Route::post('posts/{post}/clone', [\App\Http\Controllers\Admin\PostController::class, 'clone'])->middleware('permission:posts.create')->name('posts.clone');
     Route::post('categories/reorder', [\App\Http\Controllers\Admin\CategoryController::class, 'reorder'])->middleware('permission:categories.manage')->name('categories.reorder');
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->middleware('permission:categories.manage');
     Route::resource('members', \App\Http\Controllers\Admin\MemberController::class)->middleware('permission:users.create');
@@ -18,12 +19,21 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::resource('tags', \App\Http\Controllers\Admin\TagController::class)->only(['index', 'create', 'store', 'destroy'])->middleware('permission:tags.manage');
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->middleware('permission:settings.manage')->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->middleware('permission:settings.manage')->name('settings.update');
+    Route::get('settings/export', [\App\Http\Controllers\Admin\SettingController::class, 'export'])->middleware('permission:settings.manage')->name('settings.export');
+    Route::post('settings/import', [\App\Http\Controllers\Admin\SettingController::class, 'import'])->middleware('permission:settings.manage')->name('settings.import');
     Route::resource('comments', \App\Http\Controllers\Admin\CommentController::class)->only(['index'])->middleware('permission:comments.manage');
     Route::post('comments/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->middleware('permission:comments.manage')->name('comments.approve');
 
     Route::post('sitemap/generate', [\App\Http\Controllers\Admin\SitemapController::class, 'generate'])->middleware('permission:settings.manage')->name('sitemap.generate');
 
     Route::get('api-docs', [\App\Http\Controllers\Admin\ApiDocsController::class, 'index'])->middleware('permission:users.manage')->name('api-docs.index');
+
+    Route::prefix('backups')->name('backups.')->middleware('permission:backups.manage')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('index');
+        Route::post('/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('create');
+        Route::get('/download/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('download');
+        Route::delete('/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('destroy');
+    });
 
     Route::get('api-keys', [\App\Http\Controllers\Admin\ApiKeyController::class, 'index'])->middleware('permission:users.manage')->name('api-keys.index');
     Route::get('api-keys/create', [\App\Http\Controllers\Admin\ApiKeyController::class, 'create'])->middleware('permission:users.manage')->name('api-keys.create');

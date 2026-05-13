@@ -168,6 +168,11 @@
                     <i class="fas fa-book w-4"></i> API Docs
                 </a>
             @endcan
+            @can('backups.manage')
+                <a href="{{ route('admin.backups.index') }}" class="sidebar-link {{ request()->routeIs('admin.backups*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-hdd w-4"></i> Backups
+                </a>
+            @endcan
             @can('settings.manage')
                 <a href="{{ route('admin.settings.index') }}" class="sidebar-link {{ request()->routeIs('admin.settings*') ? 'active' : 'text-white/80' }}">
                     <i class="fas fa-cog w-4"></i> Settings

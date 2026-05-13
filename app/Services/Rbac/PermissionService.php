@@ -32,6 +32,7 @@ class PermissionService
         'dashboard.view',
         'themes.manage',
         'api_keys.manage',
+        'backups.manage',
     ];
 
     public const ROLE_PERMISSIONS = [

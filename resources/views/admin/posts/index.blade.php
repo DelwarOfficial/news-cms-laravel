@@ -100,6 +100,14 @@
                                             <i class="fas fa-eye text-xs"></i>
                                         </a>
                                     @endif
+                                    @can('create', \App\Models\Post::class)
+                                        <form method="POST" action="{{ route('admin.posts.clone', $post) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="text-amber-600 hover:text-amber-800 p-2 rounded-lg hover:bg-amber-50 transition-colors" title="Clone">
+                                                <i class="fas fa-copy text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
                                     @can('update', $post)
                                         <a href="{{ route('admin.posts.edit', $post) }}" class="text-blue-600 hover:text-blue-800 p-2 rounded-lg hover:bg-blue-50 transition-colors" title="Edit">
                                             <i class="fas fa-pencil text-xs"></i>
@@ -149,6 +157,12 @@
                         @if($post->status === 'published')
                             <a href="{{ route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]) }}" target="_blank" class="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">View</a>
                         @endif
+                        @can('create', \App\Models\Post::class)
+                            <form method="POST" action="{{ route('admin.posts.clone', $post) }}" class="inline">
+                                @csrf
+                                <button type="submit" class="rounded-xl border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-600">Clone</button>
+                            </form>
+                        @endcan
                         @can('update', $post)
                             <a href="{{ route('admin.posts.edit', $post) }}" class="rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white">Edit</a>
                         @endcan

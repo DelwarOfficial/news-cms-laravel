@@ -162,7 +162,67 @@ class PostController extends Controller
         $this->authorize('delete', $post);
         
         $post->delete();
+        FrontendCache::flushContent();
         return redirect()->route('admin.posts.index')->with('success', 'Post deleted successfully!');
+    }
+
+    public function clone(Post $post)
+    {
+        $this->authorize('create', Post::class);
+
+        $clone = Post::create([
+            'user_id' => Auth::id(),
+            'author_id' => $post->author_id,
+            'language_id' => $post->language_id,
+            'title' => $post->title . ' (Clone)',
+            'title_en' => $post->title_en ? $post->title_en . ' (Clone)' : null,
+            'title_bn' => $post->title_bn ? $post->title_bn . ' (Clone)' : null,
+            'slug' => $post->slug . '-clone-' . now()->timestamp,
+            'slug_en' => $post->slug_en ? $post->slug_en . '-clone-' . now()->timestamp : null,
+            'slug_bn' => $post->slug_bn ? $post->slug_bn . '-clone-' . now()->timestamp : null,
+            'content' => $post->content,
+            'body_en' => $post->body_en,
+            'body_bn' => $post->body_bn,
+            'excerpt' => $post->excerpt,
+            'shoulder' => $post->shoulder,
+            'status' => 'draft',
+            'post_format' => $post->post_format ?? 'standard',
+            'primary_category_id' => $post->primary_category_id,
+            'featured_media_id' => $post->featured_media_id,
+            'featured_image' => $post->featured_image,
+            'featured_image_alt' => $post->featured_image_alt,
+            'meta_title' => $post->meta_title,
+            'meta_description' => $post->meta_description,
+            'canonical_url' => null,
+            'division_id' => $post->division_id,
+            'district_id' => $post->district_id,
+            'upazila_id' => $post->upazila_id,
+            'is_breaking' => $post->is_breaking,
+            'is_featured' => $post->is_featured,
+            'is_trending' => $post->is_trending,
+            'is_editors_pick' => $post->is_editors_pick,
+            'is_sticky' => $post->is_sticky,
+            'is_photocard' => $post->is_photocard,
+            'allow_comments' => $post->allow_comments,
+            'show_author' => $post->show_author,
+            'show_publish_date' => $post->show_publish_date,
+        ]);
+
+        // Clone category and tag associations
+        $categoryIds = $post->categories()->pluck('categories.id')->toArray();
+        if ($categoryIds) {
+            $syncData = [];
+            foreach ($categoryIds as $cid) {
+                $syncData[$cid] = ['is_primary' => $cid === $post->primary_category_id];
+            }
+            $clone->categories()->sync($syncData);
+        }
+        $clone->tags()->sync($post->tags()->pluck('tags.id')->toArray());
+
+        FrontendCache::flushContent();
+
+        return redirect()->route('admin.posts.edit', $clone)
+            ->with('success', 'Post cloned successfully. Edit the copy below.');
     }
 
     private function preparePostData(array $validated, ?Post $post = null, ?Request $request = null): array
