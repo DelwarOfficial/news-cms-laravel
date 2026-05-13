@@ -160,6 +160,14 @@
                     <i class="fas fa-user-shield w-4"></i> Roles
                 </a>
             @endcan
+            @can('users.manage')
+                <a href="{{ route('admin.api-keys.index') }}" class="sidebar-link {{ request()->routeIs('admin.api-keys*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-key w-4"></i> API Keys
+                </a>
+                <a href="{{ route('admin.api-docs.index') }}" class="sidebar-link {{ request()->routeIs('admin.api-docs*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-book w-4"></i> API Docs
+                </a>
+            @endcan
             @can('settings.manage')
                 <a href="{{ route('admin.settings.index') }}" class="sidebar-link {{ request()->routeIs('admin.settings*') ? 'active' : 'text-white/80' }}">
                     <i class="fas fa-cog w-4"></i> Settings

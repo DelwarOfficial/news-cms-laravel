@@ -42,6 +42,13 @@ return new class extends Migration
 
     private function hasIndex(): bool
     {
+        if (DB::getDriverName() === 'sqlite') {
+            return DB::table('sqlite_master')
+                ->where('type', 'index')
+                ->where('name', $this->indexName)
+                ->exists();
+        }
+
         $database = DB::getDatabaseName();
 
         return DB::table('information_schema.statistics')

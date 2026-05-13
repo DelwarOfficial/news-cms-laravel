@@ -22,6 +22,15 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::post('comments/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->middleware('permission:comments.manage')->name('comments.approve');
 
     Route::post('sitemap/generate', [\App\Http\Controllers\Admin\SitemapController::class, 'generate'])->middleware('permission:settings.manage')->name('sitemap.generate');
+
+    Route::get('api-docs', [\App\Http\Controllers\Admin\ApiDocsController::class, 'index'])->middleware('permission:users.manage')->name('api-docs.index');
+
+    Route::get('api-keys', [\App\Http\Controllers\Admin\ApiKeyController::class, 'index'])->middleware('permission:users.manage')->name('api-keys.index');
+    Route::get('api-keys/create', [\App\Http\Controllers\Admin\ApiKeyController::class, 'create'])->middleware('permission:users.manage')->name('api-keys.create');
+    Route::post('api-keys', [\App\Http\Controllers\Admin\ApiKeyController::class, 'store'])->middleware('permission:users.manage')->name('api-keys.store');
+    Route::post('api-keys/{api_key}/toggle', [\App\Http\Controllers\Admin\ApiKeyController::class, 'toggle'])->middleware('permission:users.manage')->name('api-keys.toggle');
+    Route::delete('api-keys/{api_key}', [\App\Http\Controllers\Admin\ApiKeyController::class, 'destroy'])->middleware('permission:users.manage')->name('api-keys.destroy');
+
     Route::resource('widgets', \App\Http\Controllers\Admin\WidgetController::class)->middleware('permission:menus.manage');
     Route::post('widgets/{widget}/toggle', [\App\Http\Controllers\Admin\WidgetController::class, 'toggle'])->middleware('permission:menus.manage')->name('widgets.toggle');
     Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->middleware('permission:ads.manage');
