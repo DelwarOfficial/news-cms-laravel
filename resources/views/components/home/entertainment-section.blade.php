@@ -18,7 +18,7 @@
 
     <div class="p-4 flex flex-col">
       @if($heroPost)
-        <a href="{{ route('article.show', $heroPost['slug']) }}" class="group flex flex-col">
+        <a href="{{ $heroPost['url'] ?? route('article.show', $heroPost['slug']) }}" class="group flex flex-col">
           <div class="w-full overflow-hidden mb-4 rounded-sm">
             <div class="aspect-[16/9] w-full">
               <img src="{{ $heroPost['image_url'] }}" alt="{{ $heroPost['title'] }}" loading="lazy"
@@ -44,3 +44,4 @@
     </div>
   </div>
 </section>
+

@@ -8,7 +8,7 @@
     $number = $bengaliNumbers[$index] ?? ($index + 1);
 @endphp
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0 {{ $class }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0 {{ $class }}">
     <span class="font-serif font-bold text-[34px] text-fg-muted shrink-0 w-8 text-center leading-none mt-0.5">
         {{ $number }}
     </span>
@@ -21,3 +21,4 @@
         @endif
     </div>
 </a>
+

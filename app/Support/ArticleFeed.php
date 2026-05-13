@@ -160,7 +160,8 @@ class ArticleFeed
         $article = [
             'id' => $post->id,
             'slug' => $post->slug,
-            'url' => route('article.show', $post->slug),
+            'url' => route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]),
+            'canonical_url' => route('article.id', $post->id),
             'title' => $title,
             'headline' => $title,
             'shoulder' => $post->shoulder,
@@ -194,7 +195,7 @@ class ArticleFeed
             'tags' => $post->relationLoaded('tags') ? $post->tags->pluck('name')->values()->all() : [],
             'meta_title' => $post->meta_title ?: $title,
             'meta_description' => $post->meta_description ?: Str::limit(strip_tags($excerpt), 155, ''),
-            'canonical_url' => $post->canonical_url,
+            'stored_canonical_url' => $post->canonical_url,
             'og_image' => $post->og_image ?: $imageUrl,
         ];
 

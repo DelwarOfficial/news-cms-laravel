@@ -31,7 +31,7 @@
             <div id="dmsTickerContent"
                  style="display:inline-flex;flex-shrink:0;align-items:center;white-space:nowrap;height:38px;padding:0;will-change:transform;">
                 @foreach( $tickerHeadlines as $headline )
-                    <a href="{{ route('article.show', $headline['slug']) }}"
+                    <a href="{{ $headline['url'] ?? route('article.show', $headline['slug']) }}"
                        class="dms-ticker-link"
                        style="color:var(--color-fg,#1f2a44);font-size:16px;font-weight:500;text-decoration:none;white-space:nowrap;padding:0 4px;transition:color .2s;">{{ $headline['title'] }}</a>
                     <span style="color:var(--color-primary,#e2231a);font-size:20px;margin:0 18px;flex-shrink:0;opacity:.7;">●</span>
@@ -118,3 +118,4 @@
 })();
 </script>
 @endpush
+

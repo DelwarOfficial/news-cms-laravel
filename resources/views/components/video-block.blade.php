@@ -20,7 +20,7 @@
     
     {{-- Left: Large Featured Video (Now 60% of width) --}}
     @if($featuredVideo)
-      <a href="{{ route('article.show', $featuredVideo['slug']) }}" class="group flex flex-col">
+      <a href="{{ $featuredVideo['url'] ?? route('article.show', $featuredVideo['slug']) }}" class="group flex flex-col">
         <div class="w-full overflow-hidden mb-3 relative aspect-video rounded-sm">
           <img src="{{ $featuredVideo['image_url'] }}" alt="{{ $featuredVideo['title'] }}" loading="lazy"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -41,7 +41,7 @@
     @if($smallVideos && count($smallVideos) > 0)
       <div class="flex flex-col gap-4 border-t border-border pt-5 mt-2 lg:border-t-0 lg:pt-0 lg:mt-0 lg:border-l lg:pl-8">
         @foreach($smallVideos as $a)
-          <a href="{{ route('article.show', $a['slug']) }}"
+          <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}"
             class="group flex items-start gap-3">
             <div class="w-[140px] aspect-video shrink-0 overflow-hidden relative rounded-sm">
               <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
@@ -65,3 +65,4 @@
     
   </div>
 </div>
+

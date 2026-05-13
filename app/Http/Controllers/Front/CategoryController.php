@@ -90,9 +90,9 @@ class CategoryController extends Controller
             $postUrls = Post::query()
                 ->published()
                 ->latest('published_at')
-                ->get(['slug', 'updated_at', 'published_at'])
+                ->get(['id', 'slug', 'updated_at', 'published_at'])
                 ->map(fn (Post $post) => [
-                    'loc' => route('article.show', $post->slug),
+                    'loc' => route('article.id', $post->id),
                     'lastmod' => optional($post->updated_at ?: $post->published_at)->toDateString() ?: now()->toDateString(),
                 ]);
 

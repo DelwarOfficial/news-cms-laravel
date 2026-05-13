@@ -77,7 +77,7 @@
             <img src="{{ $prevImg }}" class="w-full h-full object-cover pointer-events-none" alt="" />
           </div>
 
-          <a href="{{ ($carousel[0]['slug'] ?? '#') === '#' ? '#' : route('article.show', $carousel[0]['slug']) }}" class="relative z-20 shadow-2xl rounded-2xl overflow-hidden bg-white block mx-auto transition-transform duration-500 hover:scale-[1.02] photo-carousel-link photo-main-link" style="width: 52%; max-width: 350px; aspect-ratio: 1 / 1;">
+          <a href="{{ ($carousel[0]['slug'] ?? '#') === '#' ? '#' : ($carousel[0]['url'] ?? route('article.show', $carousel[0]['slug'])) }}" class="relative z-20 shadow-2xl rounded-2xl overflow-hidden bg-white block mx-auto transition-transform duration-500 hover:scale-[1.02] photo-carousel-link photo-main-link" style="width: 52%; max-width: 350px; aspect-ratio: 1 / 1;">
             <img src="{{ $carousel[0]['image_url'] }}" alt="{{ $carousel[0]['headline'] }}" class="w-full h-full object-cover object-center bg-[#f3f4f6] photo-carousel-main-image photo-main-img" loading="lazy" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/15 to-transparent"></div>
             <div class="absolute bottom-0 left-0 right-0 p-4">
@@ -124,7 +124,7 @@
 
       <div class="h-[320px] lg:h-[376px] overflow-y-auto custom-scrollbar px-2 py-1 photo-tab-latest">
         @foreach($latest as $idx => $item)
-          <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : route('article.show', $item['slug']) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+          <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : ($item['url'] ?? route('article.show', $item['slug'])) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
             <span class="font-serif font-extrabold text-[32px] text-[#fca5a5] group-hover:text-[#e2231a] transition-colors shrink-0 w-8 text-center leading-none mt-1">{{ ['১','২','৩','৪','৫','৬','৭','৮','৯','১০'][$idx] ?? $idx + 1 }}</span>
             <div class="flex-1 min-w-0">
               <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">{{ $item['headline'] }}</h3>
@@ -139,7 +139,7 @@
 
       <div class="h-[320px] lg:h-[376px] overflow-y-auto custom-scrollbar px-2 py-1 hidden photo-tab-popular">
         @foreach($popular as $idx => $item)
-          <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : route('article.show', $item['slug']) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+          <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : ($item['url'] ?? route('article.show', $item['slug'])) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
             <span class="font-serif font-extrabold text-[32px] text-[#fca5a5] group-hover:text-[#e2231a] transition-colors shrink-0 w-8 text-center leading-none mt-1">{{ ['১','২','৩','৪','৫','৬','৭','৮','৯','১০'][$idx] ?? $idx + 1 }}</span>
             <div class="flex-1 min-w-0">
               <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">{{ $item['headline'] }}</h3>
@@ -156,3 +156,4 @@
 
   <script type="application/json" id="{{ $blockId }}-data">@json($carousel)</script>
 </div>
+

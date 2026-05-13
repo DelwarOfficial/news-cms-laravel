@@ -40,6 +40,12 @@ Route::get('/api/photo-story', [HomeController::class, 'photoStoryData'])->name(
 Route::get('/category/{parentSlug}', [CategoryController::class, 'showParent'])->name('category.parent');
 Route::get('/category/{parentSlug}/{childSlug}', [CategoryController::class, 'showChild'])->name('category.child');
 Route::get('/sitemap.xml', [CategoryController::class, 'sitemap'])->name('sitemap');
+Route::get('/article/{postId}/{slug}', [PostController::class, 'showIdSlug'])
+    ->whereNumber('postId')
+    ->name('article.id_slug');
+Route::get('/article/{postId}', [PostController::class, 'showId'])
+    ->whereNumber('postId')
+    ->name('article.id');
 Route::get('/article/{slug}/amp', [PostController::class, 'amp'])->name('article.amp');
 Route::get('/article/{slug}', [PostController::class, 'show'])->name('article.show');
 Route::get('/post/{slug}', [PostController::class, 'show'])->name('post.show');
@@ -47,6 +53,9 @@ Route::get('/author/{username}', [\App\Http\Controllers\Front\AuthorController::
 Route::get('/api/saradesh/districts', [CategoryController::class, 'districts'])->name('saradesh.districts');
 Route::get('/api/saradesh/upazilas', [CategoryController::class, 'upazilas'])->name('saradesh.upazilas');
 Route::post('/posts/{post}/view', [PostController::class, 'incrementView'])->name('posts.view');
+Route::get('/{postId}', [PostController::class, 'showRootId'])
+    ->whereNumber('postId')
+    ->name('article.root_id');
 Route::get('/{slug}', [PostController::class, 'show'])
     ->where('slug', '^(?!(admin|api|login|logout|latest|category|article|post|posts|author)(/|$)|sitemap\.xml$).+')
     ->name('article.slug');

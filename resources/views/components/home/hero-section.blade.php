@@ -8,7 +8,7 @@
 <div class="w-full max-w-screen-xl mx-auto px-4 hero-section">
   <div class="grid grid-cols-1 md:hidden gap-3 border-t border-border">
     @if($featured)
-      <a href="{{ route('article.show', $featured['slug']) }}" class="group flex flex-col py-4 border-b border-border">
+      <a href="{{ $featured['url'] ?? route('article.show', $featured['slug']) }}" class="group flex flex-col py-4 border-b border-border">
         <div class="w-full aspect-[16/9] overflow-hidden rounded-sm mb-2">
           <img src="{{ $featured['image_url'] }}" alt="{{ $featured['title'] }}" loading="lazy"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
@@ -23,7 +23,7 @@
     @if($centerGrid)
       <div class="grid grid-cols-3 gap-3 py-2 border-b border-border">
         @foreach($centerGrid as $a)
-          <a href="{{ route('article.show', $a['slug']) }}" class="group flex flex-col">
+          <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex flex-col">
             @if(!empty($a['image_url']))
               <div class="w-full aspect-[4/3] overflow-hidden rounded-sm mb-2">
                 <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
@@ -42,7 +42,7 @@
     @if($leftCol)
       <div class="py-2">
         @foreach($leftCol as $a)
-          <a href="{{ route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
+          <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
             <div class="flex-1 min-w-0">
               <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }}</span>
               <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
@@ -63,7 +63,7 @@
     @if($rightCol)
       <div class="py-2">
         @foreach($rightCol as $a)
-          <a href="{{ route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
+          <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
             @if(!empty($a['image_url']))
               <div class="w-[120px] h-[68px] shrink-0 overflow-hidden rounded-sm">
                 <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
@@ -85,7 +85,7 @@
   <div class="hidden md:grid grid-cols-1 lg:grid-cols-[27%_46%_27%] hero-grid border-t border-border">
     <div class="py-4 pr-0 lg:pr-5 lg:border-r border-border order-2 lg:order-1">
       @foreach($leftCol as $a)
-        <a href="{{ route('article.show', $a['slug']) }}"
+        <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}"
           class="group flex flex-col-reverse md:flex-row items-start gap-3 py-3 border-b border-border last:border-b-0">
           <div class="flex-1 min-w-0">
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }} &bull;</span>
@@ -109,7 +109,7 @@
 
     <div class="py-4 px-0 lg:px-5 lg:border-r border-border order-1 lg:order-2">
       @if($featured)
-        <a href="{{ route('article.show', $featured['slug']) }}" class="group flex flex-col mb-3 pb-3 border-b border-border">
+        <a href="{{ $featured['url'] ?? route('article.show', $featured['slug']) }}" class="group flex flex-col mb-3 pb-3 border-b border-border">
           <div class="w-full aspect-[16/9] overflow-hidden rounded-sm mb-2">
             <img src="{{ $featured['image_url'] }}" alt="{{ $featured['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
@@ -126,7 +126,7 @@
       @if($centerGrid)
         <div class="grid grid-cols-3 gap-x-4 gap-y-4">
           @foreach($centerGrid as $a)
-            <a href="{{ route('article.show', $a['slug']) }}" class="group flex flex-col">
+            <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex flex-col">
               <div class="w-full aspect-[16/9] overflow-hidden mb-1.5">
                 <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -147,7 +147,7 @@
       </div>
 
       @foreach($rightCol as $a)
-        <a href="{{ route('article.show', $a['slug']) }}"
+        <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}"
           class="group flex flex-col-reverse md:flex-row items-start gap-3 py-3 border-b border-border last:border-b-0">
           @if(!empty($a['image_url']))
             <div class="w-full md:w-[88px] h-[140px] md:h-[50px] shrink-0 overflow-hidden rounded-sm mb-2 md:mb-0">
@@ -170,3 +170,4 @@
     </div>
   </div>
 </div>
+

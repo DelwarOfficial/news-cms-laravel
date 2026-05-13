@@ -6,7 +6,7 @@
 
     <div class="space-y-1">
       @forelse($articles as $index => $article)
-        <a href="{{ route('article.show', $article['slug']) }}" class="group grid min-w-0 grid-cols-[28px_64px_minmax(0,1fr)] gap-3 border-b border-border py-3 last:border-0 sm:grid-cols-[34px_72px_minmax(0,1fr)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e2231a]">
+        <a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group grid min-w-0 grid-cols-[28px_64px_minmax(0,1fr)] gap-3 border-b border-border py-3 last:border-0 sm:grid-cols-[34px_72px_minmax(0,1fr)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e2231a]">
           <span class="pt-1 font-serif text-[20px] font-extrabold leading-none text-[#e2231a] sm:text-[22px]">
             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
           </span>
@@ -31,3 +31,4 @@
     </div>
   </div>
 </aside>
+

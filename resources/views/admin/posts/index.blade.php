@@ -96,7 +96,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-2 justify-end">
                                     @if($post->status === 'published')
-                                        <a href="{{ route('article.show', $post->slug) }}" target="_blank" class="text-gray-500 hover:text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition-colors" title="View">
+                                        <a href="{{ route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]) }}" target="_blank" class="text-gray-500 hover:text-gray-800 p-2 rounded-lg hover:bg-gray-100 transition-colors" title="View">
                                             <i class="fas fa-eye text-xs"></i>
                                         </a>
                                     @endif
@@ -147,7 +147,7 @@
                     </div>
                     <div class="flex items-center justify-end gap-2 pt-1">
                         @if($post->status === 'published')
-                            <a href="{{ route('article.show', $post->slug) }}" target="_blank" class="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">View</a>
+                            <a href="{{ route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]) }}" target="_blank" class="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600">View</a>
                         @endif
                         @can('update', $post)
                             <a href="{{ route('admin.posts.edit', $post) }}" class="rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white">Edit</a>

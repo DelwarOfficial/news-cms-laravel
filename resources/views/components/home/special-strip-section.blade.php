@@ -9,7 +9,7 @@
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-0 divide-x divide-border">
     @foreach($posts as $index => $post)
-      <a href="{{ route('article.show', $post['slug']) }}"
+      <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
         class="group flex flex-col {{ $index === 0 ? 'pr-4' : ($index === 4 ? 'pl-4' : 'px-4') }}">
         <div class="w-full aspect-[16/9] overflow-hidden mb-3 rounded-sm">
           <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] }}" loading="lazy"
@@ -27,3 +27,4 @@
     @endforeach
   </div>
 </section>
+

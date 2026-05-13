@@ -1,7 +1,7 @@
 @props(['article'])
 
 <article class="group h-full min-w-0">
-  <a href="{{ route('article.show', $article['slug']) }}" class="flex h-full min-w-0 flex-col overflow-hidden rounded-[8px] border border-border bg-bg shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e2231a] focus-visible:ring-offset-2 focus-visible:ring-offset-bg">
+  <a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="flex h-full min-w-0 flex-col overflow-hidden rounded-[8px] border border-border bg-bg shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#e2231a] focus-visible:ring-offset-2 focus-visible:ring-offset-bg">
     <div class="relative aspect-[16/10] overflow-hidden bg-surface">
       <img
         src="{{ $article['image_url'] ?? asset('images/news-1.jpg') }}"
@@ -36,3 +36,4 @@
     </div>
   </a>
 </article>
+

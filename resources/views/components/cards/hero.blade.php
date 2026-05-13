@@ -3,7 +3,7 @@
 
 @props(['article', 'imagePosition' => 'left', 'showTime' => true, 'titleSize' => 22, 'excerptLines' => 3, 'class' => ''])
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group {{ $imagePosition === 'left' ? 'flex gap-4' : 'flex flex-col' }} {{ $class }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group {{ $imagePosition === 'left' ? 'flex gap-4' : 'flex flex-col' }} {{ $class }}">
     @if(!empty($article['image_url']))
         <div class="{{ $imagePosition === 'left' ? 'w-[55%] shrink-0' : 'w-full' }} {{ $imagePosition === 'left' ? 'aspect-[16/9]' : 'aspect-[16/9] mb-3' }} overflow-hidden">
             <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
@@ -25,3 +25,4 @@
         @endif
     </div>
 </a>
+

@@ -19,7 +19,7 @@
   @if($featuredPost)
     <div class="grid grid-cols-1 md:grid-cols-[2fr_2fr_1fr] gap-0 divide-x divide-border">
       <div class="pr-6">
-        <a href="{{ route('article.show', $featuredPost['slug']) }}" class="group block">
+        <a href="{{ $featuredPost['url'] ?? route('article.show', $featuredPost['slug']) }}" class="group block">
           <div class="w-full aspect-[16/9] overflow-hidden mb-3">
             <img src="{{ $featuredPost['image_url'] }}" alt="{{ $featuredPost['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -38,7 +38,7 @@
 
       <div class="px-6 flex flex-col divide-y divide-border">
         @foreach($listPosts as $post)
-          <a href="{{ route('article.show', $post['slug']) }}"
+          <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
             class="group flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
             <h3 class="font-serif font-extrabold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3 flex-1">
               {{ $post['title'] }}
@@ -62,3 +62,4 @@
     </div>
   @endif
 </section>
+

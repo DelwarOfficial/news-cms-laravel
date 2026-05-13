@@ -21,7 +21,7 @@
     $imageClass = $imageSizes[$size] ?? $imageSizes['md'];
 @endphp
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group flex {{ $size === 'sm' ? 'flex-row gap-3' : 'flex-col' }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group flex {{ $size === 'sm' ? 'flex-row gap-3' : 'flex-col' }}">
     @if($overlay)
         <div class="relative overflow-hidden {{ $imageClass }} rounded-md">
             <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
@@ -58,3 +58,4 @@
         @endif
     @endif
 </a>
+

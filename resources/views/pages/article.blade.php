@@ -15,7 +15,7 @@
       '@type' => 'NewsArticle',
       'mainEntityOfPage' => [
           '@type' => 'WebPage',
-          '@id' => $canonicalUrl ?? route('article.show', $article['slug']),
+          '@id' => $canonicalUrl ?? $article['url'] ?? route('article.show', $article['slug']),
       ],
       'headline' => $article['title'],
       'description' => $article['meta_description'] ?? $article['excerpt'] ?? '',
@@ -164,7 +164,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
               @foreach($sectionPosts as $related)
-                <a href="{{ route('article.show', $related['slug']) }}" class="group flex flex-col">
+                <a href="{{ $related['url'] ?? route('article.show', $related['slug']) }}" class="group flex flex-col">
                   @if(!empty($related['image_url']))
                     <div class="w-full aspect-[16/9] overflow-hidden mb-2">
                       <img src="{{ $related['image_url'] }}"
@@ -213,3 +213,4 @@
   </div>
 
 @endsection
+

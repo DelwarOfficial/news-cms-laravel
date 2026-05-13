@@ -3,7 +3,7 @@
 
 @props(['article', 'showCategory' => true, 'showTime' => true, 'showExcerpt' => false, 'imageWidth' => 88, 'imageHeight' => 50, 'titleSize' => 15, 'class' => ''])
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0 {{ $class }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0 {{ $class }}">
     <div class="flex-1 min-w-0">
         @if($showCategory && !empty($article['category']))
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $article['category'] }} &bull;</span>
@@ -25,3 +25,4 @@
         </div>
     @endif
 </a>
+

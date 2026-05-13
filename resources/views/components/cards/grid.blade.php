@@ -3,7 +3,7 @@
 
 @props(['article', 'showCategory' => true, 'showTime' => true, 'aspectRatio' => '16/9', 'titleSize' => 15, 'class' => ''])
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group flex flex-col {{ $class }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group flex flex-col {{ $class }}">
     @if(!empty($article['image_url']))
         <div class="w-full overflow-hidden mb-2" style="aspect-ratio: {{ $aspectRatio }};">
             <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
@@ -20,3 +20,4 @@
         <div class="text-[11px] text-fg-muted mt-1">{{ $article['time_ago'] }}</div>
     @endif
 </a>
+

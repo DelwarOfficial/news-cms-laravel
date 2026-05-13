@@ -11,7 +11,7 @@
         @if($posts->isNotEmpty())
           @php($heroPost = $posts->first())
 
-          <a href="{{ route('article.show', $heroPost['slug']) }}" class="group flex flex-col mb-3">
+          <a href="{{ $heroPost['url'] ?? route('article.show', $heroPost['slug']) }}" class="group flex flex-col mb-3">
             <div class="relative w-full aspect-[16/9] overflow-hidden mb-3">
               <img src="{{ $heroPost['image_url'] }}" alt="{{ $heroPost['title'] }}" loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -27,7 +27,7 @@
 
           <div class="flex flex-col">
             @foreach($posts->slice(1, 3) as $post)
-              <a href="{{ route('article.show', $post['slug']) }}" class="group py-3 border-t border-border">
+              <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}" class="group py-3 border-t border-border">
                 <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
                   {{ $post['title'] }}
                 </h3>
@@ -39,3 +39,4 @@
     @endforeach
   </div>
 </section>
+

@@ -13,7 +13,7 @@
     $ts = $titleSize ?? $s['title'];
 @endphp
 
-<a href="{{ route('article.show', $article['slug']) }}" class="group relative w-full overflow-hidden {{ $class }}">
+<a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group relative w-full overflow-hidden {{ $class }}">
     <div class="w-full aspect-video overflow-hidden">
         <img src="{{ $article['image_url'] ?? '' }}" alt="{{ $article['title'] }}" loading="lazy"
              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]">
@@ -28,3 +28,4 @@
         @endif
     </div>
 </a>
+

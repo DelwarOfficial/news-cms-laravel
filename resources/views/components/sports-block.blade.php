@@ -19,7 +19,7 @@
         {{-- Left: Hero Sports --}}
         @if($primaryArticle)
           <div>
-            <a href="{{ route('article.show', $primaryArticle['slug']) }}" class="group block mb-4">
+            <a href="{{ $primaryArticle['url'] ?? route('article.show', $primaryArticle['slug']) }}" class="group block mb-4">
               <div class="relative w-full aspect-[16/9] overflow-hidden rounded-sm">
                 <img src="{{ $primaryArticle['image_url'] }}" alt="{{ $primaryArticle['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -35,7 +35,7 @@
 
             <div class="grid grid-cols-2 gap-4">
               @foreach($secondaryArticles as $i => $a)
-                <a href="{{ route('article.show', $a['slug']) }}" class="group flex flex-col">
+                <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex flex-col">
                   <div class="relative w-full aspect-[16/9] overflow-hidden rounded-sm mb-2">
                     <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
                       class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
@@ -54,7 +54,7 @@
           @if(isset($sportsSubcatArticles))
             @foreach($sportsSubcatArticles as $item)
               @continue(empty($item['article']))
-              <a href="{{ route('article.show', $item['article']['slug']) }}"
+              <a href="{{ $item['article']['url'] ?? route('article.show', $item['article']['slug']) }}"
                 class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0 first:pt-0">
                 <div class="flex-1 min-w-0">
                   <span class="text-[#e2231a] font-bold text-[12px]">{{ $item['subcat'] }} &bull;</span>
@@ -156,3 +156,4 @@
 
   </div>
 </div>
+

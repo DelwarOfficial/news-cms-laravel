@@ -1,6 +1,6 @@
 @props(['post'])
 
-<a href="{{ route('article.show', $post['slug']) }}"
+<a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
   class="group flex items-start gap-3 py-4 border-b border-border first:pt-0 last:border-b-0 last:pb-4">
   <div class="flex-1 min-w-0">
     <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
@@ -15,3 +15,4 @@
       class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
   </div>
 </a>
+

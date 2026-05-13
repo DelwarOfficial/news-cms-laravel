@@ -15,7 +15,7 @@
 
         <div class="{{ $index === 2 ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-0 md:gap-6 lg:gap-0' : '' }}">
           @foreach($posts as $post)
-            <a href="{{ route('article.show', $post['slug']) }}"
+            <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
               class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
               <div class="w-[130px] h-[73px] shrink-0 overflow-hidden rounded-sm">
                 <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] }}" loading="lazy"
@@ -42,3 +42,4 @@
     @endforeach
   </div>
 </section>
+
