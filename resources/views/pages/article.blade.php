@@ -2,6 +2,42 @@
 
 @section('title', $article['title'] . ' - ঢাকা ম্যাগাজিন')
 
+@section('meta_description', $article['meta_description'] ?? $article['excerpt'] ?? '')
+
+@push('head')
+  @if(!empty($ampUrl))
+    <link rel="amphtml" href="{{ $ampUrl }}">
+  @endif
+  <meta property="og:type" content="article">
+  <script type="application/ld+json">
+  {!! json_encode([
+      '@context' => 'https://schema.org',
+      '@type' => 'NewsArticle',
+      'mainEntityOfPage' => [
+          '@type' => 'WebPage',
+          '@id' => $canonicalUrl ?? route('article.show', $article['slug']),
+      ],
+      'headline' => $article['title'],
+      'description' => $article['meta_description'] ?? $article['excerpt'] ?? '',
+      'image' => array_values(array_filter([$article['og_image'] ?? $article['image_url'] ?? null])),
+      'datePublished' => optional($article['published_at'] ?? null)->toIso8601String() ?: now()->toIso8601String(),
+      'dateModified' => optional($article['updated_at'] ?? null)->toIso8601String() ?: optional($article['published_at'] ?? null)->toIso8601String() ?: now()->toIso8601String(),
+      'author' => [
+          '@type' => 'Person',
+          'name' => $article['author'] ?? 'Dhaka Magazine Desk',
+      ],
+      'publisher' => [
+          '@type' => 'Organization',
+          'name' => 'Dhaka Magazine',
+          'logo' => [
+              '@type' => 'ImageObject',
+              'url' => asset('images/dhaka-magazine-color-logo.svg'),
+          ],
+      ],
+  ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+  </script>
+@endpush
+
 @section('content')
   @php
     // UI adapter for future normalized Post -> categories relationship.

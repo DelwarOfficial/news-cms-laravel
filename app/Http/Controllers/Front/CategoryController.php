@@ -8,6 +8,7 @@ use App\Support\CategoryRepository;
 use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
 use App\Models\District;
+use App\Models\Post;
 use App\Models\Upazila;
 use Illuminate\Http\Request;
 
@@ -84,6 +85,21 @@ class CategoryController extends Controller
                 'loc' => CategoryRepository::route($category),
                 'lastmod' => now()->toDateString(),
             ]);
+
+        try {
+            $postUrls = Post::query()
+                ->published()
+                ->latest('published_at')
+                ->get(['slug', 'updated_at', 'published_at'])
+                ->map(fn (Post $post) => [
+                    'loc' => route('article.show', $post->slug),
+                    'lastmod' => optional($post->updated_at ?: $post->published_at)->toDateString() ?: now()->toDateString(),
+                ]);
+
+            $urls = $urls->merge($postUrls);
+        } catch (\Throwable) {
+            // Keep the sitemap available even during partial migrations.
+        }
 
         return response()
             ->view('pages.sitemap', ['urls' => $urls])

@@ -25,7 +25,7 @@ class SitemapController extends Controller
             // Posts
             Post::published()->get()->each(function ($post) use ($sitemap) {
                 $sitemap->add(
-                    Url::create(route('post.show', $post->slug))
+                    Url::create(route('article.show', $post->slug))
                         ->setLastModificationDate($post->updated_at)
                         ->setPriority(0.8)
                 );

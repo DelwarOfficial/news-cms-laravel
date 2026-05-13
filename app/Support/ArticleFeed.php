@@ -176,6 +176,7 @@ class ArticleFeed
             'time_ago' => DateHelper::timeAgo($publishedAt),
             'timestamp' => DateHelper::timeAgo($publishedAt),
             'published_at' => $publishedAt,
+            'updated_at' => $post->updated_at,
             'image_url' => $imageUrl,
             'image_alt' => $post->featured_image_alt ?: $title,
             'views' => (int) ($post->view_count ?? 0),

@@ -144,7 +144,7 @@ class Post extends Model
         return collect(['en', 'bn'])
             ->filter(fn (string $locale): bool => filled($this->{"slug_{$locale}"}))
             ->mapWithKeys(fn (string $locale): array => [
-                $locale => route('post.show', $this->{"slug_{$locale}"}),
+                $locale => route('article.show', $this->{"slug_{$locale}"}),
             ])
             ->all();
     }
