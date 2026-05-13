@@ -18,6 +18,7 @@
 
     <div class="flex min-w-0 flex-1 flex-col p-4">
       <h3 class="break-words font-serif text-[18px] font-bold leading-snug text-fg transition-colors group-hover:text-[#e2231a] line-clamp-2">
+        <x-article-shoulder :article="$article" />
         {{ $article['title'] }}
       </h3>
 

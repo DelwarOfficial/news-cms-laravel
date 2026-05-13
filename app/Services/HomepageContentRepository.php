@@ -75,6 +75,29 @@ class HomepageContentRepository
         return ArticleFeed::localNews($fallbackArticles, $limit);
     }
 
+    public function photocard(int $limit = 20): array
+    {
+        if (! $this->photocardReady()) {
+            return [];
+        }
+
+        try {
+            return Post::query()
+                ->withContentRelations()
+                ->published()
+                ->photocard()
+                ->latest('published_at')
+                ->latest('id')
+                ->take(max(1, $limit))
+                ->get()
+                ->map(fn (Post $post) => ArticleFeed::postToArticleArray($post))
+                ->values()
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
     private function placementPosts(string $placementKey, int $limit, array $exceptIds = []): Collection
     {
         if (! $this->placementsReady()) {
@@ -113,6 +136,17 @@ class HomepageContentRepository
                 && Schema::hasTable('posts');
         } catch (\Throwable) {
             return $this->placementsReady = false;
+        }
+    }
+
+    private function photocardReady(): bool
+    {
+        try {
+            return class_exists(Post::class)
+                && Schema::hasTable('posts')
+                && Schema::hasColumn('posts', 'is_photocard');
+        } catch (\Throwable) {
+            return false;
         }
     }
 

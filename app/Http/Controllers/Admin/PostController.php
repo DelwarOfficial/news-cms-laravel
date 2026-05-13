@@ -231,6 +231,7 @@ class PostController extends Controller
             'is_trending' => (bool) ($validated['is_trending'] ?? false),
             'is_editors_pick' => (bool) ($validated['is_editors_pick'] ?? false),
             'is_sticky' => (bool) ($validated['is_sticky'] ?? false),
+            'is_photocard' => (bool) ($validated['is_photocard'] ?? false),
             'allow_comments' => (bool) ($validated['allow_comments'] ?? false),
             'show_author' => (bool) ($validated['show_author'] ?? false),
             'show_publish_date' => (bool) ($validated['show_publish_date'] ?? false),

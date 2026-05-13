@@ -183,6 +183,7 @@
                         'is_trending' => 'Trending',
                         'is_editors_pick' => "Editor's Pick",
                         'is_sticky' => 'Sticky',
+                        'is_photocard' => 'Photocard',
                         'show_author' => 'Show Author',
                         'allow_comments' => 'Allow Comments',
                         'show_publish_date' => 'Show Publish Date',

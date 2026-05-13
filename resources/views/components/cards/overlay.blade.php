@@ -21,6 +21,7 @@
     </div>
     <div class="{{ $s['badge'] }}">
         <h3 class="font-serif font-extrabold text-[{{ $ts }}px] text-white leading-tight group-hover:text-[#f8a0a0] transition-colors line-clamp-2 drop-shadow">
+            <x-article-shoulder :article="$article" tone="light" />
             {{ $article['title'] }}
         </h3>
         @if(!empty($article['time_ago']))

@@ -14,6 +14,7 @@
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
         </div>
         <h2 class="font-serif font-bold text-[16px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+          <x-article-shoulder :article="$featured" />
           {{ $featured['title'] }}
         </h2>
         <p class="text-fg-secondary text-[12px] line-clamp-2 mt-1 min-h-[2em]">{{ $featured['excerpt'] }}</p>
@@ -32,6 +33,7 @@
             @endif
             <span class="text-[#e2231a] font-bold text-[11px] block mb-0.5">{{ $a['category'] }}</span>
             <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>
           </a>
@@ -46,6 +48,7 @@
             <div class="flex-1 min-w-0">
               <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }}</span>
               <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+                <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
             </div>
@@ -73,6 +76,7 @@
             <div class="flex-1 min-w-0">
               <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }}</span>
               <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+                <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
             </div>
@@ -90,6 +94,7 @@
           <div class="flex-1 min-w-0">
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }} &bull;</span>
             <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>
             @if(!empty($a['excerpt']))
@@ -115,6 +120,7 @@
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
           </div>
           <h2 class="font-serif font-bold text-[22px] leading-[1.25] text-fg group-hover:text-[#e2231a] transition-colors mb-2">
+            <x-article-shoulder :article="$featured" />
             {{ $featured['title'] }}
           </h2>
           @if(!empty($featured['excerpt']))
@@ -132,6 +138,7 @@
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
               </div>
               <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+                <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
               <div class="text-[11px] text-fg-muted mt-0.5">{{ $a['time_ago'] }}</div>
@@ -158,6 +165,7 @@
           <div class="flex-1 min-w-0">
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }} &bull;</span>
             <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>
             @if(!empty($a['excerpt']))

@@ -30,6 +30,7 @@ class AdminPostApiController extends Controller
             'is_breaking' => 'boolean',
             'is_featured' => 'boolean',
             'is_trending' => 'boolean',
+            'is_photocard' => 'boolean',
         ]);
 
         try {
@@ -43,6 +44,7 @@ class AdminPostApiController extends Controller
                 'is_breaking' => $validated['is_breaking'] ?? false,
                 'is_featured' => $validated['is_featured'] ?? false,
                 'is_trending' => $validated['is_trending'] ?? false,
+                'is_photocard' => $validated['is_photocard'] ?? false,
                 'user_id' => $request->user()->id,
                 'language_id' => Language::idForLocale(app()->getLocale()),
             ]);
@@ -84,6 +86,7 @@ class AdminPostApiController extends Controller
             'is_breaking' => 'boolean',
             'is_featured' => 'boolean',
             'is_trending' => 'boolean',
+            'is_photocard' => 'boolean',
         ]);
 
         try {

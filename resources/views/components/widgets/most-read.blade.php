@@ -20,6 +20,7 @@
           </div>
           <div class="min-w-0">
             <h3 class="break-words font-serif text-[14px] font-bold leading-snug text-fg transition-colors group-hover:text-[#e2231a] line-clamp-2">
+              <x-article-shoulder :article="$article" />
               {{ $article['title'] }}
             </h3>
             <time class="mt-1 block text-[11px] text-fg-muted">{{ $article['time_ago'] ?? $article['date'] ?? '' }}</time>

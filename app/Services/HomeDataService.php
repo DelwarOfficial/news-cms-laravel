@@ -6,7 +6,6 @@ use App\Models\District;
 use App\Support\FallbackDataService;
 use App\ViewModels\HomepageSection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
 class HomeDataService
@@ -33,7 +32,7 @@ class HomeDataService
     public function getPhotoStoryData(): array
     {
         return $this->buildPhotoStoryPayload(
-            $this->content->latest(FallbackDataService::getArticles()),
+            $this->content->photocard(20),
         );
     }
 
@@ -66,7 +65,7 @@ class HomeDataService
         $sportsArticles = $sections['sports']->articles;
         $videoLayout = $this->featureListLayout($sections['videos']->articles, 3);
         $entertainmentLayout = $this->entertainmentLayout($sections['entertainment']->articles);
-        $photoStoryPayload = $this->buildPhotoStoryPayload($articles);
+        $photoStoryPayload = $this->buildPhotoStoryPayload($this->content->photocard(20));
 
         return [
             'homepageSections' => $sections,
@@ -227,34 +226,44 @@ class HomeDataService
 
     private function buildPhotoStoryPayload(array $articles): array
     {
-        $carousel = collect($articles)->take(10)->values()->map(function ($article, $index) {
+        $photoArticles = collect($articles)
+            ->filter(fn ($article) => ! empty($article['id']))
+            ->values();
+
+        $carousel = $photoArticles->take(10)->values()->map(function ($article, $index) {
             return [
                 'id' => $article['id'] ?? $index + 1,
                 'headline' => $article['title'],
                 'slug' => $article['slug'],
+                'shoulder' => $article['shoulder'] ?? null,
+                'url' => $article['url'] ?? null,
                 'timestamp' => $article['time_ago'],
                 'image_url' => $article['image_url'],
                 'tags' => [],
             ];
         });
 
-        if ($carousel->isEmpty()) {
-            $carousel = $this->publicImageFallbackSlides();
-        }
-
-        $latest = collect($articles)->take(8)->values()->map(fn ($article, $index) => [
-            'id' => $index + 1,
+        $latest = $photoArticles->take(8)->values()->map(fn ($article, $index) => [
+            'id' => $article['id'] ?? $index + 1,
             'headline' => $article['title'],
             'slug' => $article['slug'],
+            'shoulder' => $article['shoulder'] ?? null,
+            'url' => $article['url'] ?? null,
             'timestamp' => $article['time_ago'],
         ])->all();
 
-        $popular = collect($this->popularNews->get())->values()->map(fn ($article, $index) => [
-            'id' => $index + 1,
-            'headline' => $article['title'],
-            'slug' => $article['slug'],
-            'timestamp' => $article['time_ago'],
-        ])->all();
+        $popular = $photoArticles
+            ->sortByDesc(fn ($article) => (int) ($article['views'] ?? 0))
+            ->take(8)
+            ->values()
+            ->map(fn ($article, $index) => [
+                'id' => $article['id'] ?? $index + 1,
+                'headline' => $article['title'],
+                'slug' => $article['slug'],
+                'shoulder' => $article['shoulder'] ?? null,
+                'url' => $article['url'] ?? null,
+                'timestamp' => $article['time_ago'],
+            ])->all();
 
         return [
             'carousel' => $carousel->values()->all(),
@@ -263,22 +272,4 @@ class HomeDataService
         ];
     }
 
-    private function publicImageFallbackSlides(): \Illuminate\Support\Collection
-    {
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-
-        return collect(File::files(public_path('images')))
-            ->filter(fn ($file) => in_array(strtolower($file->getExtension()), $allowedExtensions, true))
-            ->sortBy(fn ($file) => $file->getFilename())
-            ->take(5)
-            ->values()
-            ->map(fn ($file, $index) => [
-                'id' => $index + 1,
-                'headline' => 'Placeholder',
-                'slug' => '#',
-                'timestamp' => '',
-                'image_url' => asset('images/' . $file->getFilename()),
-                'tags' => [],
-            ]);
-    }
 }

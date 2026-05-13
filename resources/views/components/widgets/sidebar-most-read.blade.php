@@ -13,6 +13,7 @@
         </span>
         <div>
           <h4 class="font-bold text-[16px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors font-serif">
+            <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
           </h4>
         </div>

@@ -186,6 +186,7 @@ class ArticleFeed
             'is_breaking' => (bool) ($post->is_breaking ?? false),
             'is_featured' => (bool) ($post->is_featured ?? false),
             'is_sticky' => (bool) ($post->is_sticky ?? false),
+            'is_photocard' => (bool) ($post->is_photocard ?? false),
             'is_trending' => (bool) ($post->is_trending ?? false),
             'is_editors_pick' => (bool) ($post->is_editors_pick ?? false),
             'location' => self::locationLabel($post),

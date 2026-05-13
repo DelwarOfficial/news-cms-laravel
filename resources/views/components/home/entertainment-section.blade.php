@@ -26,6 +26,7 @@
             </div>
           </div>
           <h3 class="font-serif font-extrabold text-[24px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors mb-2.5">
+            <x-article-shoulder :article="$heroPost" />
             {{ $heroPost['title'] }}
           </h3>
           @if(!empty($heroPost['excerpt']))

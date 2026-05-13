@@ -15,6 +15,7 @@
             <span class="text-[#e2231a] font-bold text-[12px] uppercase mb-1 block">{{ $article['category'] }}</span>
         @endif
         <h2 class="font-serif font-bold text-[{{ $titleSize }}px] leading-[1.25] text-fg group-hover:text-[#e2231a] transition-colors {{ $imagePosition === 'left' ? 'mb-2' : 'mb-2' }}">
+            <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
         </h2>
         @if(!empty($article['excerpt']))

@@ -1,17 +1,17 @@
 @props(['carouselArticles' => [], 'latestArticles' => [], 'popularArticles' => []])
 
-{{-- Media-heavy category block.
-     Future CMS source: posts with featured media or a Photo News category/feed. --}}
-
 @php
     $blockId = 'photo-news-' . Str::random(6);
     $fallback = ['a.jpg', 'b.jpg', 'c.jpg', 'd.jpg', 'e.jpg', 'f.jpg', 'g.jpg', 'h.jpg', 'i.jpg', 'j.jpg'];
+    $hasCmsCarousel = collect($carouselArticles)->isNotEmpty();
 
     $carousel = collect($carouselArticles)->values()->map(function ($item, $i) use ($fallback) {
         $img = $item['image_url'] ?? asset('images/' . $fallback[$i % count($fallback)]);
         return [
             'headline' => $item['headline'] ?? $item['title'] ?? 'ডেমো ছবির খবর',
             'slug' => $item['slug'] ?? '#',
+            'shoulder' => $item['shoulder'] ?? null,
+            'url' => $item['url'] ?? null,
             'timestamp' => $item['timestamp'] ?? $item['time_ago'] ?? '১ ঘণ্টা আগে',
             'image_url' => $img,
         ];
@@ -26,10 +26,16 @@
         ])->all();
     }
 
+    if (! $hasCmsCarousel) {
+        $carousel = [];
+    }
+
     $latest = collect($latestArticles)->values()->map(function ($item) {
         return [
             'headline' => $item['headline'] ?? $item['title'] ?? '',
             'slug' => $item['slug'] ?? '#',
+            'shoulder' => $item['shoulder'] ?? null,
+            'url' => $item['url'] ?? null,
             'timestamp' => $item['timestamp'] ?? $item['time_ago'] ?? '১ ঘণ্টা আগে',
         ];
     })->all();
@@ -38,11 +44,14 @@
         return [
             'headline' => $item['headline'] ?? $item['title'] ?? '',
             'slug' => $item['slug'] ?? '#',
+            'shoulder' => $item['shoulder'] ?? null,
+            'url' => $item['url'] ?? null,
             'timestamp' => $item['timestamp'] ?? $item['time_ago'] ?? '১ ঘণ্টা আগে',
         ];
     })->all();
 @endphp
 
+@if(! empty($carousel))
 <div class="border-t-4 border-border"></div>
 
 <div
@@ -69,8 +78,8 @@
         <div class="relative w-full h-full flex items-center justify-center pt-4 pb-10">
           
           @php
-            $prevImg = $carousel[count($carousel)-1]['image_url'] ?? asset('images/a.jpg');
-            $nextImg = $carousel[1]['image_url'] ?? asset('images/b.jpg');
+            $prevImg = $carousel[count($carousel)-1]['image_url'] ?? $carousel[0]['image_url'];
+            $nextImg = $carousel[1]['image_url'] ?? $carousel[0]['image_url'];
           @endphp
 
           <div class="absolute left-[-2%] sm:left-[2%] lg:left-[4%] opacity-50 blur-[2px] scale-90 cursor-pointer transition-all duration-500 rounded-2xl overflow-hidden z-10 shadow-md photo-carousel-prev-preview photo-prev" style="width: 25%; max-width: 200px; aspect-ratio: 1 / 1;">
@@ -81,7 +90,7 @@
             <img src="{{ $carousel[0]['image_url'] }}" alt="{{ $carousel[0]['headline'] }}" class="w-full h-full object-cover object-center bg-[#f3f4f6] photo-carousel-main-image photo-main-img" loading="lazy" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/15 to-transparent"></div>
             <div class="absolute bottom-0 left-0 right-0 p-4">
-              <h3 class="font-serif font-extrabold text-white text-[16px] leading-tight line-clamp-2 drop-shadow photo-main-title">{{ $carousel[0]['headline'] }}</h3>
+              <h3 class="font-serif font-extrabold text-white text-[16px] leading-tight line-clamp-2 drop-shadow photo-main-title"><x-article-shoulder :article="$carousel[0]" tone="light" />{{ $carousel[0]['headline'] }}</h3>
               <div class="text-[11px] text-white/80 mt-1.5 photo-main-time"><span>{{ $carousel[0]['timestamp'] }}</span></div>
             </div>
           </a>
@@ -127,7 +136,7 @@
           <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : ($item['url'] ?? route('article.show', $item['slug'])) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
             <span class="font-serif font-extrabold text-[32px] text-[#fca5a5] group-hover:text-[#e2231a] transition-colors shrink-0 w-8 text-center leading-none mt-1">{{ ['১','২','৩','৪','৫','৬','৭','৮','৯','১০'][$idx] ?? $idx + 1 }}</span>
             <div class="flex-1 min-w-0">
-              <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">{{ $item['headline'] }}</h3>
+              <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2"><x-article-shoulder :article="$item" />{{ $item['headline'] }}</h3>
               <div class="text-[11px] text-gray-500 mt-1.5 flex items-center gap-1">
                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                  <span class="truncate">{{ $item['timestamp'] }}</span>
@@ -142,7 +151,7 @@
           <a href="{{ ($item['slug'] ?? '#') === '#' ? '#' : ($item['url'] ?? route('article.show', $item['slug'])) }}" class="group flex items-start gap-4 py-3.5 px-3 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
             <span class="font-serif font-extrabold text-[32px] text-[#fca5a5] group-hover:text-[#e2231a] transition-colors shrink-0 w-8 text-center leading-none mt-1">{{ ['১','২','৩','৪','৫','৬','৭','৮','৯','১০'][$idx] ?? $idx + 1 }}</span>
             <div class="flex-1 min-w-0">
-              <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">{{ $item['headline'] }}</h3>
+              <h3 class="font-serif font-bold text-[14.5px] text-gray-800 leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2"><x-article-shoulder :article="$item" />{{ $item['headline'] }}</h3>
               <div class="text-[11px] text-gray-500 mt-1.5 flex items-center gap-1">
                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                  <span class="truncate">{{ $item['timestamp'] }}</span>
@@ -156,4 +165,4 @@
 
   <script type="application/json" id="{{ $blockId }}-data">@json($carousel)</script>
 </div>
-
+@endif

@@ -26,6 +26,7 @@
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           </div>
           <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
+            <x-article-shoulder :article="$post" />
             {{ $post['title'] }}
           </h3>
         </a>
@@ -40,6 +41,7 @@
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           </div>
           <h3 class="font-serif font-extrabold text-[21px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2 mb-2">
+            <x-article-shoulder :article="$heroPost" />
             {{ $heroPost['title'] }}
           </h3>
           @if(!empty($heroPost['excerpt']))
@@ -56,6 +58,7 @@
         <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
           class="group flex items-start gap-3 py-3 first:pt-0 last:pb-0">
           <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3 flex-1">
+            <x-article-shoulder :article="$post" />
             {{ $post['title'] }}
           </h3>
           <div class="w-[68px] h-[38px] shrink-0 overflow-hidden">

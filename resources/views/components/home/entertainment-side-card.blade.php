@@ -4,6 +4,7 @@
   class="group flex items-start gap-3 py-4 border-b border-border first:pt-0 last:border-b-0 last:pb-4">
   <div class="flex-1 min-w-0">
     <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+      <x-article-shoulder :article="$post" />
       {{ $post['title'] }}
     </h3>
     @if(!empty($post['excerpt']))

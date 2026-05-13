@@ -9,6 +9,7 @@
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $article['category'] }} &bull;</span>
         @endif
         <h3 class="font-serif font-bold text-[{{ $titleSize }}px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
+            <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
         </h3>
         @if($showExcerpt && !empty($article['excerpt']))

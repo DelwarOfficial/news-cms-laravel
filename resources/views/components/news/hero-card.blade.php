@@ -18,6 +18,7 @@
     @endif
 
     <h2 class="break-words font-serif text-[26px] md:text-[34px] font-extrabold leading-tight text-fg group-hover:text-[#e2231a] transition-colors">
+      <x-article-shoulder :article="$article" />
       {{ $article['title'] }}
     </h2>
 

@@ -29,6 +29,7 @@ class Post extends Model
         'featured_image_width', 'featured_image_height', 'source_url', 'source_name',
         'category', 'category_slug', 'subcategory_slug', 'post_format', 'status',
         'published_at', 'scheduled_at', 'is_breaking', 'is_featured', 'is_sticky',
+        'is_photocard',
         'is_trending', 'is_editors_pick', 'is_breaking_news', 'breaking_news_order',
         'featured_order', 'sticky_order', 'trending_order', 'editors_pick_order',
         'urgency_level', 'view_count', 'reading_time', 'comment_count',
@@ -51,6 +52,7 @@ class Post extends Model
         'is_breaking_news' => 'boolean',
         'is_featured' => 'boolean',
         'is_sticky' => 'boolean',
+        'is_photocard' => 'boolean',
         'is_trending' => 'boolean',
         'is_editors_pick' => 'boolean',
         'allow_comments' => 'boolean',
@@ -283,6 +285,11 @@ class Post extends Model
     public function scopeSticky(Builder $query): Builder
     {
         return $query->where('is_sticky', true);
+    }
+
+    public function scopePhotocard(Builder $query): Builder
+    {
+        return $query->where('is_photocard', true);
     }
 
     public function scopeTrending(Builder $query): Builder

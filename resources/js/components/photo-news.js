@@ -6,6 +6,23 @@ function articleUrl(baseUrl, slug) {
   return baseUrl.replace(/\/$/, '') + '/' + slug;
 }
 
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function headlineWithShoulder(slide) {
+  if (!slide.shoulder) {
+    return escapeHtml(slide.headline);
+  }
+
+  return '<span class="font-extrabold text-[#fca5a5]">' + escapeHtml(slide.shoulder) + '</span><span class="mx-1 text-white/85">&bull;</span>' + escapeHtml(slide.headline);
+}
+
 function initPhotoNewsBlock(block) {
   const dataEl = document.getElementById(block.dataset.photoNewsData || '');
   const slides = dataEl ? JSON.parse(dataEl.textContent || '[]') : [];
@@ -45,10 +62,10 @@ function initPhotoNewsBlock(block) {
     const previous = slides[(index - 1 + slides.length) % slides.length];
     const next = slides[(index + 1) % slides.length];
 
-    mainLink.setAttribute('href', articleUrl(baseUrl, current.slug));
+    mainLink.setAttribute('href', current.url || articleUrl(baseUrl, current.slug));
     mainImg.setAttribute('src', current.image_url);
     mainImg.setAttribute('alt', current.headline);
-    mainTitle.textContent = current.headline;
+    mainTitle.innerHTML = headlineWithShoulder(current);
     mainTime.textContent = current.timestamp;
 
     prevWrap.innerHTML = previewImage(previous, 'Previous');
