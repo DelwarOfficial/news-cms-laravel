@@ -14,6 +14,13 @@ return [
         'default_meta_description' => 'Stay updated with the latest Bangladesh and global news, analysis, features, and local coverage.',
     ],
 
+    'cache_keys' => [
+        'homepage_data',
+        'ticker_headlines',
+        'popular_news',
+        'site_categories',
+    ],
+
     'routes' => [
         'admin_prefix' => 'admin',
         'article_prefix' => 'article',

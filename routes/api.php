@@ -28,6 +28,18 @@ Route::get('/trending', [PostApiController::class, 'trending']);
 Route::get('/breaking', [PostApiController::class, 'breaking']);
 Route::get('/featured', [PostApiController::class, 'featured']);
 
+// V1 PUBLIC API - with PostResource and throttle
+Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
+    Route::get('/posts', [PostApiController::class, 'index']);
+    Route::get('/posts/breaking', [PostApiController::class, 'breaking']);
+    Route::get('/posts/trending', [PostApiController::class, 'trending']);
+    Route::get('/posts/popular', [PostApiController::class, 'popular']);
+    Route::get('/posts/{slug}', [PostApiController::class, 'show']);
+    Route::post('/posts/{id}/view', [PostApiController::class, 'view'])->middleware('throttle:1,60');
+    Route::get('/categories', [CategoryApiController::class, 'index']);
+    Route::get('/categories/{slug}/posts', [CategoryApiController::class, 'posts']);
+});
+
 // AUTH
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthApiController::class, 'login']);

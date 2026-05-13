@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Post;
+use App\Support\FrontendCache;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 
 class ProcessPostPublishing implements ShouldQueue
 {
@@ -22,13 +24,18 @@ class ProcessPostPublishing implements ShouldQueue
 
     public function handle()
     {
-        // Example: Send notification, generate sitemap, clear cache, etc.
+        // Clear frontend caches so published post appears immediately
+        FrontendCache::flushContent();
+        Cache::forget("post_{$this->post->slug}");
+
+        if ($this->post->primaryCategory) {
+            Cache::forget("category_{$this->post->primaryCategory->slug}");
+        }
+
         \Log::info("Post published: {$this->post->title}");
 
-        // You can add more logic here:
-        // - Send email to admin
-        // - Update sitemap
-        // - Clear cache
-        // - Push notification
+        // TODO: Send notification to subscribers
+        // TODO: Update sitemap
+        // TODO: Push notification via WebSocket / Firebase
     }
 }

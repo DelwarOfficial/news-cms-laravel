@@ -34,6 +34,14 @@
             <textarea name="description" rows="4" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">{{ old('description', $category->description) }}</textarea>
         </div>
 
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Color</label>
+            <div class="flex items-center gap-3">
+                <input type="color" name="color" value="{{ old('color', $category->color ?? '#3b82f6') }}" class="h-10 w-16 rounded-lg border border-gray-200 cursor-pointer">
+                <input type="text" name="color_preview" value="{{ old('color', $category->color ?? '#3b82f6') }}" class="flex-1 border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" placeholder="#3b82f6" readonly>
+            </div>
+        </div>
+
         <div class="grid md:grid-cols-2 gap-5">
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>

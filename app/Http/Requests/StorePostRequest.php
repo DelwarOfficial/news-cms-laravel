@@ -42,6 +42,7 @@ class StorePostRequest extends FormRequest
             "meta_description_{$locale}" => ['nullable', 'string', 'max:170'],
             "meta_description_{$otherLocale}" => ['nullable', 'string', 'max:170'],
             'canonical_url' => ['nullable', 'url', 'max:500'],
+            'featured_media_id' => ['nullable', 'exists:media,id'],
             'featured_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
             'og_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
             'featured_image_alt' => ['nullable', 'string', 'max:255'],

@@ -91,4 +91,13 @@ class WidgetController extends Controller
             return back()->with('error', 'Failed to delete widget: ' . $e->getMessage());
         }
     }
+
+    public function toggle(Widget $widget)
+    {
+        $this->authorize('update', $widget);
+
+        $widget->update(['is_active' => ! $widget->is_active]);
+
+        return back()->with('success', 'Widget status toggled successfully.');
+    }
 }

@@ -22,8 +22,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::post('comments/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->middleware('permission:comments.manage')->name('comments.approve');
 
     Route::post('sitemap/generate', [\App\Http\Controllers\Admin\SitemapController::class, 'generate'])->middleware('permission:settings.manage')->name('sitemap.generate');
-    Route::resource('widgets', \App\Http\Controllers\Admin\WidgetController::class)->only(['index', 'store'])->middleware('permission:menus.manage');
-    Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->only(['index', 'store'])->middleware('permission:ads.manage');
+    Route::resource('widgets', \App\Http\Controllers\Admin\WidgetController::class)->middleware('permission:menus.manage');
+    Route::post('widgets/{widget}/toggle', [\App\Http\Controllers\Admin\WidgetController::class, 'toggle'])->middleware('permission:menus.manage')->name('widgets.toggle');
+    Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->middleware('permission:ads.manage');
 
     Route::resource('placements', ContentPlacementController::class)
         ->only(['index', 'store', 'destroy'])

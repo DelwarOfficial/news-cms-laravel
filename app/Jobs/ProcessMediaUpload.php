@@ -19,11 +19,9 @@ class ProcessMediaUpload implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info("Starting background processing for media ID: {$this->mediaId}");
-        
-        // Simulate heavy image processing (e.g., generating thumbnails, optimizing)
-        sleep(2);
-        
-        Log::info("Successfully generated webp versions and thumbnails for media ID: {$this->mediaId}");
+        Log::info("Processing media ID: {$this->mediaId}");
+
+        // TODO: Add intervention/image WebP conversion here
+        // TODO: Generate thumbnails for responsive image sets
     }
 }

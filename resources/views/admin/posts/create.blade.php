@@ -114,6 +114,16 @@
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
                 <h2 class="text-sm font-bold text-gray-900">Featured Image</h2>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Media Library Image</label>
+                    <select name="featured_media_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">Select from Media Library</option>
+                        @foreach(\App\Models\Media::orderByDesc('id')->limit(50)->get() as $media)
+                            <option value="{{ $media->id }}" @selected((int) old('featured_media_id') === $media->id)>{{ $media->name }} ({{ $media->file_name }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <p class="text-xs text-gray-400">Or upload a new image:</p>
                 <input type="file" name="featured_image" id="featured-image" accept="image/*" class="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm file:mr-4 file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:rounded-lg">
                 <img id="featured-image-preview" class="hidden w-full aspect-video object-cover rounded-xl border border-gray-200" alt="">
                 <input type="text" name="featured_image_alt" value="{{ old('featured_image_alt') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alt text">

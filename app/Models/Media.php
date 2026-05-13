@@ -32,4 +32,10 @@ class Media extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    // Column names updated to match frontend schema
+    public function getUrlAttribute(): ?string
+    {
+        return $this->file_url ?? $this->attributes['url'] ?? null;
+    }
 }

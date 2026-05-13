@@ -209,6 +209,7 @@ class PostController extends Controller
             'body_bn' => $bodyBnRaw ? $bodyBn : null, // Let rich text handle existing
             'summary_en' => $summaryEnRaw ? $summaryEn : null,
             'summary_bn' => $summaryBnRaw ? $summaryBn : null,
+            'featured_media_id' => $validated['featured_media_id'] ?? null,
             'featured_image' => $featuredImage,
             'featured_image_alt' => $validated['featured_image_alt'] ?? ($titleBn ?: $titleEn),
             'post_format' => $validated['post_format'] ?? 'standard',

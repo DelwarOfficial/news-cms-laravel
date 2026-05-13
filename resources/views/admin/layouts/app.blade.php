@@ -119,6 +119,16 @@
                     <i class="fas fa-map-location-dot w-4"></i> Locations
                 </a>
             @endcan
+            @can('menus.manage')
+                <a href="{{ route('admin.widgets.index') }}" class="sidebar-link {{ request()->routeIs('admin.widgets*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-puzzle-piece w-4"></i> Widgets
+                </a>
+            @endcan
+            @can('ads.manage')
+                <a href="{{ route('admin.advertisements.index') }}" class="sidebar-link {{ request()->routeIs('admin.advertisements*') ? 'active' : 'text-white/80' }}">
+                    <i class="fas fa-ad w-4"></i> Advertisements
+                </a>
+            @endcan
             @can('tags.manage')
                 <a href="{{ route('admin.tags.index') }}" class="sidebar-link {{ request()->routeIs('admin.tags*') ? 'active' : 'text-white/80' }}">
                     <i class="fas fa-tags w-4"></i> Tags

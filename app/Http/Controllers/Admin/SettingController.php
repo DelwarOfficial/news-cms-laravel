@@ -61,6 +61,7 @@ class SettingController extends Controller
 
         // Clear settings cache
         Cache::forget('settings');
+        Cache::forget('cms_settings');
 
         return back()->with('success', 'Settings updated successfully!');
     }

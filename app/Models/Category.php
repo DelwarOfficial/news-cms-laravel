@@ -12,8 +12,8 @@ class Category extends Model
     use HasFactory, HasSlug;
 
     protected $fillable = [
-        'parent_id', 'name', 'slug', 'description', 'image', 'icon', 
-        'order', 'status', 'meta_title', 'meta_description'
+        'parent_id', 'name', 'slug', 'description', 'image', 'icon',
+        'color', 'order', 'status', 'meta_title', 'meta_description'
     ];
 
     public function getSlugOptions(): SlugOptions
