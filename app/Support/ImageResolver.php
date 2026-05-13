@@ -34,6 +34,10 @@ class ImageResolver
             return $path;
         }
 
+        if (Str::startsWith($path, ['/storage/', 'storage/'])) {
+            return asset(ltrim($path, '/'));
+        }
+
         if (Str::startsWith($path, ['/images/', 'images/'])) {
             return asset(ltrim($path, '/'));
         }

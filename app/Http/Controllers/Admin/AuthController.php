@@ -12,10 +12,6 @@ class AuthController extends Controller
 {
     public function login()
     {
-        if (Auth::check()) {
-            return redirect()->route('admin.dashboard');
-        }
-        
         return view('admin.auth.login');
     }
 
@@ -44,14 +40,12 @@ class AuthController extends Controller
             // Clear rate limiter on successful login
             RateLimiter::clear($throttleKey);
             
-            $request->session()->regenerate();
-
             Log::info('User logged in successfully', [
                 'user_id' => Auth::id(),
                 'ip' => $request->ip()
             ]);
 
-            return redirect()->intended(route('admin.dashboard'));
+            return redirect()->route('admin.dashboard');
         }
 
         // Increment failed attempt counter

@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             AdminUserSeeder::class,
             CategorySeeder::class,
+            FrontendLocationImportSeeder::class,
             SettingSeeder::class,
         ]);
     }

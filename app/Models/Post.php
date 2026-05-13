@@ -21,18 +21,18 @@ class Post extends Model
 
     protected $fillable = [
         'user_id', 'author_id', 'language_id', 'category_id', 'subcategory_id',
-        'primary_category_id', 'division_id', 'district_id', 'upazila_id',
+        'primary_category_id', 'division_id', 'district_id', 'upazila_id', 'shoulder',
         'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
         'excerpt', 'body', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn',
         'featured_image', 'featured_media_id', 'image_path', 'featured_image_alt',
         'featured_image_caption', 'featured_image_credit', 'featured_image_source',
         'featured_image_width', 'featured_image_height', 'source_url', 'source_name',
-        'category', 'category_slug', 'subcategory_slug', 'status',
+        'category', 'category_slug', 'subcategory_slug', 'post_format', 'status',
         'published_at', 'scheduled_at', 'is_breaking', 'is_featured', 'is_sticky',
         'is_trending', 'is_editors_pick', 'is_breaking_news', 'breaking_news_order',
         'featured_order', 'sticky_order', 'trending_order', 'editors_pick_order',
         'urgency_level', 'view_count', 'reading_time', 'comment_count',
-        'allow_comments', 'needs_editorial_review', 'raw_import_payload', 'meta_title',
+        'allow_comments', 'show_author', 'show_publish_date', 'needs_editorial_review', 'raw_import_payload', 'meta_title',
         'meta_title_en', 'meta_title_bn', 'meta_description', 'meta_description_en',
         'meta_description_bn', 'canonical_url', 'og_image',
     ];
@@ -54,6 +54,8 @@ class Post extends Model
         'is_trending' => 'boolean',
         'is_editors_pick' => 'boolean',
         'allow_comments' => 'boolean',
+        'show_author' => 'boolean',
+        'show_publish_date' => 'boolean',
         'needs_editorial_review' => 'boolean',
         'view_count' => 'integer',
         'reading_time' => 'integer',
@@ -155,6 +157,11 @@ class Post extends Model
     public function cmsAuthor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function bylineAuthor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'author_id');
     }
 
     public function language(): BelongsTo
@@ -297,6 +304,7 @@ class Post extends Model
     {
         return $query->with([
             'author',
+            'bylineAuthor',
             'language',
             'primaryCategory.parent',
             'category.parent',

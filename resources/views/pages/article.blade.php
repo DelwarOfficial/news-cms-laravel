@@ -25,6 +25,11 @@
         </div>
 
         {{-- Article Title --}}
+        @if(!empty($article['shoulder']))
+          <div class="text-[15px] font-bold text-[#e2231a] mb-2 font-serif">
+            {{ $article['shoulder'] }}
+          </div>
+        @endif
         <h1 class="text-[28px] md:text-[36px] lg:text-[42px] font-serif font-bold leading-[1.3] text-fg mb-4">
           {{ $article['title'] }}
         </h1>
@@ -33,14 +38,18 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between border-t border-border border-b py-3 mb-6">
           <div class="flex flex-col mb-3 md:mb-0">
             <div class="flex items-center gap-2">
-              <span class="text-[14px] font-bold text-fg">{{ $article['author'] ?? 'নিজস্ব প্রতিবেদক' }}</span>
+              @if($article['show_author'] ?? true)
+                <span class="text-[14px] font-bold text-fg">{{ $article['author'] ?? 'নিজস্ব প্রতিবেদক' }}</span>
+              @endif
               @if(!empty($article['location']))
                 <span class="text-[14px] text-fg-secondary">· {{ $article['location'] }}</span>
               @endif
             </div>
-            <div class="text-[13px] text-gray-500 mt-1">
-              প্রকাশ: {{ $article['date'] ?? '' }}
-            </div>
+            @if($article['show_publish_date'] ?? true)
+              <div class="text-[13px] text-gray-500 mt-1">
+                প্রকাশ: {{ $article['date'] ?? '' }}
+              </div>
+            @endif
           </div>
 
           {{-- Share Buttons --}}

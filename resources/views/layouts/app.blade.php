@@ -22,6 +22,7 @@
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">
     <meta name="twitter:image" content="{{ $pageImageUrl }}">
+    @stack('head')
     <script>
         (function() {
             const theme = localStorage.getItem('theme');

@@ -3,88 +3,203 @@
 @section('page-title', 'Edit Post')
 
 @section('content')
-<div class="max-w-4xl">
-    <form action="{{ route('admin.posts.update', $post) }}" method="POST" class="space-y-6">
-        @csrf @method('PUT')
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-            @if($errors->any())
-            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl text-sm">
-                <ul class="list-disc list-inside space-y-1">
-                    @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                </ul>
-            </div>
-            @endif
+@php
+    $locale = app()->getLocale();
+    $titleField = 'title_'.$locale;
+    $slugField = 'slug_'.$locale;
+    $summaryField = 'summary_'.$locale;
+    $bodyField = 'body_'.$locale;
+    $metaTitleField = 'meta_title_'.$locale;
+    $metaDescriptionField = 'meta_description_'.$locale;
+    $selectedCategory = old('category_id', $post->primary_category_id ?: $post->categories->first()?->id);
+    $selectedTags = old('tag_ids', $post->tags->pluck('id')->map(fn ($id) => (string) $id)->all());
+    $currentTitle = old($titleField, $post->{$titleField} ?: ($locale === 'en' ? $post->title : ''));
+    $currentSlug = old($slugField, $post->{$slugField} ?: ($locale === 'en' ? $post->slug : ''));
+    $currentSeoTitle = old($metaTitleField, $post->{$metaTitleField} ?: ($locale === 'en' ? $post->meta_title : ''));
+    $currentMetaDescription = old($metaDescriptionField, $post->{$metaDescriptionField} ?: ($locale === 'en' ? $post->meta_description : ''));
+@endphp
 
-            @php $locale = app()->getLocale(); @endphp
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<form action="{{ route('admin.posts.update', $post) }}" method="POST" enctype="multipart/form-data" class="space-y-6 min-w-0" id="post-edit-form">
+    @csrf
+    @method('PUT')
+
+    @if($errors->any())
+        <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-xl text-sm">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+            </ul>
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+        <div class="space-y-6 min-w-0">
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Shoulder</label>
+                    <input type="text" name="shoulder" value="{{ old('shoulder', $post->shoulder) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Small label above headline">
+                </div>
+
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
-                    <input type="text" name="title_{{ $locale }}" value="{{ old('title_'.$locale, $post->{'title_'.$locale} ?: ($locale === 'en' ? $post->title : '')) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}" required>
+                    <input type="text" name="{{ $titleField }}" id="post-title" value="{{ $currentTitle }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}" required>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
-                    <input type="text" name="slug_{{ $locale }}" value="{{ old('slug_'.$locale, $post->{'slug_'.$locale} ?: ($locale === 'en' ? $post->slug : '')) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug / Permalink</label>
+                    <input type="text" name="{{ $slugField }}" id="post-slug" value="{{ $currentSlug }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
                 </div>
-            </div>
 
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Summary</label>
-                <x-rich-text::input id="summary_{{ $locale }}" name="summary_{{ $locale }}" :value="old('summary_'.$locale, $post->editorHtml('summary_'.$locale))" class="newscore-richtext {{ $locale === 'bn' ? 'font-bengali' : '' }}" />
-            </div>
-
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Content <span class="text-red-500">*</span></label>
-                <x-rich-text::input id="body_{{ $locale }}" name="body_{{ $locale }}" :value="old('body_'.$locale, $post->editorHtml('body_'.$locale))" class="newscore-richtext {{ $locale === 'bn' ? 'font-bengali' : '' }}" />
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
-                    <select name="status" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                        <option value="draft" {{ old('status', $post->status) === 'draft' ? 'selected' : '' }}>Draft</option>
-                        @can('posts.submit_review')
-                            <option value="pending" {{ old('status', $post->status) === 'pending' ? 'selected' : '' }}>Submit for Review</option>
-                        @endcan
-                        @can('posts.publish')
-                            <option value="published" {{ old('status', $post->status) === 'published' ? 'selected' : '' }}>Published</option>
-                        @endcan
-                    </select>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Excerpt / Intro</label>
+                    <textarea id="post-excerpt" name="{{ $summaryField }}" rows="3" maxlength="5000" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-7 outline-none resize-y focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $locale === 'bn' ? 'font-bengali' : '' }}" placeholder="Write a short excerpt...">{{ old($summaryField, $post->summaryForLocale($locale)) }}</textarea>
+                    <div class="mt-1 text-xs text-gray-400 text-right"><span data-counter-for="post-excerpt">0</span>/500</div>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Category</label>
-                    <select name="category_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                        <option value="">No Category</option>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content <span class="text-red-500">*</span></label>
+                    <textarea id="post-body-input" name="{{ $bodyField }}" class="hidden">{{ old($bodyField, $post->bodyHtmlForLocale($locale)) }}</textarea>
+                    <div class="cms-editor-toolbar" role="toolbar" aria-label="Content editor toolbar">
+                        <button type="button" class="cms-editor-button" data-command="bold">B</button>
+                        <button type="button" class="cms-editor-button italic" data-command="italic">I</button>
+                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="H2">H2</button>
+                        <button type="button" class="cms-editor-button" data-command="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="cms-editor-button" data-command="insertOrderedList"><i class="fas fa-list-ol"></i></button>
+                        <button type="button" class="cms-editor-button" data-command="createLink"><i class="fas fa-link"></i></button>
+                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="BLOCKQUOTE"><i class="fas fa-quote-right"></i></button>
+                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="P"><i class="fas fa-paragraph"></i></button>
+                    </div>
+                    <div id="post-body-editor" class="cms-body-editor {{ $locale === 'bn' ? 'font-bengali' : '' }}" contenteditable="true" data-placeholder="Write your post content here. You can use formatting, links, quotes, headings and lists.">{!! old($bodyField, $post->bodyHtmlForLocale($locale)) !!}</div>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5">
+                <div class="flex items-center justify-between gap-4">
+                    <h2 class="text-sm font-bold text-gray-900">SEO</h2>
+                    <span class="text-xs text-gray-400">Manual values are preserved</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title</label>
+                        <input type="text" name="{{ $metaTitleField }}" id="seo-title" value="{{ $currentSeoTitle }}" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="seo-title">0</span>/70</div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Canonical URL</label>
+                        <input type="url" name="canonical_url" value="{{ old('canonical_url', $post->canonical_url) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+                        <textarea name="{{ $metaDescriptionField }}" id="meta-description" rows="3" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ $currentMetaDescription }}</textarea>
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta-description">0</span>/170</div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Open Graph Image</label>
+                        @if($post->og_image)
+                            <div class="text-xs text-gray-500 mb-2 truncate">Current: {{ $post->og_image }}</div>
+                        @endif
+                        <input type="file" name="og_image" accept="image/*" class="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm file:mr-4 file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:rounded-lg">
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <aside class="space-y-6 min-w-0">
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Publish</h2>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Schedule Date</label>
+                    <input type="datetime-local" name="scheduled_at" id="scheduled-at" value="{{ old('scheduled_at', optional($post->scheduled_at)->format('Y-m-d\\TH:i')) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="text-xs text-gray-500">Current status: <span class="font-semibold">{{ ucfirst($post->status) }}</span></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="submit" name="status" value="draft" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-semibold transition-colors">Save Draft</button>
+                    @can('posts.submit_review')
+                        <button type="submit" name="status" value="pending" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Review</button>
+                    @endcan
+                    @can('posts.publish')
+                        <button type="submit" name="status" value="scheduled" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Schedule</button>
+                        <button type="submit" name="status" value="published" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Publish</button>
+                    @endcan
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Featured Image</h2>
+                @if($post->featured_image)
+                    <img src="{{ \App\Support\ImageResolver::imageUrl($post->featured_image) }}" class="w-full aspect-video object-cover rounded-xl border border-gray-200" alt="{{ $post->featured_image_alt }}">
+                @endif
+                <input type="file" name="featured_image" id="featured-image" accept="image/*" class="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm file:mr-4 file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:rounded-lg">
+                <img id="featured-image-preview" class="hidden w-full aspect-video object-cover rounded-xl border border-gray-200" alt="">
+                <input type="text" name="featured_image_alt" value="{{ old('featured_image_alt', $post->featured_image_alt) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alt text">
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Taxonomy</h2>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Category <span class="text-red-500">*</span></label>
+                    <select name="category_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" required>
+                        <option value="">Select Category</option>
                         @foreach($categories as $cat)
-                        <option value="{{ $cat->id }}" {{ old('category_id', $post->categories->first()?->id) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            <option value="{{ $cat->id }}" @selected((int) $selectedCategory === $cat->id)>{{ $cat->parent ? $cat->parent->name.' / ' : '' }}{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </div>
-            </div>
-
-            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title</label>
-                    <input type="text" name="meta_title_{{ $locale }}" value="{{ old('meta_title_'.$locale, $post->{'meta_title_'.$locale} ?: ($locale === 'en' ? $post->meta_title : '')) }}" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none {{ $locale === 'bn' ? 'font-bengali' : '' }}">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Tags</label>
+                    <select name="tag_ids[]" multiple class="w-full min-h-36 border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" @selected(in_array((string) $tag->id, array_map('strval', $selectedTags), true))>{{ $tag->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    @can('categories.manage')
+                        <a href="{{ route('admin.categories.create') }}" class="text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-sm font-semibold">Add Category</a>
+                    @else
+                        <button type="button" disabled class="bg-gray-100 text-gray-400 px-3 py-2 rounded-xl text-sm font-semibold cursor-not-allowed">Add Category</button>
+                    @endcan
+                    @can('tags.manage')
+                        <a href="{{ route('admin.tags.create') }}" class="text-center bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-sm font-semibold">Add Tag</a>
+                    @else
+                        <button type="button" disabled class="bg-gray-100 text-gray-400 px-3 py-2 rounded-xl text-sm font-semibold cursor-not-allowed">Add Tag</button>
+                    @endcan
+                </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Post Details</h2>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Author</label>
+                    <select name="author_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">Current user</option>
+                        @foreach($authors as $author)
+                            <option value="{{ $author->id }}" @selected((int) old('author_id', $post->author_id) === $author->id)>{{ $author->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Canonical URL</label>
-                    <input type="url" name="canonical_url" value="{{ old('canonical_url', $post->canonical_url) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Post Format</label>
+                    <select name="post_format" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        @foreach(['standard' => 'Standard', 'video' => 'Video', 'gallery' => 'Gallery', 'opinion' => 'Opinion', 'live' => 'Live'] as $value => $label)
+                            <option value="{{ $value }}" @selected(old('post_format', $post->post_format ?: 'standard') === $value)>{{ $label }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
-                    <textarea name="meta_description_{{ $locale }}" rows="2" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none {{ $locale === 'bn' ? 'font-bengali' : '' }}">{{ old('meta_description_'.$locale, $post->{'meta_description_'.$locale} ?: ($locale === 'en' ? $post->meta_description : '')) }}</textarea>
-                </div>
-            </div>
+                <div class="text-sm text-gray-500">Reading time: <span id="reading-time-estimate">{{ $post->reading_time }}</span> min</div>
+            </section>
 
-            <div class="mt-8 border-t border-gray-100 pt-6">
-                <h2 class="text-sm font-bold text-gray-900 mb-4">News Flags</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Options</h2>
+                <div class="grid grid-cols-1 gap-3">
                     @foreach([
-                        'is_breaking' => 'Breaking News',
                         'is_featured' => 'Featured',
+                        'is_breaking' => 'Breaking News',
                         'is_trending' => 'Trending',
                         'is_editors_pick' => "Editor's Pick",
                         'is_sticky' => 'Sticky',
+                        'show_author' => 'Show Author',
+                        'allow_comments' => 'Allow Comments',
+                        'show_publish_date' => 'Show Publish Date',
                     ] as $field => $label)
                         <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
                             <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field, $post->{$field})) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -92,70 +207,130 @@
                         </label>
                     @endforeach
                 </div>
-            </div>
+            </section>
 
-            <div class="mt-8 border-t border-gray-100 pt-6">
-                <h2 class="text-sm font-bold text-gray-900 mb-4">Location</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Division</label>
-                        <select name="division_id" id="division_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                            <option value="">No Division</option>
-                            @foreach($divisions as $division)
-                                <option value="{{ $division->id }}" @selected((int) old('division_id', $post->division_id) === $division->id)>{{ $division->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">District</label>
-                        <select name="district_id" id="district_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white">
-                            <option value="">No District</option>
-                            @foreach($districts as $district)
-                                <option value="{{ $district->id }}" data-division="{{ $district->division_id }}" @selected((int) old('district_id', $post->district_id) === $district->id)>{{ $district->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex gap-3">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors">
-                <i class="fas fa-save mr-2"></i> Update Post
-            </button>
-            <a href="{{ route('admin.posts.index') }}" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-8 py-3 rounded-xl font-semibold transition-colors">
-                Cancel
-            </a>
-        </div>
-    </form>
-</div>
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">Location</h2>
+                <select name="division_id" id="division_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                    <option value="">No Division</option>
+                    @foreach($divisions as $division)
+                        <option value="{{ $division->id }}" @selected((int) old('division_id', $post->division_id) === $division->id)>{{ $division->name }}</option>
+                    @endforeach
+                </select>
+                <select name="district_id" id="district_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                    <option value="">No District</option>
+                    @foreach($districts as $district)
+                        <option value="{{ $district->id }}" data-division="{{ $district->division_id }}" @selected((int) old('district_id', $post->district_id) === $district->id)>{{ $district->name }}</option>
+                    @endforeach
+                </select>
+                <select name="upazila_id" id="upazila_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                    <option value="">No Upazila</option>
+                    @foreach($upazilas as $upazila)
+                        <option value="{{ $upazila->id }}" data-district="{{ $upazila->district_id }}" @selected((int) old('upazila_id', $post->upazila_id) === $upazila->id)>{{ $upazila->name }}</option>
+                    @endforeach
+                </select>
+            </section>
+        </aside>
+    </div>
+</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('post-edit-form');
+    const title = document.getElementById('post-title');
+    const slug = document.getElementById('post-slug');
+    const seoTitle = document.getElementById('seo-title');
+    const metaDescription = document.getElementById('meta-description');
+    const excerpt = document.getElementById('post-excerpt');
+    const bodyInput = document.getElementById('post-body-input');
+    const bodyEditor = document.getElementById('post-body-editor');
+    const featuredImage = document.getElementById('featured-image');
+    const featuredPreview = document.getElementById('featured-image-preview');
+    const readingTime = document.getElementById('reading-time-estimate');
+
+    const updateCounter = (id) => {
+        const input = document.getElementById(id);
+        const counter = document.querySelector(`[data-counter-for="${id}"]`);
+        if (input && counter) counter.textContent = input.value.length;
+    };
+
+    title?.addEventListener('input', () => {
+        if (seoTitle && !seoTitle.dataset.touched) seoTitle.value = title.value.slice(0, 70);
+        updateCounter('seo-title');
+    });
+    slug?.addEventListener('input', () => slug.dataset.touched = '1');
+    seoTitle?.addEventListener('input', () => { seoTitle.dataset.touched = '1'; updateCounter('seo-title'); });
+    metaDescription?.addEventListener('input', () => { metaDescription.dataset.touched = '1'; updateCounter('meta-description'); });
+    excerpt?.addEventListener('input', () => {
+        updateCounter('post-excerpt');
+        if (metaDescription && !metaDescription.dataset.touched) {
+            metaDescription.value = excerpt.value.trim().replace(/\s+/g, ' ').slice(0, 170);
+            updateCounter('meta-description');
+        }
+    });
+
+    const updateEditorStats = () => {
+        const text = `${excerpt?.value || ''} ${bodyEditor?.innerText || ''}`;
+        const words = text.trim().split(/\s+/).filter(Boolean).length;
+        readingTime.textContent = Math.max(1, Math.ceil(words / 200));
+        if (metaDescription && !metaDescription.dataset.touched) {
+            metaDescription.value = text.trim().replace(/\s+/g, ' ').slice(0, 170);
+            updateCounter('meta-description');
+        }
+    };
+
+    form?.addEventListener('submit', () => {
+        if (bodyInput && bodyEditor) bodyInput.value = bodyEditor.innerHTML.trim();
+    });
+
+    bodyEditor?.addEventListener('input', updateEditorStats);
+    document.querySelectorAll('[data-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+            bodyEditor?.focus();
+            const command = button.dataset.command;
+            let value = button.dataset.value || null;
+            if (command === 'createLink') {
+                value = prompt('Enter URL');
+                if (!value) return;
+            }
+            document.execCommand(command, false, value);
+            updateEditorStats();
+        });
+    });
+
+    featuredImage?.addEventListener('change', () => {
+        const file = featuredImage.files?.[0];
+        if (!file) return;
+        featuredPreview.src = URL.createObjectURL(file);
+        featuredPreview.classList.remove('hidden');
+    });
+
     const divisionSelect = document.getElementById('division_id');
     const districtSelect = document.getElementById('district_id');
+    const upazilaSelect = document.getElementById('upazila_id');
     const districtOptions = Array.from(districtSelect.options);
+    const upazilaOptions = Array.from(upazilaSelect.options);
+
+    function filterUpazilas() {
+        const districtId = districtSelect.value;
+        upazilaOptions.forEach((option) => option.hidden = option.value && districtId && option.dataset.district !== districtId);
+        if (upazilaSelect.selectedOptions[0]?.hidden) upazilaSelect.value = '';
+    }
 
     function filterDistricts() {
         const divisionId = divisionSelect.value;
-
-        districtOptions.forEach((option) => {
-            if (!option.value) {
-                option.hidden = false;
-                return;
-            }
-
-            option.hidden = divisionId && option.dataset.division !== divisionId;
-        });
-
-        const selected = districtSelect.selectedOptions[0];
-        if (selected && selected.hidden) {
-            districtSelect.value = '';
-        }
+        districtOptions.forEach((option) => option.hidden = option.value && divisionId && option.dataset.division !== divisionId);
+        if (districtSelect.selectedOptions[0]?.hidden) districtSelect.value = '';
+        filterUpazilas();
     }
 
     divisionSelect.addEventListener('change', filterDistricts);
+    districtSelect.addEventListener('change', filterUpazilas);
     filterDistricts();
+    updateCounter('seo-title');
+    updateCounter('meta-description');
+    updateCounter('post-excerpt');
+    updateEditorStats();
 });
 </script>
 @endsection

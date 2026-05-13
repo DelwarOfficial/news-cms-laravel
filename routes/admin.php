@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\ContentPlacementController;
 use App\Http\Controllers\Admin\LocationController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->middleware('permission:dashboard.view')->name('dashboard');
 
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->middleware('permission:posts.create');

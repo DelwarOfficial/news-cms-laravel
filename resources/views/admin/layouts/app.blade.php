@@ -57,8 +57,25 @@
         .sidebar-link:hover { @apply bg-white/10; }
         .sidebar-link.active { @apply bg-white text-blue-700 shadow-md; }
         .newscore-richtext trix-toolbar { @apply border border-gray-200 rounded-t-xl bg-gray-50 px-3 pt-2; }
-        .newscore-richtext trix-editor { @apply min-h-[220px] border border-gray-200 border-t-0 rounded-b-xl px-4 py-3 text-sm leading-7 outline-none; }
+        .newscore-richtext trix-toolbar { overflow-x: auto; max-width: 100%; }
+        .newscore-richtext trix-toolbar .trix-button-row { flex-wrap: wrap; gap: 0.25rem; }
+        .newscore-richtext trix-toolbar .trix-button-group { margin-bottom: 0.25rem; }
+        .newscore-richtext trix-toolbar .trix-button--icon-attach,
+        .newscore-richtext trix-toolbar .trix-button-group--file-tools { display: none; }
+        .newscore-richtext trix-toolbar .trix-dialogs { max-width: 100%; }
+        .newscore-richtext trix-toolbar .trix-dialog { position: static; max-width: 100%; }
+        .newscore-richtext trix-toolbar .trix-dialog__link-fields { flex-wrap: wrap; }
+        .newscore-richtext trix-toolbar .trix-input--dialog { min-width: 0; width: 100%; }
+        .newscore-richtext trix-editor { @apply min-h-[220px] border border-gray-200 border-t-0 rounded-b-xl px-4 py-3 text-sm leading-7 outline-none bg-white; max-width: 100%; overflow-wrap: anywhere; }
+        .newscore-richtext trix-editor[aria-label="summary_en"],
+        .newscore-richtext trix-editor[aria-label="summary_bn"] { min-height: 120px; }
         .newscore-richtext trix-editor:focus { @apply ring-2 ring-blue-500 border-transparent; }
+        .cms-editor-toolbar { @apply flex flex-wrap items-center gap-1 border border-gray-200 rounded-t-xl bg-gray-50 px-3 py-2; }
+        .cms-editor-button { @apply inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-semibold text-gray-600 hover:bg-white hover:text-blue-700; }
+        .cms-editor-button.active { @apply bg-white text-blue-700 shadow-sm; }
+        .cms-body-editor { @apply min-h-[320px] w-full overflow-y-auto rounded-b-xl border border-t-0 border-gray-200 bg-white px-4 py-3 text-sm leading-7 outline-none; overflow-wrap: anywhere; }
+        .cms-body-editor:focus { @apply ring-2 ring-blue-500 border-transparent; }
+        .cms-body-editor:empty:before { content: attr(data-placeholder); color: #9ca3af; }
         .trix-content .text-right { text-align: right; }
     </style>
 </head>

@@ -8,6 +8,7 @@ use App\Support\CategoryRepository;
 use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
 use App\Models\District;
+use App\Models\Upazila;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -226,6 +227,42 @@ class CategoryController extends Controller
 
     private function upazilasFor(string $division, string $district): array
     {
+        try {
+            $districtModel = District::query()
+                ->select('districts.id')
+                ->join('divisions', 'divisions.id', '=', 'districts.division_id')
+                ->where(function ($query) use ($division) {
+                    $query->where('divisions.name', $division)
+                        ->orWhere('divisions.name_bangla', $division)
+                        ->orWhere('divisions.slug', $division);
+                })
+                ->where(function ($query) use ($district) {
+                    $query->where('districts.name', $district)
+                        ->orWhere('districts.name_bangla', $district)
+                        ->orWhere('districts.slug', $district);
+                })
+                ->first();
+
+            if ($districtModel) {
+                $upazilas = Upazila::query()
+                    ->active()
+                    ->where('district_id', $districtModel->id)
+                    ->orderBy('name')
+                    ->pluck('name')
+                    ->all();
+
+                if ($upazilas !== []) {
+                    return $upazilas;
+                }
+            }
+        } catch (\Throwable $exception) {
+            \Illuminate\Support\Facades\Log::warning('Failed to fetch upazilas from database.', [
+                'division' => $division,
+                'district' => $district,
+                'message' => $exception->getMessage(),
+            ]);
+        }
+
         $locationData = \App\Support\LocationDataProvider::getLocationData();
 
         return $locationData[$division]['districts'][$district]['upazilas'] ?? [];
