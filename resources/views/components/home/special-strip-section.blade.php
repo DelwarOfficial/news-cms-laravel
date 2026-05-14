@@ -15,7 +15,7 @@
           <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] }}" loading="lazy"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
         </div>
-        <h3 class="font-serif font-bold text-[15px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors line-clamp-3 mb-1.5">
+        <h3 class="font-serif font-bold text-[15px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors mb-1.5">
           <x-article-shoulder :article="$post" />
           {{ $post['title'] }}
         </h3>

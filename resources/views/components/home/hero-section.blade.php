@@ -13,7 +13,7 @@
           <img src="{{ $featured['image_url'] }}" alt="{{ $featured['image_alt'] ?? $featured['title'] }}" loading="lazy"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
         </div>
-        <h2 class="font-serif font-bold text-[16px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+        <h2 class="font-serif font-bold text-[16px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
           <x-article-shoulder :article="$featured" />
           {{ $featured['title'] }}
         </h2>
@@ -32,7 +32,7 @@
               </div>
             @endif
             <span class="text-[#e2231a] font-bold text-[11px] block mb-0.5">{{ $a['category'] }}</span>
-            <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+            <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
               <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>
@@ -47,7 +47,7 @@
           <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
             <div class="flex-1 min-w-0">
               <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }}</span>
-              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
                 <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
@@ -75,7 +75,7 @@
             @endif
             <div class="flex-1 min-w-0">
               <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }}</span>
-              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
                 <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
@@ -93,7 +93,7 @@
           class="group flex flex-col-reverse md:flex-row items-start gap-3 py-3 border-b border-border last:border-b-0">
           <div class="flex-1 min-w-0">
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }} &bull;</span>
-            <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+            <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
               <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>
@@ -137,7 +137,7 @@
                 <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
               </div>
-              <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+              <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
                 <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
@@ -164,7 +164,7 @@
           @endif
           <div class="flex-1 min-w-0">
             <span class="text-[#e2231a] font-bold text-[12px] block mb-0.5">{{ $a['category'] }} &bull;</span>
-            <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
+            <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
               <x-article-shoulder :article="$a" />
               {{ $a['title'] }}
             </h3>

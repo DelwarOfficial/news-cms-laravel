@@ -253,7 +253,6 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'NotoSerifBengali', serif;
-    letter-spacing: -0.01em;
 }
 
 a {
@@ -404,7 +403,7 @@ a:hover h2, a:hover h3, a:hover h4, a:hover h5, a:hover h6 {
 
 /* ── Hero Section ──────────────────────────────── */
 .hero-section h3 {
-    font-size: 16px !important;
+    font-size: 18px !important;
 }
 .hero-section h2 {
     font-size: 23px !important;

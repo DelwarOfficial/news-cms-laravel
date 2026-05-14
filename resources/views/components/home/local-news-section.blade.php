@@ -25,7 +25,7 @@
             <img src="{{ $post['image_url'] }}" alt="{{ $post['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           </div>
-          <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
+          <h3 class="font-serif font-bold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
             <x-article-shoulder :article="$post" />
             {{ $post['title'] }}
           </h3>
@@ -40,7 +40,7 @@
             <img src="{{ $heroPost['image_url'] }}" alt="{{ $heroPost['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           </div>
-          <h3 class="font-serif font-extrabold text-[21px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2 mb-2">
+          <h3 class="font-serif font-extrabold text-[21px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors mb-2">
             <x-article-shoulder :article="$heroPost" />
             {{ $heroPost['title'] }}
           </h3>
@@ -57,7 +57,7 @@
       @foreach($rightPosts as $post)
         <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
           class="group flex items-start gap-3 py-3 first:pt-0 last:pb-0">
-          <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3 flex-1">
+          <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors flex-1">
             <x-article-shoulder :article="$post" />
             {{ $post['title'] }}
           </h3>

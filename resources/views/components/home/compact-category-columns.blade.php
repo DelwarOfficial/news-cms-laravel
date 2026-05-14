@@ -25,7 +25,7 @@
                 @if(!empty($post['category']))
                   <span class="text-[#e2231a] font-bold text-[12px]">{{ $post['category'] }} &bull;</span>
                 @endif
-                <h3 class="font-serif font-bold text-[16px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors line-clamp-2 mt-0.5">
+                <h3 class="font-serif font-bold text-[16px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors mt-0.5">
                   <x-article-shoulder :article="$post" />
                   {{ $post['title'] }}
                 </h3>

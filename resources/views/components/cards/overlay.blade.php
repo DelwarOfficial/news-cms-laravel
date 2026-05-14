@@ -20,7 +20,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
     </div>
     <div class="{{ $s['badge'] }}">
-        <h3 class="font-serif font-extrabold text-[{{ $ts }}px] text-white leading-tight group-hover:text-[#f8a0a0] transition-colors line-clamp-2 drop-shadow">
+        <h3 class="font-serif font-extrabold text-[{{ $ts }}px] text-white leading-tight group-hover:text-[#f8a0a0] transition-colors drop-shadow">
             <x-article-shoulder :article="$article" tone="light" />
             {{ $article['title'] }}
         </h3>

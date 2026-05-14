@@ -18,7 +18,7 @@
                             {{ $featured->title }}
                         </h1>
                         <p class="text-gray-300 text-lg md:text-xl line-clamp-2">
-                            {{ Str::limit($featured->excerpt ?? strip_tags($featured->content), 150) }}
+                            {{ $featured->excerpt ?? strip_tags($featured->content) }}
                         </p>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                             <a href="{{ route('post.show', $post->slug) }}">{{ $post->title }}</a>
                         </h3>
                         <p class="text-gray-600 text-sm line-clamp-2 mb-3">
-                            {{ Str::limit($post->excerpt ?? strip_tags($post->content), 100) }}
+                            {{ $post->excerpt ?? strip_tags($post->content) }}
                         </p>
                         <div class="text-xs text-gray-400 font-medium uppercase tracking-wider">
                             {{ $post->created_at->format('M d, Y') }} &middot; {{ $post->reading_time }} MIN READ

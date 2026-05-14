@@ -12,7 +12,7 @@
         @if($showCategory && $article['category'] ?? false)
             <span class="text-primary text-[11px] font-semibold">{{ $article['category'] }}</span>
         @endif
-        <h3 class="font-serif font-extrabold text-fg text-[14px] leading-snug group-hover:text-primary transition-colors line-clamp-2">
+        <h3 class="font-serif font-extrabold text-fg text-[14px] leading-snug group-hover:text-primary transition-colors">
             <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
         </h3>

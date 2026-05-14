@@ -19,7 +19,7 @@
             >
           </div>
           <div class="min-w-0">
-            <h3 class="break-words font-serif text-[14px] font-bold leading-snug text-fg transition-colors group-hover:text-[#e2231a] line-clamp-2">
+            <h3 class="break-words font-serif text-[14px] font-bold leading-snug text-fg transition-colors group-hover:text-[#e2231a]">
               <x-article-shoulder :article="$article" />
               {{ $article['title'] }}
             </h3>

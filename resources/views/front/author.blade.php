@@ -42,7 +42,7 @@
                     <a href="{{ route('post.show', $post->slug) }}">{{ $post->title }}</a>
                 </h3>
                 <p class="text-gray-600 text-sm line-clamp-2 mb-4">
-                    {{ Str::limit($post->excerpt ?? strip_tags($post->content), 100) }}
+                    {{ $post->excerpt ?? strip_tags($post->content) }}
                 </p>
                 <div class="text-xs text-gray-500 font-medium uppercase tracking-wider">
                     {{ $post->created_at->format('M d, Y') }} &middot; {{ $post->reading_time }} MIN READ

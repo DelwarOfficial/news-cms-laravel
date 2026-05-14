@@ -28,7 +28,7 @@
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 right-0 p-4">
-                <h3 class="font-serif font-extrabold text-white text-[16px] leading-snug line-clamp-2">
+                <h3 class="font-serif font-extrabold text-white text-[16px] leading-snug">
                     <x-article-shoulder :article="$article" tone="light" />
                     {{ $article['title'] }}
                 </h3>
@@ -48,7 +48,7 @@
         @if($showCategory && $article['category'] ?? false)
             <span class="text-primary text-[11px] font-semibold mb-1">{{ $article['category'] }}</span>
         @endif
-        <h3 class="font-serif font-extrabold text-fg {{ $size === 'sm' ? 'text-[14px]' : 'text-[16px]' }} leading-snug group-hover:text-primary transition-colors line-clamp-2">
+        <h3 class="font-serif font-extrabold text-fg {{ $size === 'sm' ? 'text-[14px]' : 'text-[16px]' }} leading-snug group-hover:text-primary transition-colors">
             <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
         </h3>

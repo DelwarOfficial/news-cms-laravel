@@ -12,11 +12,14 @@ Homestead.yaml
 
 # Laravel runtime
 /bootstrap/cache/*
+!/bootstrap/cache/.gitignore
 /storage/*.key
 /storage/framework/*
 /storage/logs/*
 /storage/app/public/*
 !/storage/app/public/.gitkeep
+!/storage/app/public/.gitignore
+/storage/app/reports/
 
 # Public runtime links/uploads
 /public/hot
@@ -24,6 +27,7 @@ Homestead.yaml
 /public/uploads/
 /public/media/
 /public/news/
+/public/temp/
 
 # Build output
 /public/build/
@@ -48,6 +52,8 @@ pnpm-debug.log*
 /.fleet/
 /.idea/
 /.vscode/
+/.cursor/
+/.codex/
 .DS_Store
 Thumbs.db
 desktop.ini

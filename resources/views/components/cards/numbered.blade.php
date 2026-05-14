@@ -13,7 +13,7 @@
         {{ $number }}
     </span>
     <div class="flex-1 pt-0.5">
-        <h3 class="font-serif font-extrabold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
+        <h3 class="font-serif font-extrabold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
             <x-article-shoulder :article="$article" />
             {{ $article['title'] }}
         </h3>

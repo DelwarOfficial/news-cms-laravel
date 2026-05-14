@@ -23,7 +23,7 @@
                     <a href="{{ route('post.show', $post->slug) }}">{{ $post->title }}</a>
                 </h3>
                 <p class="text-gray-600 text-base line-clamp-3 mb-4">
-                    {{ Str::limit($post->excerpt ?? strip_tags($post->content), 120) }}
+                    {{ $post->excerpt ?? strip_tags($post->content) }}
                 </p>
                 <div class="flex items-center gap-3 text-xs text-gray-500 font-medium uppercase tracking-wider">
                     <span>{{ $post->created_at->format('M d, Y') }}</span>

@@ -24,7 +24,7 @@
             <img src="{{ $featuredPost['image_url'] }}" alt="{{ $featuredPost['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
           </div>
-          <h3 class="font-serif font-extrabold text-[20px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors mb-2 line-clamp-3">
+          <h3 class="font-serif font-extrabold text-[20px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors mb-2">
             <x-article-shoulder :article="$featuredPost" />
             {{ $featuredPost['title'] }}
           </h3>
@@ -41,7 +41,7 @@
         @foreach($listPosts as $post)
           <a href="{{ $post['url'] ?? route('article.show', $post['slug']) }}"
             class="group flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-            <h3 class="font-serif font-extrabold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3 flex-1">
+            <h3 class="font-serif font-extrabold text-[15px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors flex-1">
               <x-article-shoulder :article="$post" />
               {{ $post['title'] }}
             </h3>

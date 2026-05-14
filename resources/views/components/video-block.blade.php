@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-        <h3 class="font-serif font-bold text-[18px] md:text-[22px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors line-clamp-2">
+        <h3 class="font-serif font-bold text-[18px] md:text-[22px] text-fg leading-tight group-hover:text-[#e2231a] transition-colors">
           <x-article-shoulder :article="$featuredVideo" />
           {{ $featuredVideo['title'] }}
         </h3>
@@ -54,7 +54,7 @@
               </div>
             </div>
             <div class="flex-1 min-w-0">
-              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-3">
+              <h3 class="font-serif font-bold text-[14px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors">
                 <x-article-shoulder :article="$a" />
                 {{ $a['title'] }}
               </h3>
