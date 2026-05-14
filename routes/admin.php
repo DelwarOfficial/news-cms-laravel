@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->middleware('permission:dashboard.view')->name('dashboard');
+    Route::post('tinymce/upload', \App\Http\Controllers\Admin\TinyMceUploadController::class)
+        ->middleware('permission:posts.create')
+        ->name('tinymce.upload');
 
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->middleware('permission:posts.create');
     Route::post('posts/{post}/clone', [\App\Http\Controllers\Admin\PostController::class, 'clone'])->middleware('permission:posts.create')->name('posts.clone');

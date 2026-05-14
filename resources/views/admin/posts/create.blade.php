@@ -50,18 +50,12 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content <span class="text-red-500">*</span></label>
-                    <textarea id="post-body-input" name="{{ $bodyField }}" class="hidden">{{ old($bodyField) }}</textarea>
-                    <div class="cms-editor-toolbar" role="toolbar" aria-label="Content editor toolbar">
-                        <button type="button" class="cms-editor-button" data-command="bold">B</button>
-                        <button type="button" class="cms-editor-button italic" data-command="italic">I</button>
-                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="H2">H2</button>
-                        <button type="button" class="cms-editor-button" data-command="insertUnorderedList"><i class="fas fa-list-ul"></i></button>
-                        <button type="button" class="cms-editor-button" data-command="insertOrderedList"><i class="fas fa-list-ol"></i></button>
-                        <button type="button" class="cms-editor-button" data-command="createLink"><i class="fas fa-link"></i></button>
-                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="BLOCKQUOTE"><i class="fas fa-quote-right"></i></button>
-                        <button type="button" class="cms-editor-button" data-command="formatBlock" data-value="P"><i class="fas fa-paragraph"></i></button>
-                    </div>
-                    <div id="post-body-editor" class="cms-body-editor {{ $locale === 'bn' ? 'font-bengali' : '' }}" contenteditable="true" data-placeholder="Write your post content here. You can use formatting, links, quotes, headings and lists.">{!! old($bodyField) !!}</div>
+                    <x-forms.tinymce
+                        id="post-body-input"
+                        name="{{ $bodyField }}"
+                        :value="old($bodyField)"
+                        placeholder="Write your post content here. You can use formatting, links, quotes, headings and lists."
+                    />
                 </div>
             </section>
 
@@ -269,7 +263,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const updateEditorStats = () => {
-        const text = `${excerpt?.value || ''} ${bodyEditor?.innerText || ''}`;
+        const editor = window.tinymce?.get('post-body-input');
+        const bodyText = editor ? editor.getContent({ format: 'text' }) : (bodyInput?.value || '').replace(/<[^>]*>/g, ' ');
+        const text = `${excerpt?.value || ''} ${bodyText}`;
         const words = text.trim().split(/\s+/).filter(Boolean).length;
         readingTime.textContent = Math.max(1, Math.ceil(words / 200));
         if (metaDescription && !metaDescription.dataset.touched) {
@@ -278,11 +274,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    form?.addEventListener('submit', () => {
-        if (bodyInput && bodyEditor) bodyInput.value = bodyEditor.innerHTML.trim();
-    });
+    form?.addEventListener('submit', () => window.tinymce?.triggerSave());
 
-    bodyEditor?.addEventListener('input', updateEditorStats);
+    bodyInput?.addEventListener('input', updateEditorStats);
     document.querySelectorAll('[data-command]').forEach((button) => {
         button.addEventListener('click', () => {
             bodyEditor?.focus();

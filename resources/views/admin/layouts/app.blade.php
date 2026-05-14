@@ -238,6 +238,9 @@
         /* Search wrapper */
         .search-wrapper { position: relative; }
         .search-wrapper .fa-search { position: absolute; left: .875rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: .8125rem; pointer-events: none; }
+        .tox.tox-tinymce { border-color: var(--border) !important; border-radius: .75rem !important; overflow: hidden; }
+        .tox .tox-toolbar__primary { flex-wrap: wrap; }
+        .dark .tox.tox-tinymce { border-color: var(--border) !important; }
     </style>
     @stack('styles')
 </head>
@@ -495,5 +498,6 @@
     </main>
 </div>
 
+@stack('scripts')
 </body>
 </html>
