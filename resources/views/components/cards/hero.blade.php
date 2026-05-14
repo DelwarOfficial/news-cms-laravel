@@ -6,7 +6,7 @@
 <a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group {{ $imagePosition === 'left' ? 'flex gap-4' : 'flex flex-col' }} {{ $class }}">
     @if(!empty($article['image_url']))
         <div class="{{ $imagePosition === 'left' ? 'w-[55%] shrink-0' : 'w-full' }} {{ $imagePosition === 'left' ? 'aspect-[16/9]' : 'aspect-[16/9] mb-3' }} overflow-hidden">
-            <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
+            <img src="{{ $article['image_url'] }}" alt="{{ $article['image_alt'] ?? $article['title'] }}" loading="lazy"
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]">
         </div>
     @endif

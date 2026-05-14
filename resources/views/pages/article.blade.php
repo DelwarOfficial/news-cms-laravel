@@ -116,12 +116,12 @@
           <figure class="mb-6">
             <div class="w-full overflow-hidden">
               <img src="{{ $article['image_url'] }}"
-                   alt="{{ $article['title'] }}"
+                   alt="{{ $article['image_alt'] ?? $article['title'] }}"
                    class="w-full h-auto object-cover">
             </div>
-            <figcaption class="text-[12px] text-gray-500 mt-2 font-ui">
-              ছবি: সংগৃহীত
-            </figcaption>
+            @if(!empty($article['image_caption']))
+              <figcaption class="text-[12px] text-gray-500 mt-2 font-ui">{{ $article['image_caption'] }}</figcaption>
+            @endif
           </figure>
         @endif
 
@@ -133,7 +133,9 @@
             </p>
           @endif
 
-          @if(isset($article['body']) && is_array($article['body']))
+          @if(!empty($article['body_html']))
+            {!! $article['body_html'] !!}
+          @elseif(isset($article['body']) && is_array($article['body']))
             @foreach($article['body'] as $paragraph)
               <p class="text-[18px] leading-[1.8] mb-5 text-fg-secondary">
                 {{ $paragraph }}

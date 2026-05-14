@@ -15,7 +15,7 @@
 
 <a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group relative w-full overflow-hidden {{ $class }}">
     <div class="w-full aspect-video overflow-hidden">
-        <img src="{{ $article['image_url'] ?? '' }}" alt="{{ $article['title'] }}" loading="lazy"
+        <img src="{{ $article['image_url'] ?? '' }}" alt="{{ $article['image_alt'] ?? $article['title'] }}" loading="lazy"
              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]">
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
     </div>

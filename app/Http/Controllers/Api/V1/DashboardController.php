@@ -13,7 +13,7 @@ class DashboardController extends BaseApiController
     {
         return $this->success([
             'total_posts' => Post::count(),
-            'published_posts' => Post::where('status', 'published')->count(),
+            'published_posts' => Post::published()->count(),
             'total_categories' => Category::count(),
             'total_tags' => Tag::count(),
             'total_media' => Media::count(),

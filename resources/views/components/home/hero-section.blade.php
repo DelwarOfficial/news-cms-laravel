@@ -10,7 +10,7 @@
     @if($featured)
       <a href="{{ $featured['url'] ?? route('article.show', $featured['slug']) }}" class="group flex flex-col py-4 border-b border-border">
         <div class="w-full aspect-[16/9] overflow-hidden rounded-sm mb-2">
-          <img src="{{ $featured['image_url'] }}" alt="{{ $featured['title'] }}" loading="lazy"
+          <img src="{{ $featured['image_url'] }}" alt="{{ $featured['image_alt'] ?? $featured['title'] }}" loading="lazy"
             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
         </div>
         <h2 class="font-serif font-bold text-[16px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
@@ -27,7 +27,7 @@
           <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex flex-col">
             @if(!empty($a['image_url']))
               <div class="w-full aspect-[4/3] overflow-hidden rounded-sm mb-2">
-                <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+                <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
               </div>
             @endif
@@ -54,7 +54,7 @@
             </div>
             @if(!empty($a['image_url']))
               <div class="w-[120px] h-[68px] shrink-0 overflow-hidden rounded-sm">
-                <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+                <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
               </div>
             @endif
@@ -69,7 +69,7 @@
           <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex items-start gap-3 py-3 border-b border-border last:border-b-0">
             @if(!empty($a['image_url']))
               <div class="w-[120px] h-[68px] shrink-0 overflow-hidden rounded-sm">
-                <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+                <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
               </div>
             @endif
@@ -104,7 +104,7 @@
           </div>
           @if(!empty($a['image_url']))
             <div class="w-full md:w-[88px] h-[140px] md:h-[50px] shrink-0 overflow-hidden rounded-sm mb-2 md:mb-0">
-              <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+              <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
             </div>
           @endif
@@ -116,7 +116,7 @@
       @if($featured)
         <a href="{{ $featured['url'] ?? route('article.show', $featured['slug']) }}" class="group flex flex-col mb-3 pb-3 border-b border-border">
           <div class="w-full aspect-[16/9] overflow-hidden rounded-sm mb-2">
-            <img src="{{ $featured['image_url'] }}" alt="{{ $featured['title'] }}" loading="lazy"
+            <img src="{{ $featured['image_url'] }}" alt="{{ $featured['image_alt'] ?? $featured['title'] }}" loading="lazy"
               class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
           </div>
           <h2 class="font-serif font-bold text-[22px] leading-[1.25] text-fg group-hover:text-[#e2231a] transition-colors mb-2">
@@ -134,7 +134,7 @@
           @foreach($centerGrid as $a)
             <a href="{{ $a['url'] ?? route('article.show', $a['slug']) }}" class="group flex flex-col">
               <div class="w-full aspect-[16/9] overflow-hidden mb-1.5">
-                <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+                <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                   class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
               </div>
               <h3 class="font-serif font-bold text-[13px] text-fg leading-snug group-hover:text-[#e2231a] transition-colors line-clamp-2">
@@ -158,7 +158,7 @@
           class="group flex flex-col-reverse md:flex-row items-start gap-3 py-3 border-b border-border last:border-b-0">
           @if(!empty($a['image_url']))
             <div class="w-full md:w-[88px] h-[140px] md:h-[50px] shrink-0 overflow-hidden rounded-sm mb-2 md:mb-0">
-              <img src="{{ $a['image_url'] }}" alt="{{ $a['title'] }}" loading="lazy"
+              <img src="{{ $a['image_url'] }}" alt="{{ $a['image_alt'] ?? $a['title'] }}" loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" />
             </div>
           @endif

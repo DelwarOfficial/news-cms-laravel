@@ -21,7 +21,7 @@
     </div>
     @if(!empty($article['image_url']))
         <div class="w-[{{ $imageWidth }}px] h-[{{ $imageHeight }}px] shrink-0 overflow-hidden">
-            <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
+            <img src="{{ $article['image_url'] }}" alt="{{ $article['image_alt'] ?? $article['title'] }}" loading="lazy"
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]">
         </div>
     @endif

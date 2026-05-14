@@ -22,6 +22,8 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'image_url' => $imageUrl,
+            'image_alt' => $this->featured_image_alt ?: $this->title,
+            'image_caption' => $this->featured_image_caption,
             'published_at' => $this->published_at,
             'reading_time' => (int) ($this->reading_time ?? 1),
             'view_count' => (int) ($this->view_count ?? 0),

@@ -69,7 +69,9 @@
     @if(!empty($article['image_url']))
       <figure>
         <amp-img src="{{ $article['image_url'] }}" width="1200" height="675" layout="responsive" alt="{{ $article['image_alt'] ?? $article['title'] }}"></amp-img>
-        <figcaption>{{ $article['image_alt'] ?? $article['title'] }}</figcaption>
+        @if(!empty($article['image_caption']))
+          <figcaption>{{ $article['image_caption'] }}</figcaption>
+        @endif
       </figure>
     @endif
 

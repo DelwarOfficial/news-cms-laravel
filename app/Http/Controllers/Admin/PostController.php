@@ -187,10 +187,12 @@ class PostController extends Controller
             'shoulder' => $post->shoulder,
             'status' => 'draft',
             'post_format' => $post->post_format ?? 'standard',
+            'visibility' => $post->visibility ?? 'public',
             'primary_category_id' => $post->primary_category_id,
             'featured_media_id' => $post->featured_media_id,
             'featured_image' => $post->featured_image,
             'featured_image_alt' => $post->featured_image_alt,
+            'featured_image_caption' => $post->featured_image_caption,
             'meta_title' => $post->meta_title,
             'meta_description' => $post->meta_description,
             'canonical_url' => null,
@@ -271,9 +273,11 @@ class PostController extends Controller
             'summary_bn' => $summaryBnRaw ? $summaryBn : null,
             'featured_media_id' => $validated['featured_media_id'] ?? null,
             'featured_image' => $featuredImage,
-            'featured_image_alt' => $validated['featured_image_alt'] ?? ($titleBn ?: $titleEn),
+            'featured_image_alt' => filled($validated['featured_image_alt'] ?? null) ? $validated['featured_image_alt'] : ($titleBn ?: $titleEn),
+            'featured_image_caption' => $validated['featured_image_caption'] ?? null,
             'post_format' => $validated['post_format'] ?? 'standard',
             'status' => $validated['status'],
+            'visibility' => $validated['visibility'] ?? 'public',
             ...$statusDates,
             'primary_category_id' => $validated['category_id'] ?? null,
             'meta_title' => $validated['meta_title'] ?? $validated['meta_title_bn'] ?? $validated['meta_title_en'] ?? ($titleBn ?: $titleEn),
@@ -332,7 +336,7 @@ class PostController extends Controller
 
         $slug = Str::of($source)
             ->lower()
-            ->replaceMatches('/[^\pL\pN]+/u', '-')
+            ->replaceMatches('/[^\pL\pM\pN]+/u', '-')
             ->trim('-')
             ->toString();
 

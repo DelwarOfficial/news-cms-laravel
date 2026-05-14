@@ -24,7 +24,7 @@
 <a href="{{ $article['url'] ?? route('article.show', $article['slug']) }}" class="group flex {{ $size === 'sm' ? 'flex-row gap-3' : 'flex-col' }}">
     @if($overlay)
         <div class="relative overflow-hidden {{ $imageClass }} rounded-md">
-            <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
+            <img src="{{ $article['image_url'] }}" alt="{{ $article['image_alt'] ?? $article['title'] }}" loading="lazy"
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
             <div class="absolute bottom-0 left-0 right-0 p-4">
@@ -42,7 +42,7 @@
         </div>
     @else
         <div class="overflow-hidden {{ $imageClass }} mb-2">
-            <img src="{{ $article['image_url'] }}" alt="{{ $article['title'] }}" loading="lazy"
+            <img src="{{ $article['image_url'] }}" alt="{{ $article['image_alt'] ?? $article['title'] }}" loading="lazy"
                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
         </div>
         @if($showCategory && $article['category'] ?? false)

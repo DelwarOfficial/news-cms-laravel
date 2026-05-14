@@ -27,7 +27,7 @@ class Post extends Model
         'featured_image', 'featured_media_id', 'image_path', 'featured_image_alt',
         'featured_image_caption', 'featured_image_credit', 'featured_image_source',
         'featured_image_width', 'featured_image_height', 'source_url', 'source_name',
-        'category', 'category_slug', 'subcategory_slug', 'post_format', 'status',
+        'category', 'category_slug', 'subcategory_slug', 'post_format', 'status', 'visibility',
         'published_at', 'scheduled_at', 'is_breaking', 'is_featured', 'is_sticky',
         'is_photocard',
         'is_trending', 'is_editors_pick', 'is_breaking_news', 'breaking_news_order',
@@ -264,7 +264,7 @@ class Post extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status', 'published');
+        return $query->where('status', 'published')->where('visibility', 'public');
     }
 
     public function scopeBreaking(Builder $query): Builder

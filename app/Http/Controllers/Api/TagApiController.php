@@ -14,7 +14,7 @@ class TagApiController extends Controller
         
         $posts = $tag->posts()
             ->with(['author:id,name', 'categories:id,name,slug'])
-            ->where('status', 'published')
+            ->published()
             ->latest()
             ->paginate($request->get('per_page', 15));
 

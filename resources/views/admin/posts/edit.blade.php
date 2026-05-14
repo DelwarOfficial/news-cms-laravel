@@ -134,7 +134,8 @@
                 <p class="text-xs text-gray-400">Or upload a new image:</p>
                 <input type="file" name="featured_image" id="featured-image" accept="image/*" class="w-full border border-gray-200 px-4 py-3 rounded-xl text-sm file:mr-4 file:border-0 file:bg-gray-100 file:px-3 file:py-2 file:rounded-lg">
                 <img id="featured-image-preview" class="hidden w-full aspect-video object-cover rounded-xl border border-gray-200" alt="">
-                <input type="text" name="featured_image_alt" value="{{ old('featured_image_alt', $post->featured_image_alt) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alt text">
+                <input type="text" name="featured_image_alt" id="featured-image-alt" value="{{ old('featured_image_alt', $post->featured_image_alt) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Alt text">
+                <input type="text" name="featured_image_caption" value="{{ old('featured_image_caption', $post->featured_image_caption) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Caption">
             </section>
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
@@ -187,6 +188,13 @@
                         @foreach(['standard' => 'Standard', 'video' => 'Video', 'gallery' => 'Gallery', 'opinion' => 'Opinion', 'live' => 'Live'] as $value => $label)
                             <option value="{{ $value }}" @selected(old('post_format', $post->post_format ?: 'standard') === $value)>{{ $label }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Visibility</label>
+                    <select name="visibility" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="public" @selected(old('visibility', $post->visibility ?? 'public') === 'public')>Public</option>
+                        <option value="private" @selected(old('visibility', $post->visibility ?? 'public') === 'private')>Private</option>
                     </select>
                 </div>
                 <div class="text-sm text-gray-500">Reading time: <span id="reading-time-estimate">{{ $post->reading_time }}</span> min</div>
@@ -250,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bodyInput = document.getElementById('post-body-input');
     const bodyEditor = document.getElementById('post-body-editor');
     const featuredImage = document.getElementById('featured-image');
+    const featuredAlt = document.getElementById('featured-image-alt');
     const featuredPreview = document.getElementById('featured-image-preview');
     const readingTime = document.getElementById('reading-time-estimate');
 
@@ -261,10 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     title?.addEventListener('input', () => {
         if (seoTitle && !seoTitle.dataset.touched) seoTitle.value = title.value.slice(0, 70);
+        if (featuredAlt && !featuredAlt.dataset.touched && !featuredAlt.value.trim()) featuredAlt.value = title.value;
         updateCounter('seo-title');
     });
     slug?.addEventListener('input', () => slug.dataset.touched = '1');
     seoTitle?.addEventListener('input', () => { seoTitle.dataset.touched = '1'; updateCounter('seo-title'); });
+    featuredAlt?.addEventListener('input', () => featuredAlt.dataset.touched = '1');
     metaDescription?.addEventListener('input', () => { metaDescription.dataset.touched = '1'; updateCounter('meta-description'); });
     excerpt?.addEventListener('input', () => {
         updateCounter('post-excerpt');

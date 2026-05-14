@@ -180,6 +180,7 @@ class ArticleFeed
             'updated_at' => $post->updated_at,
             'image_url' => $imageUrl,
             'image_alt' => $post->featured_image_alt ?: $title,
+            'image_caption' => $post->featured_image_caption,
             'views' => (int) ($post->view_count ?? 0),
             'reading_time' => (int) ($post->reading_time ?? 1),
             'comment_count' => (int) ($post->comment_count ?? 0),
@@ -201,6 +202,7 @@ class ArticleFeed
         ];
 
         if ($includeBody) {
+            $article['body_html'] = $post->bodyHtmlForLocale(app()->getLocale());
             $article['body'] = collect(preg_split('/\R{2,}/', $bodyText))
                 ->map(fn (string $paragraph) => trim(strip_tags($paragraph)))
                 ->filter()
