@@ -177,7 +177,8 @@
                     <select name="category_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" required>
                         <option value="">Select Category</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" @selected((int) old('category_id') === $cat->id)>{{ $cat->parent ? $cat->parent->name.' / ' : '' }}{{ $cat->name }}</option>
+                            @php($categoryLabel = $cat->parent && $cat->parent->name !== $cat->name ? $cat->parent->name.' / '.$cat->name : $cat->name)
+                            <option value="{{ $cat->id }}" @selected((int) old('category_id') === $cat->id)>{{ $categoryLabel }}</option>
                         @endforeach
                     </select>
                 </div>

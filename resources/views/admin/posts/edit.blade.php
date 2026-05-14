@@ -66,6 +66,52 @@
                 </div>
             </section>
 
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                    <h2 class="text-sm font-bold text-gray-900">Options</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @foreach([
+                            'is_featured' => 'Featured',
+                            'is_breaking' => 'Breaking News',
+                            'is_trending' => 'Trending',
+                            'is_editors_pick' => "Editor's Pick",
+                            'is_sticky' => 'Sticky',
+                            'is_photocard' => 'Photocard',
+                            'show_author' => 'Show Author',
+                            'allow_comments' => 'Allow Comments',
+                            'show_publish_date' => 'Show Publish Date',
+                        ] as $field => $label)
+                            <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
+                                <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field, $post->{$field})) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                    <h2 class="text-sm font-bold text-gray-900">Location</h2>
+                    <select name="division_id" id="division_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">No Division</option>
+                        @foreach($divisions as $division)
+                            <option value="{{ $division->id }}" @selected((int) old('division_id', $post->division_id) === $division->id)>{{ $division->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="district_id" id="district_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">No District</option>
+                        @foreach($districts as $district)
+                            <option value="{{ $district->id }}" data-division="{{ $district->division_id }}" @selected((int) old('district_id', $post->district_id) === $district->id)>{{ $district->name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="upazila_id" id="upazila_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        <option value="">No Upazila</option>
+                        @foreach($upazilas as $upazila)
+                            <option value="{{ $upazila->id }}" data-district="{{ $upazila->district_id }}" @selected((int) old('upazila_id', $post->upazila_id) === $upazila->id)>{{ $upazila->name }}</option>
+                        @endforeach
+                    </select>
+                </section>
+            </div>
+
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5">
                 <div class="flex items-center justify-between gap-4">
                     <h2 class="text-sm font-bold text-gray-900">SEO</h2>
@@ -145,7 +191,8 @@
                     <select name="category_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" required>
                         <option value="">Select Category</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" @selected((int) $selectedCategory === $cat->id)>{{ $cat->parent ? $cat->parent->name.' / ' : '' }}{{ $cat->name }}</option>
+                            @php($categoryLabel = $cat->parent && $cat->parent->name !== $cat->name ? $cat->parent->name.' / '.$cat->name : $cat->name)
+                            <option value="{{ $cat->id }}" @selected((int) $selectedCategory === $cat->id)>{{ $categoryLabel }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -200,49 +247,6 @@
                 <div class="text-sm text-gray-500">Reading time: <span id="reading-time-estimate">{{ $post->reading_time }}</span> min</div>
             </section>
 
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
-                <h2 class="text-sm font-bold text-gray-900">Options</h2>
-                <div class="grid grid-cols-1 gap-3">
-                    @foreach([
-                        'is_featured' => 'Featured',
-                        'is_breaking' => 'Breaking News',
-                        'is_trending' => 'Trending',
-                        'is_editors_pick' => "Editor's Pick",
-                        'is_sticky' => 'Sticky',
-                        'is_photocard' => 'Photocard',
-                        'show_author' => 'Show Author',
-                        'allow_comments' => 'Allow Comments',
-                        'show_publish_date' => 'Show Publish Date',
-                    ] as $field => $label)
-                        <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
-                            <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field, $post->{$field})) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </section>
-
-            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
-                <h2 class="text-sm font-bold text-gray-900">Location</h2>
-                <select name="division_id" id="division_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="">No Division</option>
-                    @foreach($divisions as $division)
-                        <option value="{{ $division->id }}" @selected((int) old('division_id', $post->division_id) === $division->id)>{{ $division->name }}</option>
-                    @endforeach
-                </select>
-                <select name="district_id" id="district_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="">No District</option>
-                    @foreach($districts as $district)
-                        <option value="{{ $district->id }}" data-division="{{ $district->division_id }}" @selected((int) old('district_id', $post->district_id) === $district->id)>{{ $district->name }}</option>
-                    @endforeach
-                </select>
-                <select name="upazila_id" id="upazila_id" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="">No Upazila</option>
-                    @foreach($upazilas as $upazila)
-                        <option value="{{ $upazila->id }}" data-district="{{ $upazila->district_id }}" @selected((int) old('upazila_id', $post->upazila_id) === $upazila->id)>{{ $upazila->name }}</option>
-                    @endforeach
-                </select>
-            </section>
         </aside>
     </div>
 </form>
