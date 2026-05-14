@@ -82,7 +82,7 @@ class BackupController extends Controller
 
         Log::info('Backup deleted', ['user_id' => auth()->id(), 'file' => $fileName]);
 
-        return back()->with('success', "Backup \"{$fileName}\" deleted.");
+        return redirect()->route('admin.backups.index')->with('success', "Backup \"{$fileName}\" deleted.");
     }
 
     private function humanSize(int $bytes): string

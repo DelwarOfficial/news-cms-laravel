@@ -32,7 +32,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
         Route::get('/', [\App\Http\Controllers\Admin\BackupController::class, 'index'])->name('index');
         Route::post('/create', [\App\Http\Controllers\Admin\BackupController::class, 'create'])->name('create');
         Route::get('/download/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'download'])->name('download');
-        Route::delete('/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('destroy');
+        Route::match(['delete', 'post'], '/{fileName}', [\App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('destroy');
     });
 
     Route::get('api-keys', [\App\Http\Controllers\Admin\ApiKeyController::class, 'index'])->middleware('permission:users.manage')->name('api-keys.index');
