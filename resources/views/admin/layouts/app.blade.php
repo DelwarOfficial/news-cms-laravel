@@ -193,12 +193,26 @@
         .dark [class*="border-gray-200"]:not(.dark\:border-gray-700):not(.dark\:border-gray-800) { border-color: var(--border) !important; }
         .dark [class*="bg-gray-50"]:not(.dark\:bg-gray-800):not(.dark\:bg-gray-900):not(dark\:bg-gray-950):not([class*="hover"]) { background: var(--bg-subtle) !important; }
 
+        /* Hover states in dark */
+        .dark [class*="hover:bg-gray-100"]:hover { background: rgba(255,255,255,.06) !important; }
+        .dark [class*="hover:bg-gray-50"]:hover { background: rgba(255,255,255,.04) !important; }
+
         /* Dividers */
         [class*="divide-y divide-gray-50"] > * { border-color: var(--border-light) !important; }
+        [class*="divide-y divide-gray-100"] > * { border-color: var(--border-light) !important; }
 
         /* Empty states */
         [class*="px-6 py-14 text-center"] [class*="mx-auto"] + [class*="font-semibold"] { margin-top: .75rem; font-size: .875rem; }
         [class*="px-6 py-14 text-center"] [class*="text-sm"] { margin-top: .25rem; }
+
+        /* Pagination disabled */
+        .dark [class*="border-gray-100 text-gray-300"] { border-color: rgba(255,255,255,.06) !important; color: #475569 !important; }
+        .dark [class*="rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"] { border-color: var(--border) !important; color: var(--text-secondary) !important; }
+        .dark [class*="rounded-xl border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"]:hover { background: var(--bg-hover) !important; }
+
+        /* Mobile card items in dark */
+        .dark [class*="lg:hidden divide-y"] { border-color: var(--border-light) !important; }
+        .dark [class*="text-gray-400"]:where(.text-xs) { color: var(--text-muted) !important; }
 
         /* Pagination */
         .dark [class*="bg-white"][class*="border-gray-200"] { background: var(--bg-card) !important; border-color: var(--border) !important; color: var(--text-secondary) !important; }
@@ -206,6 +220,17 @@
 
         /* Shadow on dark cards */
         .dark .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,.2), 0 1px 3px rgba(0,0,0,.3) !important; }
+
+        /* Search/filter toolbar */
+        .dark [class*="bg-gray-900 hover:bg-gray-800"][class*="text-white"] { background: #2563eb !important; }
+        .dark [class*="bg-gray-900 hover:bg-gray-800"][class*="text-white"]:hover { background: #1d4ed8 !important; }
+
+        /* Mobile action buttons */
+        .dark [class*="border-amber-200"][class*="text-amber-600"] { border-color: rgba(217,119,6,.35) !important; }
+        .dark [class*="border-red-200"][class*="text-red-600"] { border-color: rgba(220,38,38,.35) !important; }
+
+        /* Filter tab count badge */
+        .dark [class*="bg-white text-gray-500"]:not(.dark\:bg-gray-800):not(table) { background: rgba(255,255,255,.08) !important; color: #94a3b8 !important; }
 
         /* Headings in cards */
         .dark h1, .dark h2, .dark h3, .dark h4 { color: var(--text-primary); }
