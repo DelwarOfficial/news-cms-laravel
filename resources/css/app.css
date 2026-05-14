@@ -64,31 +64,31 @@
 /* ── Fonts ────────────────────────────────────────────────── */
 @font-face {
     font-family: 'NotoSerifBengali';
-    src: url('../fonts/NotoSerifBengali-Regular.ttf') format('truetype');
+    src: url('/fonts/NotoSerifBengali-Regular.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
 }
 @font-face {
     font-family: 'NotoSerifBengali';
-    src: url('../fonts/NotoSerifBengali-Thin.ttf') format('truetype');
+    src: url('/fonts/NotoSerifBengali-Thin.ttf') format('truetype');
     font-weight: 300;
     font-style: normal;
 }
 @font-face {
     font-family: 'NotoSerifBengali';
-    src: url('../fonts/NotoSerifBengali-SemiBold.ttf') format('truetype');
+    src: url('/fonts/NotoSerifBengali-SemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
 }
 @font-face {
     font-family: 'NotoSerifBengali';
-    src: url('../fonts/NotoSerifBengali-Bold.ttf') format('truetype');
+    src: url('/fonts/NotoSerifBengali-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
 }
 @font-face {
     font-family: 'NotoSerifBengali';
-    src: url('../fonts/NotoSerifBengali-ExtraBold.ttf') format('truetype');
+    src: url('/fonts/NotoSerifBengali-ExtraBold.ttf') format('truetype');
     font-weight: 800;
     font-style: normal;
 }
