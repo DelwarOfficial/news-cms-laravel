@@ -12,6 +12,7 @@
     @vite(['resources/css/app.css'])
     @vite(['resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -95,54 +96,120 @@
         </div>
 
         {{-- Nav Links --}}
-        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-0.5 scrollbar-thin" :class="sidebarCollapsed ? 'overflow-x-hidden' : ''">
+        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1 scrollbar-thin" :class="sidebarCollapsed ? 'overflow-x-hidden' : ''">
             @php
-                $nav = [
-                    'dashboard' => ['route' => 'admin.dashboard', 'icon' => 'fa-home', 'perm' => 'dashboard.view', 'label' => 'Dashboard'],
-                    'posts' => ['route' => 'admin.posts.index', 'icon' => 'fa-newspaper', 'perm' => 'posts.create', 'label' => 'Posts'],
-                    'categories' => ['route' => 'admin.categories.index', 'icon' => 'fa-folder', 'perm' => 'categories.manage', 'label' => 'Categories'],
-                    'placements' => ['route' => 'admin.placements.index', 'icon' => 'fa-layer-group', 'perm' => 'posts.create', 'label' => 'Placements'],
-                    'locations' => ['route' => 'admin.locations.index', 'icon' => 'fa-map-location-dot', 'perm' => 'categories.manage', 'label' => 'Locations'],
-                    'widgets' => ['route' => 'admin.widgets.index', 'icon' => 'fa-puzzle-piece', 'perm' => 'menus.manage', 'label' => 'Widgets'],
-                    'ads' => ['route' => 'admin.advertisements.index', 'icon' => 'fa-ad', 'perm' => 'ads.manage', 'label' => 'Ads'],
-                    'tags' => ['route' => 'admin.tags.index', 'icon' => 'fa-tags', 'perm' => 'tags.manage', 'label' => 'Tags'],
-                    'media' => ['route' => 'admin.media.index', 'icon' => 'fa-images', 'perm' => 'media.manage', 'label' => 'Media'],
-                    'comments' => ['route' => 'admin.comments.index', 'icon' => 'fa-comments', 'perm' => 'comments.manage', 'label' => 'Comments'],
-                    'members' => ['route' => 'admin.members.index', 'icon' => 'fa-id-badge', 'perm' => 'users.create', 'label' => 'Members'],
+                $groups = [
+                    'dashboard' => [
+                        'items' => [
+                            'dashboard' => ['route' => 'admin.dashboard', 'icon' => 'fa-gauge-high', 'perm' => 'dashboard.view', 'label' => 'Dashboard'],
+                        ],
+                    ],
+                    'content' => [
+                        'label' => 'Content',
+                        'icon' => 'fa-pen-nib',
+                        'items' => [
+                            'posts' => ['route' => 'admin.posts.index', 'icon' => 'fa-newspaper', 'perm' => 'posts.create', 'label' => 'Posts'],
+                            'categories' => ['route' => 'admin.categories.index', 'icon' => 'fa-folder-tree', 'perm' => 'categories.manage', 'label' => 'Categories'],
+                            'tags' => ['route' => 'admin.tags.index', 'icon' => 'fa-tags', 'perm' => 'tags.manage', 'label' => 'Tags'],
+                            'media' => ['route' => 'admin.media.index', 'icon' => 'fa-images', 'perm' => 'media.manage', 'label' => 'Media'],
+                            'comments' => ['route' => 'admin.comments.index', 'icon' => 'fa-comments', 'perm' => 'comments.manage', 'label' => 'Comments'],
+                        ],
+                    ],
+                    'display' => [
+                        'label' => 'Display',
+                        'icon' => 'fa-palette',
+                        'items' => [
+                            'placements' => ['route' => 'admin.placements.index', 'icon' => 'fa-layer-group', 'perm' => 'posts.create', 'label' => 'Placements'],
+                            'locations' => ['route' => 'admin.locations.index', 'icon' => 'fa-map-location-dot', 'perm' => 'categories.manage', 'label' => 'Locations'],
+                            'widgets' => ['route' => 'admin.widgets.index', 'icon' => 'fa-puzzle-piece', 'perm' => 'menus.manage', 'label' => 'Widgets'],
+                            'ads' => ['route' => 'admin.advertisements.index', 'icon' => 'fa-rectangle-ad', 'perm' => 'ads.manage', 'label' => 'Ads'],
+                        ],
+                    ],
+                    'members' => [
+                        'label' => 'Members',
+                        'icon' => 'fa-id-card',
+                        'items' => [
+                            'members' => ['route' => 'admin.members.index', 'icon' => 'fa-id-badge', 'perm' => 'users.create', 'label' => 'Members'],
+                        ],
+                    ],
+                    'system' => [
+                        'label' => 'System',
+                        'icon' => 'fa-gear',
+                        'items' => [
+                            'users' => ['route' => 'admin.users.index', 'icon' => 'fa-users', 'perm' => 'users.manage', 'label' => 'Users'],
+                            'roles' => ['route' => 'admin.roles.index', 'icon' => 'fa-user-shield', 'perm' => 'roles.manage', 'label' => 'Roles'],
+                            'api-keys' => ['route' => 'admin.api-keys.index', 'icon' => 'fa-key', 'perm' => 'users.manage', 'label' => 'API Keys'],
+                            'api-docs' => ['route' => 'admin.api-docs.index', 'icon' => 'fa-book', 'perm' => 'users.manage', 'label' => 'API Docs'],
+                            'backups' => ['route' => 'admin.backups.index', 'icon' => 'fa-hard-drive', 'perm' => 'backups.manage', 'label' => 'Backups'],
+                            'settings' => ['route' => 'admin.settings.index', 'icon' => 'fa-sliders', 'perm' => 'settings.manage', 'label' => 'Settings'],
+                        ],
+                    ],
                 ];
-                $system = [
-                    'users' => ['route' => 'admin.users.index', 'icon' => 'fa-users', 'perm' => 'users.manage', 'label' => 'Users'],
-                    'roles' => ['route' => 'admin.roles.index', 'icon' => 'fa-user-shield', 'perm' => 'roles.manage', 'label' => 'Roles'],
-                    'api-keys' => ['route' => 'admin.api-keys.index', 'icon' => 'fa-key', 'perm' => 'users.manage', 'label' => 'API Keys'],
-                    'api-docs' => ['route' => 'admin.api-docs.index', 'icon' => 'fa-book', 'perm' => 'users.manage', 'label' => 'API Docs'],
-                    'backups' => ['route' => 'admin.backups.index', 'icon' => 'fa-hdd', 'perm' => 'backups.manage', 'label' => 'Backups'],
-                    'settings' => ['route' => 'admin.settings.index', 'icon' => 'fa-cog', 'perm' => 'settings.manage', 'label' => 'Settings'],
-                ];
+
             @endphp
 
-            @foreach($nav as $key => $item)
-                @can($item['perm'])
-                    <a href="{{ route($item['route']) }}"
-                       class="sidebar-link {{ request()->routeIs($item['route'] . '*') ? 'bg-white/20 text-white shadow-sm' : 'text-white/70 hover:text-white hover:bg-white/10' }}"
-                       :title="sidebarCollapsed ? '{{ $item['label'] }}' : ''">
-                        <i class="fas {{ $item['icon'] }} w-5 text-center shrink-0"></i>
-                        <span x-show="!sidebarCollapsed" x-cloak>{{ $item['label'] }}</span>
-                    </a>
-                @endcan
-            @endforeach
+            @foreach($groups as $gKey => $group)
+                @php
+                    $visibleItems = array_filter($group['items'], fn($i) => auth()->user()->can($i['perm']));
+                @endphp
+                @if(empty($visibleItems))
+                    @continue
+                @endif
 
-            <div class="pt-4 pb-1 px-4 text-xs font-semibold text-white/40 uppercase tracking-wider"
-                 x-show="!sidebarCollapsed" x-cloak>System</div>
-
-            @foreach($system as $key => $item)
-                @can($item['perm'])
-                    <a href="{{ route($item['route']) }}"
-                       class="sidebar-link {{ request()->routeIs($item['route'] . '*') ? 'bg-white/20 text-white shadow-sm' : 'text-white/70 hover:text-white hover:bg-white/10' }}"
-                       :title="sidebarCollapsed ? '{{ $item['label'] }}' : ''">
-                        <i class="fas {{ $item['icon'] }} w-5 text-center shrink-0"></i>
-                        <span x-show="!sidebarCollapsed" x-cloak>{{ $item['label'] }}</span>
-                    </a>
-                @endcan
+                @if($gKey === 'dashboard')
+                    {{-- Dashboard -- standalone link, always visible --}}
+                    <div class="mb-2">
+                        @can('dashboard.view')
+                            <a href="{{ route('admin.dashboard') }}"
+                               class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'bg-white/20 text-white shadow-sm font-medium' : 'text-white/60 hover:text-white hover:bg-white/10' }}"
+                               :title="sidebarCollapsed ? 'Dashboard' : ''">
+                                <i class="fas fa-gauge-high w-5 text-center shrink-0"></i>
+                                <span x-show="!sidebarCollapsed" x-cloak class="font-semibold tracking-wide">Dashboard</span>
+                            </a>
+                        @endcan
+                    </div>
+                @else
+                    {{-- Collapsible Group --}}
+                    <div x-data="{ open: localStorage.getItem('sidebar_group_{{ $gKey }}') !== 'false' }"
+                         x-init="if (!sidebarCollapsed && !localStorage.getItem('sidebar_group_{{ $gKey }}')) { localStorage.setItem('sidebar_group_{{ $gKey }}', 'true') }"
+                         class="space-y-0.5">
+                        <button @@click="open = !open; localStorage.setItem('sidebar_group_{{ $gKey }}', open)"
+                                class="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest text-white/40 hover:text-white/70 transition-colors sidebar-group-btn"
+                                x-show="!sidebarCollapsed" x-cloak>
+                            <i class="fas {{ $group['icon'] }} w-5 text-center shrink-0 text-[11px]"></i>
+                            <span class="flex-1 text-left">{{ $group['label'] }}</span>
+                            <i class="fas fa-chevron-down text-[9px] transition-transform duration-200"
+                               :class="{ 'rotate-180': open }"></i>
+                        </button>
+                        <template x-if="sidebarCollapsed">
+                            <div>
+                                @foreach($visibleItems as $key => $item)
+                                    @can($item['perm'])
+                                        <a href="{{ route($item['route']) }}"
+                                           class="sidebar-link {{ request()->routeIs($item['route'] . '*') ? 'bg-white/20 text-white shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10' }}"
+                                           :title="'{{ $item['label'] }}'">
+                                            <i class="fas {{ $item['icon'] }} w-5 text-center shrink-0"></i>
+                                        </a>
+                                    @endcan
+                                @endforeach
+                            </div>
+                        </template>
+                        <template x-if="!sidebarCollapsed">
+                            <div x-show="open" x-collapse.duration.200ms>
+                                @foreach($visibleItems as $key => $item)
+                                    @can($item['perm'])
+                                        <a href="{{ route($item['route']) }}"
+                                           class="sidebar-link {{ request()->routeIs($item['route'] . '*') ? 'bg-white/20 text-white shadow-sm font-medium' : 'text-white/60 hover:text-white hover:bg-white/10' }}"
+                                           :title="sidebarCollapsed ? '{{ $item['label'] }}' : ''">
+                                            <i class="fas {{ $item['icon'] }} w-5 text-center shrink-0"></i>
+                                            <span x-show="!sidebarCollapsed" x-cloak>{{ $item['label'] }}</span>
+                                        </a>
+                                    @endcan
+                                @endforeach
+                            </div>
+                        </template>
+                    </div>
+                @endif
             @endforeach
         </nav>
 

@@ -80,9 +80,9 @@ class BackupController extends Controller
 
         Storage::disk($disk)->delete($path);
 
-        Log::info('Backup deleted', ['user_id' => auth()->id(), 'file' => $fileName]);
+        Log::info('Backup deleted', ['user_id' => auth()->id(), 'file' => $fileName, 'redirect_to' => route('admin.backups.index')]);
 
-        return redirect()->route('admin.backups.index')->with('success', "Backup \"{$fileName}\" deleted.");
+        return to_route('admin.backups.index', status: 303)->with('success', "Backup \"{$fileName}\" deleted.");
     }
 
     private function humanSize(int $bytes): string
