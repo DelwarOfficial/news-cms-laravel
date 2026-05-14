@@ -45,6 +45,14 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::post('widgets/{widget}/toggle', [\App\Http\Controllers\Admin\WidgetController::class, 'toggle'])->middleware('permission:menus.manage')->name('widgets.toggle');
     Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->middleware('permission:ads.manage');
 
+    Route::post('locale/switch', function (\Illuminate\Http\Request $request) {
+        $locale = $request->input('locale');
+        if (in_array($locale, ['en', 'bn'])) {
+            session(['admin_locale' => $locale]);
+        }
+        return redirect()->back();
+    })->name('locale.switch');
+
     Route::resource('placements', ContentPlacementController::class)
         ->only(['index', 'store', 'edit', 'update', 'destroy'])
         ->middleware('permission:posts.create');

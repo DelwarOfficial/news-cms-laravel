@@ -34,21 +34,29 @@
     <style>
         body { font-family: 'Inter', 'Noto Sans Bengali', sans-serif; }
         [x-cloak] { display: none !important; }
-        .sidebar-link { @apply flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200; }
-        .newscore-richtext trix-toolbar { @apply border border-gray-200 dark:border-gray-600 rounded-t-xl bg-gray-50 dark:bg-gray-800 px-3 pt-2; overflow-x: auto; max-width: 100%; }
+        @media (min-width: 1024px) { #admin-sidebar { display: flex !important; } }
+        .sidebar-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+        .newscore-richtext trix-toolbar { border: 1px solid var(--color-gray-200); border-radius: 0.75rem 0.75rem 0 0; background: var(--color-gray-50); padding: 0.5rem 0.75rem 0; overflow-x: auto; max-width: 100%; }
+        .dark .newscore-richtext trix-toolbar { border-color: var(--color-gray-600); background: var(--color-gray-800); }
         .newscore-richtext trix-toolbar .trix-button-row { flex-wrap: wrap; gap: 0.25rem; }
         .newscore-richtext trix-toolbar .trix-button-group { margin-bottom: 0.25rem; }
         .newscore-richtext trix-toolbar .trix-button--icon-attach, .newscore-richtext trix-toolbar .trix-button-group--file-tools { display: none; }
         .newscore-richtext trix-toolbar .trix-dialogs { max-width: 100%; }
         .newscore-richtext trix-toolbar .trix-dialog { position: static; max-width: 100%; }
         .newscore-richtext trix-toolbar .trix-dialog__link-fields { flex-wrap: wrap; }
-        .newscore-richtext trix-editor { @apply min-h-[220px] border border-gray-200 dark:border-gray-600 border-t-0 rounded-b-xl px-4 py-3 text-sm leading-7 outline-none bg-white dark:bg-gray-900; max-width: 100%; overflow-wrap: anywhere; }
+        .newscore-richtext trix-editor { min-height: 220px; border: 1px solid var(--color-gray-200); border-top: 0; border-radius: 0 0 0.75rem 0.75rem; padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.75; outline: none; background: var(--color-white); max-width: 100%; overflow-wrap: anywhere; }
+        .dark .newscore-richtext trix-editor { border-color: var(--color-gray-600); background: var(--color-gray-900); }
         .newscore-richtext trix-editor[aria-label="summary_en"], .newscore-richtext trix-editor[aria-label="summary_bn"] { min-height: 120px; }
-        .newscore-richtext trix-editor:focus { @apply ring-2 ring-blue-500 border-transparent; }
-        .cms-editor-toolbar { @apply flex flex-wrap items-center gap-1 border border-gray-200 dark:border-gray-600 rounded-t-xl bg-gray-50 dark:bg-gray-800 px-3 py-2; }
-        .cms-editor-button { @apply inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:text-blue-700; }
-        .cms-body-editor { @apply min-h-[320px] w-full overflow-y-auto rounded-b-xl border border-t-0 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 px-4 py-3 text-sm leading-7 outline-none dark:text-gray-100; overflow-wrap: anywhere; }
-        .cms-body-editor:focus { @apply ring-2 ring-blue-500 border-transparent; }
+        .newscore-richtext trix-editor:focus { --tw-ring-shadow: 0 0 0 calc(2px + 0) var(--tw-ring-color, #3b82f6); box-shadow: 0 0 0 2px #3b82f6; border-color: transparent; }
+        .cms-editor-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; border: 1px solid var(--color-gray-200); border-radius: 0.75rem 0.75rem 0 0; background: var(--color-gray-50); padding: 0.5rem 0.75rem; }
+        .dark .cms-editor-toolbar { border-color: var(--color-gray-600); background: var(--color-gray-800); }
+        .cms-editor-button { display: inline-flex; height: 2rem; min-width: 2rem; align-items: center; justify-content: center; border-radius: 0.5rem; padding: 0 0.5rem; font-size: 0.75rem; font-weight: 600; color: var(--color-gray-600); }
+        .dark .cms-editor-button { color: var(--color-gray-300); }
+        .cms-editor-button:hover { background: var(--color-white); color: #3b82f6; }
+        .dark .cms-editor-button:hover { background: var(--color-gray-700); }
+        .cms-body-editor { min-height: 320px; width: 100%; overflow-y: auto; border: 1px solid var(--color-gray-200); border-top: 0; border-radius: 0 0 0.75rem 0.75rem; background: var(--color-white); padding: 0.75rem 1rem; font-size: 0.875rem; line-height: 1.75; outline: none; overflow-wrap: anywhere; }
+        .dark .cms-body-editor { border-color: var(--color-gray-600); background: var(--color-gray-900); color: var(--color-gray-100); }
+        .cms-body-editor:focus { --tw-ring-shadow: 0 0 0 calc(2px + 0) var(--tw-ring-color, #3b82f6); box-shadow: 0 0 0 2px #3b82f6; border-color: transparent; }
         .cms-body-editor:empty:before { content: attr(data-placeholder); color: #9ca3af; }
         .trix-content .text-right { text-align: right; }
     </style>
@@ -62,17 +70,10 @@
     <div x-show="sidebarOpen" x-cloak @@click="sidebarOpen = false" class="fixed inset-0 z-40 bg-black/50 lg:hidden"></div>
 
     {{-- Sidebar --}}
-    <aside :class="sidebarCollapsed ? 'w-[68px]' : 'w-64'"
+    <aside id="admin-sidebar" :class="sidebarCollapsed ? 'w-[68px]' : 'w-64'"
            class="fixed lg:static inset-y-0 left-0 z-50 flex flex-col bg-gradient-to-b from-blue-700 to-blue-900 dark:from-gray-900 dark:to-gray-950 text-white transition-all duration-300 ease-in-out overflow-hidden"
            x-show="sidebarOpen" x-cloak
-           x-transition:enter="transition-transform duration-300"
-           x-transition:enter-start="-translate-x-full"
-           x-transition:enter-end="translate-x-0"
-           x-transition:leave="transition-transform duration-300"
-           x-transition:leave-start="translate-x-0"
-           x-transition:leave-end="-translate-x-full"
-           @@keydown.window.escape="sidebarOpen = false"
-           :class="{ 'lg:!flex lg:!translate-x-0': true }">
+           @@keydown.window.escape="sidebarOpen = false">
 
         {{-- Logo + Collapse --}}
         <div class="flex items-center justify-between px-4 py-4 border-b border-white/10 shrink-0">

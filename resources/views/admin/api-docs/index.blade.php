@@ -6,12 +6,14 @@
 @push('styles')
 <style>
     .doc-section { scroll-margin-top: 6rem; }
-    .method-badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide uppercase; min-width: 4rem; justify-content: center; }
-    .scope-badge { @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold; }
-    .endpoint-table td { @apply py-3 px-4 text-sm; }
-    .endpoint-table tr:hover { @apply bg-gray-50; }
-    .arch-card { @apply bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden; }
-    .arch-arrow { @apply text-gray-400 text-2xl; }
+    .method-badge { display: inline-flex; align-items: center; padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; min-width: 4rem; justify-content: center; }
+    .scope-badge { display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; }
+    .endpoint-table td { padding: 0.75rem 1rem; font-size: 0.875rem; }
+    .endpoint-table tr:hover { background: var(--color-gray-50); }
+    .dark .endpoint-table tr:hover { background: var(--color-gray-800); }
+    .arch-card { background: var(--color-white); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--color-gray-100); overflow: hidden; }
+    .dark .arch-card { background: var(--color-gray-900); border-color: var(--color-gray-700); }
+    .arch-arrow { color: var(--color-gray-400); font-size: 1.5rem; }
 </style>
 @endpush
 
