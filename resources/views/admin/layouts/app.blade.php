@@ -106,7 +106,7 @@
         .dark .btn-ghost:hover { border-color: #334155; }
 
         /* Override existing blue primary */
-        [class*="bg-blue-600 hover:bg-blue-700"] { transition: all .15s; }
+        [class*="bg-blue-600 hover:bg-blue-700"] { transition: all .15s; color: #fff !important; }
         [class*="bg-blue-600 hover:bg-blue-700"]:hover { transform: translateY(-.5px); }
 
         /* Action icon buttons */

@@ -42,8 +42,10 @@ class TagController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|max:100|unique:tags,name',
+            'slug' => 'nullable|max:100|unique:tags,slug|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:500',
-            'meta_description' => 'nullable|max:160',
+            'meta_title' => 'nullable|max:70',
+            'meta_description' => 'nullable|max:170',
         ]);
 
         try {

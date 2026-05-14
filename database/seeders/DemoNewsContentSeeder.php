@@ -166,12 +166,28 @@ class DemoNewsContentSeeder extends Seeder
 
     private function syncTags(Post $post, array $tags): void
     {
+        $bengaliNames = [
+            'bank' => 'ব্যাংক',
+            'transport' => 'পরিবহন',
+            'bnp' => 'বিএনপি',
+            'cricket' => 'ক্রিকেট',
+            'awami-league' => 'আওয়ামী লীগ',
+            'technology' => 'তথ্যপ্রযুক্তি',
+            'economy' => 'অর্থনীতি',
+            'hollywood' => 'হলিউড',
+            'health' => 'স্বাস্থ্য',
+            'video' => 'ভিডিও',
+            'sports' => 'খেলাধুলা',
+            'entertainment' => 'বিনোদন',
+        ];
+
         $tagIds = collect($tags)
             ->filter()
-            ->map(function (string $tag): int {
+            ->map(function (string $tag) use ($bengaliNames): int {
+                $slug = Str::slug($tag);
                 return Tag::query()->updateOrCreate(
-                    ['slug' => Str::slug($tag)],
-                    ['name' => Str::headline($tag)],
+                    ['slug' => $slug],
+                    ['name' => $bengaliNames[$slug] ?? Str::headline($tag)],
                 )->id;
             })
             ->values()

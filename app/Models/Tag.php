@@ -11,13 +11,14 @@ class Tag extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'description', 'meta_title', 'meta_description'];
 
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
-            ->saveSlugsTo('slug');
+            ->saveSlugsTo('slug')
+            ->skipGenerateWhen(fn () => filled($this->slug));
     }
 
     public function posts()

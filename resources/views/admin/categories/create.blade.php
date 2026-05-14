@@ -13,9 +13,16 @@
             </div>
         @endif
 
-        <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
-            <input type="text" name="name" value="{{ old('name') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Name</label>
+                <input type="text" name="name" id="cat_name" value="{{ old('name') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Slug</label>
+                <input type="text" name="slug" id="cat_slug" value="{{ old('slug') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm" placeholder="Auto-generated from name">
+                <p class="text-xs text-gray-400 mt-1">Leave empty to auto-generate.</p>
+            </div>
         </div>
 
         <div>
@@ -41,14 +48,25 @@
             </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-5">
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>
-                <input type="text" name="meta_title" value="{{ old('meta_title') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-            </div>
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
-                <input type="text" name="meta_description" value="{{ old('meta_description') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+        <hr class="border-gray-100">
+
+        <div>
+            <h3 class="text-sm font-semibold text-gray-700 mb-3">SEO Settings</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Title</label>
+                    <input type="text" name="meta_title" value="{{ old('meta_title') }}" maxlength="70"
+                           class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                           placeholder="e.g. {{ 'খেলাধুলা - Dhaka Magazine' }}">
+                    <p class="text-xs text-gray-400 mt-1">Max 70 characters.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
+                    <textarea name="meta_description" rows="2" maxlength="170"
+                              class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                              placeholder="Brief SEO description for this category page">{{ old('meta_description') }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1">Max 170 characters.</p>
+                </div>
             </div>
         </div>
 
@@ -59,3 +77,25 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nameInput = document.getElementById('cat_name');
+    const slugInput = document.getElementById('cat_slug');
+    if (!nameInput || !slugInput) return;
+    let slugManuallyEdited = slugInput.value !== '';
+    slugInput.addEventListener('input', function () { slugManuallyEdited = this.value !== ''; });
+    nameInput.addEventListener('input', function () {
+        if (slugManuallyEdited) return;
+        slugInput.value = nameInput.value
+            .replace(/[\u0980-\u09FF]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/[\s_]+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    });
+});
+</script>
+@endpush

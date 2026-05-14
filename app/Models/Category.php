@@ -20,7 +20,8 @@ class Category extends Model
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
-            ->saveSlugsTo('slug');
+            ->saveSlugsTo('slug')
+            ->skipGenerateWhen(fn () => filled($this->slug));
     }
 
     public function parent()
