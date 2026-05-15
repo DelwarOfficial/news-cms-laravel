@@ -75,6 +75,29 @@ class HomepageContentRepository
         return ArticleFeed::localNews($fallbackArticles, $limit);
     }
 
+    public function videoPosts(int $limit = 10): array
+    {
+        if (! $this->photocardReady()) {
+            return [];
+        }
+
+        try {
+            return Post::query()
+                ->withContentRelations()
+                ->published()
+                ->where('post_format', 'video')
+                ->latest('published_at')
+                ->latest('id')
+                ->take(max(1, $limit))
+                ->get()
+                ->map(fn (Post $post) => ArticleFeed::postToArticleArray($post))
+                ->values()
+                ->all();
+        } catch (\Throwable) {
+            return [];
+        }
+    }
+
     public function photocard(int $limit = 20): array
     {
         if (! $this->photocardReady()) {

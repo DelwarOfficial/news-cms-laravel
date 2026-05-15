@@ -63,7 +63,8 @@ class HomeDataService
 
         $worldLayout = $this->featureListLayout($sections['world']->articles);
         $sportsArticles = $sections['sports']->articles;
-        $videoLayout = $this->featureListLayout($sections['videos']->articles, 3);
+        $videoArticles = $this->content->videoPosts(10);
+        $videoLayout = $this->featureListLayout($videoArticles, 3);
         $entertainmentLayout = $this->entertainmentLayout($sections['entertainment']->articles);
         $photoStoryPayload = $this->buildPhotoStoryPayload($this->content->photocard(20));
 

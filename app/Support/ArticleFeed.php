@@ -157,6 +157,10 @@ class ArticleFeed
         $bodyText = self::postBodyText($post);
         $imageUrl = self::resolveImageUrl($post);
 
+        if ($post->post_format === 'video') {
+            $imageUrl = self::videoThumbnailUrl($post) ?: $imageUrl;
+        }
+
         $article = [
             'id' => $post->id,
             'slug' => $post->slug,
@@ -199,6 +203,7 @@ class ArticleFeed
             'meta_description' => $post->meta_description ?: Str::limit(strip_tags($excerpt), 155, ''),
             'stored_canonical_url' => $post->canonical_url,
             'og_image' => $post->og_image ?: $imageUrl,
+            'post_format' => $post->post_format,
         ];
 
         if ($includeBody) {
@@ -233,6 +238,24 @@ class ArticleFeed
         }
 
         return ImageResolver::placeholderImageUrl();
+    }
+
+    public static function videoThumbnailUrl(Post $post): ?string
+    {
+        $html = $post->bodyHtmlForLocale(app()->getLocale())
+            ?? $post->content
+            ?? $post->body
+            ?? '';
+
+        if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $html, $matches)) {
+            return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
+        }
+
+        if (preg_match('/(?:vimeo\.com\/(?:video\/)?(\d+))/', $html, $matches)) {
+            return 'https://vumbnail.com/' . $matches[1] . '.jpg';
+        }
+
+        return null;
     }
 
     private static function publicPosts(int $limit): Collection
