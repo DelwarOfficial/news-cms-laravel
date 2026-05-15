@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const divisionSelect = document.getElementById('division_id');
     const districtSelect = document.getElementById('district_id');
     const upazilaSelect = document.getElementById('upazila_id');
-    const districtOptions = divisionSelect ? Array.from(document.getElementById('district_id').options) : [];
-    const upazilaOptions = divisionSelect ? Array.from(document.getElementById('upazila_id').options) : [];
+    const districtOptions = districtSelect ? Array.from(districtSelect.options) : [];
+    const upazilaOptions = upazilaSelect ? Array.from(upazilaSelect.options) : [];
     function filterUpazilas() {
         const districtId = districtSelect.value;
         upazilaOptions.forEach((option) => option.hidden = option.value && districtId && option.dataset.district !== districtId);

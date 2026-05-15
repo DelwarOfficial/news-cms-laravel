@@ -106,7 +106,8 @@ class Post extends Model
     {
         $locale = $this->normalizeLocale($locale);
         $field = "summary_{$locale}";
-        $summary = trim($this->{$field}->toPlainText());
+        $richText = $this->{$field};
+        $summary = $richText ? trim($richText->toPlainText()) : '';
 
         return $summary !== '' ? $summary : (string) $this->excerpt;
     }
@@ -115,14 +116,16 @@ class Post extends Model
     {
         $locale = $this->normalizeLocale($locale);
         $field = "body_{$locale}";
-        $html = trim($this->{$field}->toHtml());
+        $richText = $this->{$field};
+        $html = $richText ? trim($richText->toHtml()) : '';
 
         return app(RichTextSanitizer::class)->sanitize($html !== '' ? $html : nl2br(e($this->content)));
     }
 
     public function editorHtml(string $field): string
     {
-        return $this->{$field}->toEditorHtml();
+        $richText = $this->{$field};
+        return $richText ? $richText->toEditorHtml() : '';
     }
 
     public function metaTitleForLocale(?string $locale = null): string

@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+﻿@extends('admin.layouts.app')
 @section('title', 'Edit Post')
 @section('page-title', 'Edit Post')
 
@@ -253,14 +253,22 @@
                 </div>
             </section>
 
+            @php $aiSection = null; @endphp
+            @php
+                try {
+                    $translator = app(\App\Services\GoogleTranslateService::class);
+                    $usage = $translator->getMonthlyUsage();
+                    $limit = config('google_translate.monthly_limit', 0);
+                    $hasBn = filled($post->title_bn ?: $post->title);
+                    $aiSection = true;
+                } catch (\Throwable $e) {
+                    $aiSection = null;
+                }
+            @endphp
+            @if($aiSection)
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
                 <h2 class="text-sm font-bold text-gray-900">AI Translation</h2>
                 <p class="text-xs text-gray-500">Translate Bengali content to English using Google Cloud.</p>
-                @php
-                    $hasBn = filled($post->title_bn) || filled($post->body_bn);
-                    $usage = app(\App\Services\GoogleTranslateService::class)->getMonthlyUsage();
-                    $limit = config('google_translate.monthly_limit', 0);
-                @endphp
                 @if($hasBn)
                     <form action="{{ route('admin.posts.translate-google', $post) }}" method="POST" onsubmit="return confirm('Dispatch translation job for this post?')">
                         @csrf
@@ -277,6 +285,7 @@
                     <p class="text-xs text-gray-400 italic">No Bengali content to translate.</p>
                 @endif
             </section>
+            @endif
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
                 <h2 class="text-sm font-bold text-gray-900">Post Details</h2>
@@ -383,25 +392,29 @@ document.addEventListener('DOMContentLoaded', () => {
     featuredImage?.addEventListener('change', () => {
         const file = featuredImage.files?.[0];
         if (!file) return;
-        featuredPreview.src = URL.createObjectURL(file);
-        featuredPreview.classList.remove('hidden');
+        if (featuredPreview) {
+            featuredPreview.src = URL.createObjectURL(file);
+            featuredPreview.classList.remove('hidden');
+        }
     });
 
-    // ── Location filters ──
+    // -- Location filters --
     const divisionSelect = document.getElementById('division_id');
     const districtSelect = document.getElementById('district_id');
     const upazilaSelect = document.getElementById('upazila_id');
-    const districtOptions = divisionSelect ? Array.from(document.getElementById('district_id').options) : [];
-    const upazilaOptions = divisionSelect ? Array.from(document.getElementById('upazila_id').options) : [];
+    const districtOptions = districtSelect ? Array.from(districtSelect.options) : [];
+    const upazilaOptions = upazilaSelect ? Array.from(upazilaSelect.options) : [];
     function filterUpazilas() {
+        if (!districtSelect) return;
         const districtId = districtSelect.value;
         upazilaOptions.forEach((option) => option.hidden = option.value && districtId && option.dataset.district !== districtId);
-        if (upazilaSelect.selectedOptions[0]?.hidden) upazilaSelect.value = '';
+        if (upazilaSelect?.selectedOptions[0]?.hidden) upazilaSelect.value = '';
     }
     function filterDistricts() {
+        if (!divisionSelect) return;
         const divisionId = divisionSelect.value;
         districtOptions.forEach((option) => option.hidden = option.value && divisionId && option.dataset.division !== divisionId);
-        if (districtSelect.selectedOptions[0]?.hidden) districtSelect.value = '';
+        if (districtSelect?.selectedOptions[0]?.hidden) districtSelect.value = '';
         filterUpazilas();
     }
     divisionSelect?.addEventListener('change', filterDistricts);
