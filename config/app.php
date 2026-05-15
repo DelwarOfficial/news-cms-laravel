@@ -41,9 +41,9 @@ return [
     | Application Locale Configuration
     |--------------------------------------------------------------------------
     */
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'bn'),
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'bn'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
