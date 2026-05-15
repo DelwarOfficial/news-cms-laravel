@@ -268,19 +268,22 @@
             ?>
             @if($aiSection)
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
-                <h2 class="text-sm font-bold text-gray-900">AI Translation</h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-sm font-bold text-gray-900">AI Translation</h2>
+                    <span class="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded bg-purple-100 text-purple-700">Google</span>
+                </div>
                 <p class="text-xs text-gray-500">Translate Bengali content to English using Google Cloud.</p>
                 @if($hasBn)
                     <form action="{{ route('admin.posts.translate-google', $post) }}" method="POST" onsubmit="return confirm('Dispatch translation job for this post?')">
                         @csrf
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors text-sm">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors text-sm">
                             🌐 Translate with Google
                         </button>
                     </form>
                     @if($limit > 0)
-                        <div class="text-xs text-gray-400 mt-1">
-                            Monthly usage: {{ number_format($usage) }} / {{ number_format($limit) }} chars
-                        </div>
+                        <p class="text-xs text-gray-400">
+                            {{ number_format($usage) }} / {{ number_format($limit) }} chars used this month
+                        </p>
                     @endif
                 @else
                     <p class="text-xs text-gray-400 italic">No Bengali content to translate.</p>
