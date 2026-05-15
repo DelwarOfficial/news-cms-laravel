@@ -1,4 +1,4 @@
-﻿@extends('admin.layouts.app')
+@extends('admin.layouts.app')
 @section('title', 'Edit Post')
 @section('page-title', 'Edit Post')
 
@@ -253,8 +253,9 @@
                 </div>
             </section>
 
-            @php $aiSection = null; @endphp
-            @php
+            <?php
+                $aiSection = null;
+                $hasBn = false;
                 try {
                     $translator = app(\App\Services\GoogleTranslateService::class);
                     $usage = $translator->getMonthlyUsage();
@@ -264,7 +265,7 @@
                 } catch (\Throwable $e) {
                     $aiSection = null;
                 }
-            @endphp
+            ?>
             @if($aiSection)
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
                 <h2 class="text-sm font-bold text-gray-900">AI Translation</h2>
@@ -419,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     divisionSelect?.addEventListener('change', filterDistricts);
     districtSelect?.addEventListener('change', filterUpazilas);
-    filterDistricts();
+    if (divisionSelect) filterDistricts();
 });
 </script>
 @endsection

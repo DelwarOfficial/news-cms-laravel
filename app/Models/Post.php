@@ -373,6 +373,11 @@ class Post extends Model
         return max(1, (int) ceil($words / 200));
     }
 
+    public function getRichTextAttributes(): array
+    {
+        return $this->richTextAttributes;
+    }
+
     private function normalizeLocale(?string $locale = null): string
     {
         return in_array($locale, ['en', 'bn'], true) ? $locale : 'en';

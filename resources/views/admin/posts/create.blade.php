@@ -363,14 +363,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const districtOptions = districtSelect ? Array.from(districtSelect.options) : [];
     const upazilaOptions = upazilaSelect ? Array.from(upazilaSelect.options) : [];
     function filterUpazilas() {
+        if (!districtSelect) return;
         const districtId = districtSelect.value;
         upazilaOptions.forEach((option) => option.hidden = option.value && districtId && option.dataset.district !== districtId);
-        if (upazilaSelect.selectedOptions[0]?.hidden) upazilaSelect.value = '';
+        if (upazilaSelect?.selectedOptions[0]?.hidden) upazilaSelect.value = '';
     }
     function filterDistricts() {
+        if (!divisionSelect) return;
         const divisionId = divisionSelect.value;
         districtOptions.forEach((option) => option.hidden = option.value && divisionId && option.dataset.division !== divisionId);
-        if (districtSelect.selectedOptions[0]?.hidden) districtSelect.value = '';
+        if (districtSelect?.selectedOptions[0]?.hidden) districtSelect.value = '';
         filterUpazilas();
     }
     divisionSelect?.addEventListener('change', filterDistricts);
