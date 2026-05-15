@@ -40,14 +40,16 @@ Route::get('/api/photo-story', [HomeController::class, 'photoStoryData'])->name(
 Route::get('/category/{parentSlug}', [CategoryController::class, 'showParent'])->name('category.parent');
 Route::get('/category/{parentSlug}/{childSlug}', [CategoryController::class, 'showChild'])->name('category.child');
 Route::get('/sitemap.xml', [CategoryController::class, 'sitemap'])->name('sitemap');
-Route::get('/article/{postId}/{slug}', [PostController::class, 'showIdSlug'])
-    ->whereNumber('postId')
-    ->name('article.id_slug');
-Route::get('/article/{postId}', [PostController::class, 'showId'])
-    ->whereNumber('postId')
-    ->name('article.id');
-Route::get('/article/{slug}/amp', [PostController::class, 'amp'])->name('article.amp');
-Route::get('/article/{slug}', [PostController::class, 'show'])->name('article.show');
+foreach (['article', 'video', 'live', 'gallery', 'opinion'] as $fmt) {
+    Route::get("/{$fmt}/{postId}/{slug}", [PostController::class, 'showIdSlug'])
+        ->whereNumber('postId')
+        ->name("{$fmt}.id_slug");
+    Route::get("/{$fmt}/{postId}", [PostController::class, 'showId'])
+        ->whereNumber('postId')
+        ->name("{$fmt}.id");
+    Route::get("/{$fmt}/{slug}/amp", [PostController::class, 'amp'])->name("{$fmt}.amp");
+    Route::get("/{$fmt}/{slug}", [PostController::class, 'show'])->name("{$fmt}.show");
+}
 Route::get('/post/{slug}', [PostController::class, 'show'])->name('post.show');
 Route::get('/author/{username}', [\App\Http\Controllers\Front\AuthorController::class, 'show'])->name('author.show');
 Route::get('/api/saradesh/districts', [CategoryController::class, 'districts'])->name('saradesh.districts');
@@ -57,7 +59,7 @@ Route::get('/{postId}', [PostController::class, 'showRootId'])
     ->whereNumber('postId')
     ->name('article.root_id');
 Route::get('/{slug}', [PostController::class, 'show'])
-    ->where('slug', '^(?!(admin|api|login|logout|latest|category|article|post|posts|author)(/|$)|sitemap\.xml$).+')
+    ->where('slug', '^(?!(admin|api|login|logout|latest|category|article|video|live|gallery|opinion|post|posts|author)(/|$)|sitemap\.xml$).+')
     ->name('article.slug');
 
 // Auth

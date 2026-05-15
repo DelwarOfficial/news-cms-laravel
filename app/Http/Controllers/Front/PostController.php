@@ -27,10 +27,11 @@ class PostController extends Controller
             abort(404);
         }
 
+        $prefix = ArticleFeed::formatRoutePrefix($article['post_format'] ?? 'standard');
         $canonicalUrl = $this->canonicalUrl($article);
-        $ampUrl = route('article.amp', $article['slug']);
+        $ampUrl = $this->ampUrl($article);
 
-        if (! $request->routeIs('article.show')) {
+        if (! $request->routeIs("{$prefix}.show")) {
             return redirect($canonicalUrl, 301);
         }
 
@@ -59,6 +60,15 @@ class PostController extends Controller
     public function showIdSlug(Request $request, int $postId, string $slug)
     {
         $post = $this->publishedPostById($postId);
+        $prefix = ArticleFeed::formatRoutePrefix($post->post_format);
+
+        if (! $request->routeIs("{$prefix}.id_slug")) {
+            return redirect($this->canonicalUrl([
+                'id' => $post->id,
+                'slug' => $post->slug,
+                'post_format' => $post->post_format,
+            ]), 301);
+        }
 
         return $this->renderPost($post);
     }
@@ -70,7 +80,10 @@ class PostController extends Controller
 
     public function showRootId(int $postId)
     {
-        return redirect()->route('article.id', $postId, 301);
+        $post = $this->publishedPostById($postId);
+        $prefix = ArticleFeed::formatRoutePrefix($post->post_format);
+
+        return redirect()->route("{$prefix}.id", $postId, 301);
     }
 
     private function renderPost(Post $post)
@@ -90,8 +103,8 @@ class PostController extends Controller
             'tags',
         ]), true);
 
-        $canonicalUrl = route('article.id', $post->id);
-        $ampUrl = route('article.amp', $article['slug']);
+        $canonicalUrl = $this->canonicalUrl($article);
+        $ampUrl = $this->ampUrl($article);
 
         $post->incrementViews();
 
@@ -123,7 +136,7 @@ class PostController extends Controller
             ->view('pages.article-amp', [
                 'article' => $article,
                 'canonicalUrl' => $this->canonicalUrl($article),
-                'ampUrl' => route('article.amp', $article['slug']),
+                'ampUrl' => $this->ampUrl($article),
             ])
             ->header('Content-Type', 'text/html; charset=UTF-8');
     }
@@ -138,9 +151,18 @@ class PostController extends Controller
 
     private function canonicalUrl(array $article): string
     {
+        $prefix = ArticleFeed::formatRoutePrefix($article['post_format'] ?? 'standard');
+
         return ! empty($article['id'])
-            ? route('article.id', $article['id'])
-            : route('article.show', $article['slug']);
+            ? route("{$prefix}.id_slug", ['postId' => $article['id'], 'slug' => $article['slug']])
+            : route("{$prefix}.show", $article['slug']);
+    }
+
+    private function ampUrl(array $article): string
+    {
+        $prefix = ArticleFeed::formatRoutePrefix($article['post_format'] ?? 'standard');
+
+        return route("{$prefix}.amp", $article['slug']);
     }
 
     public function incrementView(Post $post)

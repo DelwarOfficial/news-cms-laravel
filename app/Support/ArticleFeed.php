@@ -161,11 +161,13 @@ class ArticleFeed
             $imageUrl = self::videoThumbnailUrl($post) ?: $imageUrl;
         }
 
+        $prefix = self::formatRoutePrefix($post->post_format);
+
         $article = [
             'id' => $post->id,
             'slug' => $post->slug,
-            'url' => route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]),
-            'canonical_url' => route('article.id', $post->id),
+            'url' => route("{$prefix}.id_slug", ['postId' => $post->id, 'slug' => $post->slug]),
+            'canonical_url' => route("{$prefix}.id_slug", ['postId' => $post->id, 'slug' => $post->slug]),
             'title' => $title,
             'headline' => $title,
             'shoulder' => $post->shoulder,
@@ -248,7 +250,7 @@ class ArticleFeed
             ?? '';
 
         if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $html, $matches)) {
-            return 'https://img.youtube.com/vi/' . $matches[1] . '/hqdefault.jpg';
+            return 'https://img.youtube.com/vi/' . $matches[1] . '/maxresdefault.jpg';
         }
 
         if (preg_match('/(?:vimeo\.com\/(?:video\/)?(\d+))/', $html, $matches)) {
@@ -256,6 +258,17 @@ class ArticleFeed
         }
 
         return null;
+    }
+
+    public static function formatRoutePrefix(?string $format): string
+    {
+        return match ($format) {
+            'video' => 'video',
+            'live' => 'live',
+            'gallery' => 'gallery',
+            'opinion' => 'opinion',
+            default => 'article',
+        };
     }
 
     private static function publicPosts(int $limit): Collection

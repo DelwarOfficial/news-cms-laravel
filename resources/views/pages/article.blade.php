@@ -126,7 +126,7 @@
         @endif
 
         {{-- Article Body --}}
-        <div class="prose max-w-none font-serif text-fg-secondary">
+        <div class="prose prose-p:text-[18px] prose-p:leading-[1.8] max-w-none font-serif text-fg-secondary">
           @if(!empty($article['excerpt']))
             <p class="text-[18px] font-bold leading-[1.7] text-fg mb-5">
               {{ $article['excerpt'] }}

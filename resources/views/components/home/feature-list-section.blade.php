@@ -57,7 +57,7 @@
         <div class="pl-6 flex flex-col items-center">
           <div class="ad-container bg-surface border border-border flex flex-col items-center justify-center relative">
             <span class="text-[#e2231a] text-[11px] font-bold tracking-wide mb-1 absolute top-2 right-2 z-10">বিজ্ঞাপন</span>
-            <img src="{{ asset('images/coming-soon-ad.webp') }}" alt="Advertisement" class="w-full h-full object-cover opacity-50" />
+            <img src="{{ asset('images/coming-soon-ad.webp') }}" alt="Advertisement" class="w-full h-full object-cover" />
           </div>
         </div>
       @endif

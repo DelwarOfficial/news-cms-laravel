@@ -37,6 +37,7 @@ class RichTextSanitizer
             ])
             ->allowElement('figure', ['class'])
             ->allowElement('figcaption')
+            ->allowElement('iframe', ['src', 'width', 'height', 'frameborder', 'allowfullscreen', 'allow', 'style', 'scrolling', 'title', 'loading'])
             ->allowAttribute('class', ['div', 'span', 'figure', 'rich-text-attachment'])
             ->allowAttribute('dir', ['div', 'p'])
             ->allowAttribute('lang', ['div', 'p', 'span'])
