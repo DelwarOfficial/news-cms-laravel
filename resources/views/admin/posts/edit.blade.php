@@ -152,13 +152,14 @@
                 </div>
                 <div class="text-xs text-gray-500">Current status: <span class="font-semibold">{{ ucfirst($post->status) }}</span></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <button type="submit" name="status" value="draft" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-semibold transition-colors">Save Draft</button>
+                    @php $st = $post->status; @endphp
+                    <button type="submit" name="status" value="draft" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-semibold transition-colors {{ $st === 'draft' ? 'ring-2 ring-black/30 ring-offset-2' : '' }}">{{ $st === 'draft' ? 'Draft' : 'Save Draft' }}</button>
                     @can('posts.submit_review')
-                        <button type="submit" name="status" value="pending" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Review</button>
+                        <button type="submit" name="status" value="pending" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $st === 'pending' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">{{ $st === 'pending' ? 'Pending' : 'Review' }}</button>
                     @endcan
                     @can('posts.publish')
-                        <button type="submit" name="status" value="scheduled" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Schedule</button>
-                        <button type="submit" name="status" value="published" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Publish</button>
+                        <button type="submit" name="status" value="scheduled" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $st === 'scheduled' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">{{ $st === 'scheduled' ? 'Scheduled' : 'Schedule' }}</button>
+                        <button type="submit" name="status" value="published" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $st === 'published' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">{{ $st === 'published' ? 'Update' : 'Publish' }}</button>
                     @endcan
                 </div>
             </section>

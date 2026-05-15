@@ -140,14 +140,15 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Schedule Date</label>
                     <input type="datetime-local" name="scheduled_at" id="scheduled-at" value="{{ old('scheduled_at') }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                @php $createStatus = old('status', 'draft'); @endphp
                 <div class="grid grid-cols-2 gap-3">
-                    <button type="submit" name="status" value="draft" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-semibold transition-colors">Save Draft</button>
+                    <button type="submit" name="status" value="draft" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-3 rounded-xl font-semibold transition-colors {{ $createStatus === 'draft' ? 'ring-2 ring-black/30 ring-offset-2' : '' }}">Save Draft</button>
                     @can('posts.submit_review')
-                        <button type="submit" name="status" value="pending" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Review</button>
+                        <button type="submit" name="status" value="pending" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $createStatus === 'pending' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">Review</button>
                     @endcan
                     @can('posts.publish')
-                        <button type="submit" name="status" value="scheduled" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Schedule</button>
-                        <button type="submit" name="status" value="published" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors">Publish</button>
+                        <button type="submit" name="status" value="scheduled" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $createStatus === 'scheduled' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">Schedule</button>
+                        <button type="submit" name="status" value="published" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors {{ $createStatus === 'published' ? 'ring-2 ring-white/70 ring-offset-2' : '' }}">Publish</button>
                     @endcan
                 </div>
             </section>

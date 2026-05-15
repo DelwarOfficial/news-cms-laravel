@@ -154,7 +154,7 @@ class PostController extends Controller
         $post->tags()->sync($validated['tag_ids'] ?? []);
         FrontendCache::flushContent();
         
-        return redirect()->route('admin.posts.index')->with('success', 'Post updated successfully!');
+        return redirect()->route('admin.posts.edit', $post)->with('success', 'Post updated successfully!');
     }
 
     public function destroy(Post $post)
