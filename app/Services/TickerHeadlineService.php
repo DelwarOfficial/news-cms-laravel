@@ -26,6 +26,6 @@ class TickerHeadlineService
 
     private function cacheKey(int $limit): string
     {
-        return "layout:ticker-headlines:v2:{$limit}";
+        return "layout:ticker-headlines:v2:{$limit}:" . app()->getLocale();
     }
 }

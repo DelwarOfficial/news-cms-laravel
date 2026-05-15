@@ -34,35 +34,55 @@
     <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
         <div class="space-y-6 min-w-0">
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                    <div class="flex gap-1 bg-gray-100 rounded-lg p-0.5" id="lang-tabs">
+                        <button type="button" class="lang-tab px-4 py-1.5 text-sm font-semibold rounded-md bg-white shadow-sm text-gray-900" data-lang="bn">বাংলা</button>
+                        <button type="button" class="lang-tab px-4 py-1.5 text-sm font-semibold rounded-md text-gray-500 hover:text-gray-700" data-lang="en">English</button>
+                    </div>
+                    <button type="button" id="ai-translate-btn" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-1.5 rounded-lg font-medium transition-colors">🤖 Translate বাং → EN</button>
+                </div>
+
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Shoulder</label>
                     <input type="text" name="shoulder" value="{{ old('shoulder', $post->shoulder) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="Small label above headline">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title <span class="text-red-500">*</span></label>
-                    <input type="text" name="{{ $titleField }}" id="post-title" value="{{ $currentTitle }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition {{ $locale === 'bn' ? 'font-bengali' : '' }}" required>
+                <div class="lang-field bn">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title (বাংলা) <span class="text-red-500">*</span></label>
+                    <input type="text" name="title_bn" id="post-title-bn" value="{{ old('title_bn', $post->title_bn ?: $post->title) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition font-bengali" required>
+                </div>
+                <div class="lang-field en hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Title (English)</label>
+                    <input type="text" name="title_en" id="post-title-en" value="{{ old('title_en', $post->title_en) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug / Permalink</label>
-                    <input type="text" name="{{ $slugField }}" id="post-slug" value="{{ $currentSlug }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition">
+                <div class="lang-field bn">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug (বাংলা)</label>
+                    <input type="text" name="slug_bn" id="post-slug-bn" value="{{ old('slug_bn', $post->slug_bn ?: $post->slug) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="auto-generated if empty">
+                </div>
+                <div class="lang-field en hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Slug (English)</label>
+                    <input type="text" name="slug_en" id="post-slug-en" value="{{ old('slug_en', $post->slug_en) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition" placeholder="auto-generated if empty">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Excerpt / Intro</label>
-                    <textarea id="post-excerpt" name="{{ $summaryField }}" rows="3" maxlength="5000" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-7 outline-none resize-y focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $locale === 'bn' ? 'font-bengali' : '' }}" placeholder="Write a short excerpt...">{{ old($summaryField, $post->summaryForLocale($locale)) }}</textarea>
-                    <div class="mt-1 text-xs text-gray-400 text-right"><span data-counter-for="post-excerpt">0</span>/500</div>
+                <div class="lang-field bn">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Excerpt / Intro (বাংলা)</label>
+                    <textarea name="summary_bn" rows="3" maxlength="5000" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-7 outline-none resize-y focus:ring-2 focus:ring-blue-500 focus:border-transparent font-bengali" placeholder="Write a short excerpt...">{{ old('summary_bn', $post->summaryForLocale('bn')) }}</textarea>
+                    <div class="mt-1 text-xs text-gray-400 text-right"><span data-counter-for="summary_bn">0</span>/500</div>
+                </div>
+                <div class="lang-field en hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Excerpt / Intro (English)</label>
+                    <textarea name="summary_en" rows="3" maxlength="5000" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm leading-7 outline-none resize-y focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Write a short excerpt...">{{ old('summary_en', $post->summaryForLocale('en')) }}</textarea>
+                    <div class="mt-1 text-xs text-gray-400 text-right"><span data-counter-for="summary_en">0</span>/500</div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content <span class="text-red-500">*</span></label>
-                    <x-forms.tinymce
-                        id="post-body-input"
-                        name="{{ $bodyField }}"
-                        :value="old($bodyField, $post->bodyHtmlForLocale($locale))"
-                        placeholder="Write your post content here. You can use formatting, links, quotes, headings and lists."
-                    />
+                <div class="lang-field bn">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content (বাংলা) <span class="text-red-500">*</span></label>
+                    <x-forms.tinymce id="post-body-bn" name="body_bn" :value="old('body_bn', $post->bodyHtmlForLocale('bn'))" placeholder="Write your post content here." />
+                </div>
+                <div class="lang-field en hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Content (English)</label>
+                    <x-forms.tinymce id="post-body-en" name="body_en" :value="old('body_en', $post->bodyHtmlForLocale('en'))" placeholder="Write your post content here." />
                 </div>
             </section>
 
@@ -117,20 +137,34 @@
                     <h2 class="text-sm font-bold text-gray-900">SEO</h2>
                     <span class="text-xs text-gray-400">Manual values are preserved</span>
                 </div>
+                <div class="flex gap-1 bg-gray-100 rounded-lg p-0.5 mb-4 w-fit" id="seo-lang-tabs">
+                    <button type="button" class="seo-lang-tab px-3 py-1 text-xs font-semibold rounded-md bg-white shadow-sm text-gray-900" data-lang="bn">বাংলা</button>
+                    <button type="button" class="seo-lang-tab px-3 py-1 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-700" data-lang="en">English</button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title</label>
-                        <input type="text" name="{{ $metaTitleField }}" id="seo-title" value="{{ $currentSeoTitle }}" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
-                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="seo-title">0</span>/70</div>
+                    <div class="seo-lang-field bn">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title (বাংলা)</label>
+                        <input type="text" name="meta_title_bn" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value="{{ old('meta_title_bn', $post->meta_title_bn) }}">
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta_title_bn">0</span>/70</div>
+                    </div>
+                    <div class="seo-lang-field en hidden">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">SEO Title (English)</label>
+                        <input type="text" name="meta_title_en" maxlength="70" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" value="{{ old('meta_title_en', $post->meta_title_en) }}">
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta_title_en">0</span>/70</div>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Canonical URL</label>
                         <input type="url" name="canonical_url" value="{{ old('canonical_url', $post->canonical_url) }}" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description</label>
-                        <textarea name="{{ $metaDescriptionField }}" id="meta-description" rows="3" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ $currentMetaDescription }}</textarea>
-                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta-description">0</span>/170</div>
+                    <div class="seo-lang-field bn md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description (বাংলা)</label>
+                        <textarea name="meta_description_bn" rows="3" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ old('meta_description_bn', $post->meta_description_bn) }}</textarea>
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta_description_bn">0</span>/170</div>
+                    </div>
+                    <div class="seo-lang-field en hidden md:col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Meta Description (English)</label>
+                        <textarea name="meta_description_en" rows="3" maxlength="170" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none resize-none">{{ old('meta_description_en', $post->meta_description_en) }}</textarea>
+                        <div class="mt-1 text-xs text-gray-400"><span data-counter-for="meta_description_en">0</span>/170</div>
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Open Graph Image</label>
@@ -255,70 +289,72 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('post-edit-form');
-    const title = document.getElementById('post-title');
-    const slug = document.getElementById('post-slug');
-    const seoTitle = document.getElementById('seo-title');
-    const metaDescription = document.getElementById('meta-description');
-    const excerpt = document.getElementById('post-excerpt');
-    const bodyInput = document.getElementById('post-body-input');
-    const bodyEditor = document.getElementById('post-body-editor');
     const featuredImage = document.getElementById('featured-image');
-    const featuredAlt = document.getElementById('featured-image-alt');
     const featuredPreview = document.getElementById('featured-image-preview');
-    const readingTime = document.getElementById('reading-time-estimate');
+    const featuredAlt = document.getElementById('featured-image-alt');
 
-    const updateCounter = (id) => {
-        const input = document.getElementById(id);
-        const counter = document.querySelector(`[data-counter-for="${id}"]`);
-        if (input && counter) counter.textContent = input.value.length;
-    };
+    // ── Language Tabs ──
+    function initTabs(tabContainer, fieldGroup) {
+        const tabs = tabContainer?.querySelectorAll('[data-lang]');
+        tabs?.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const lang = tab.dataset.lang;
+                tabs.forEach(t => t.classList.remove('bg-white', 'shadow-sm', 'text-gray-900'));
+                tabs.forEach(t => t.classList.add('text-gray-500'));
+                tab.classList.add('bg-white', 'shadow-sm', 'text-gray-900');
+                tab.classList.remove('text-gray-500');
+                document.querySelectorAll(`.${fieldGroup}`).forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll(`.${fieldGroup}.${lang}`).forEach(el => el.classList.remove('hidden'));
+            });
+        });
+    }
+    initTabs(document.getElementById('lang-tabs'), 'lang-field');
+    initTabs(document.getElementById('seo-lang-tabs'), 'seo-lang-field');
 
-    title?.addEventListener('input', () => {
-        if (seoTitle && !seoTitle.dataset.touched) seoTitle.value = title.value.slice(0, 70);
-        if (featuredAlt && !featuredAlt.dataset.touched && !featuredAlt.value.trim()) featuredAlt.value = title.value;
-        updateCounter('seo-title');
-    });
-    slug?.addEventListener('input', () => slug.dataset.touched = '1');
-    seoTitle?.addEventListener('input', () => { seoTitle.dataset.touched = '1'; updateCounter('seo-title'); });
-    featuredAlt?.addEventListener('input', () => featuredAlt.dataset.touched = '1');
-    metaDescription?.addEventListener('input', () => { metaDescription.dataset.touched = '1'; updateCounter('meta-description'); });
-    excerpt?.addEventListener('input', () => {
-        updateCounter('post-excerpt');
-        if (metaDescription && !metaDescription.dataset.touched) {
-            metaDescription.value = excerpt.value.trim().replace(/\s+/g, ' ').slice(0, 170);
-            updateCounter('meta-description');
+    // ── AI Translate ──
+    document.getElementById('ai-translate-btn')?.addEventListener('click', async () => {
+        const btn = document.getElementById('ai-translate-btn');
+        btn.textContent = '⏳ Translating...';
+        btn.disabled = true;
+        try {
+            const res = await fetch('{{ route("admin.posts.translate") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]')?.value },
+                body: JSON.stringify({
+                    post_id: {{ $post->id }},
+                    title_bn: document.querySelector('input[name="title_bn"]')?.value || '',
+                    summary_bn: document.querySelector('textarea[name="summary_bn"]')?.value || '',
+                    body_bn: window.tinymce?.get('post-body-bn')?.getContent() || '',
+                    meta_title_bn: document.querySelector('input[name="meta_title_bn"]')?.value || '',
+                    meta_description_bn: document.querySelector('textarea[name="meta_description_bn"]')?.value || '',
+                }),
+            });
+            const data = await res.json();
+            if (data.title_en) document.querySelector('input[name="title_en"]').value = data.title_en;
+            if (data.summary_en) document.querySelector('textarea[name="summary_en"]').value = data.summary_en;
+            if (data.body_en && window.tinymce?.get('post-body-en')) window.tinymce.get('post-body-en').setContent(data.body_en);
+            if (data.meta_title_en) document.querySelector('input[name="meta_title_en"]').value = data.meta_title_en;
+            if (data.meta_description_en) document.querySelector('textarea[name="meta_description_en"]').value = data.meta_description_en;
+        } catch (e) {
+            alert('Translation failed. Check console for details.');
+            console.error(e);
         }
+        btn.textContent = '🤖 Translate বাং → EN';
+        btn.disabled = false;
     });
 
-    const updateEditorStats = () => {
-        const editor = window.tinymce?.get('post-body-input');
-        const bodyText = editor ? editor.getContent({ format: 'text' }) : (bodyInput?.value || '').replace(/<[^>]*>/g, ' ');
-        const text = `${excerpt?.value || ''} ${bodyText}`;
-        const words = text.trim().split(/\s+/).filter(Boolean).length;
-        readingTime.textContent = Math.max(1, Math.ceil(words / 200));
-        if (metaDescription && !metaDescription.dataset.touched) {
-            metaDescription.value = text.trim().replace(/\s+/g, ' ').slice(0, 170);
-            updateCounter('meta-description');
-        }
-    };
+    // ── Counter helpers ──
+    document.querySelectorAll('[data-counter-for]').forEach(el => {
+        const input = document.getElementById(el.dataset.counterFor);
+        const update = () => el.textContent = input?.value.length || 0;
+        input?.addEventListener('input', update);
+        update();
+    });
 
+    // ── Submit: save TinyMCE ──
     form?.addEventListener('submit', () => window.tinymce?.triggerSave());
 
-    bodyInput?.addEventListener('input', updateEditorStats);
-    document.querySelectorAll('[data-command]').forEach((button) => {
-        button.addEventListener('click', () => {
-            bodyEditor?.focus();
-            const command = button.dataset.command;
-            let value = button.dataset.value || null;
-            if (command === 'createLink') {
-                value = prompt('Enter URL');
-                if (!value) return;
-            }
-            document.execCommand(command, false, value);
-            updateEditorStats();
-        });
-    });
-
+    // ── Featured image preview ──
     featuredImage?.addEventListener('change', () => {
         const file = featuredImage.files?.[0];
         if (!file) return;
@@ -326,32 +362,26 @@ document.addEventListener('DOMContentLoaded', () => {
         featuredPreview.classList.remove('hidden');
     });
 
+    // ── Location filters ──
     const divisionSelect = document.getElementById('division_id');
     const districtSelect = document.getElementById('district_id');
     const upazilaSelect = document.getElementById('upazila_id');
-    const districtOptions = Array.from(districtSelect.options);
-    const upazilaOptions = Array.from(upazilaSelect.options);
-
+    const districtOptions = divisionSelect ? Array.from(document.getElementById('district_id').options) : [];
+    const upazilaOptions = divisionSelect ? Array.from(document.getElementById('upazila_id').options) : [];
     function filterUpazilas() {
         const districtId = districtSelect.value;
         upazilaOptions.forEach((option) => option.hidden = option.value && districtId && option.dataset.district !== districtId);
         if (upazilaSelect.selectedOptions[0]?.hidden) upazilaSelect.value = '';
     }
-
     function filterDistricts() {
         const divisionId = divisionSelect.value;
         districtOptions.forEach((option) => option.hidden = option.value && divisionId && option.dataset.division !== divisionId);
         if (districtSelect.selectedOptions[0]?.hidden) districtSelect.value = '';
         filterUpazilas();
     }
-
-    divisionSelect.addEventListener('change', filterDistricts);
-    districtSelect.addEventListener('change', filterUpazilas);
+    divisionSelect?.addEventListener('change', filterDistricts);
+    districtSelect?.addEventListener('change', filterUpazilas);
     filterDistricts();
-    updateCounter('seo-title');
-    updateCounter('meta-description');
-    updateCounter('post-excerpt');
-    updateEditorStats();
 });
 </script>
 @endsection

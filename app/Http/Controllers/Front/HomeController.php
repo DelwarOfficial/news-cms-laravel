@@ -9,7 +9,12 @@ class HomeController extends Controller
 {
     public function index(HomeDataService $homeDataService)
     {
-        return view('pages.home', $homeDataService->getHomepageData());
+        $locale = app()->getLocale();
+
+        return view('pages.home', array_merge(
+            $homeDataService->getHomepageData(),
+            ['locale' => $locale],
+        ));
     }
 
     public function photoStoryData(HomeDataService $homeDataService)

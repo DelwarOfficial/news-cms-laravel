@@ -34,35 +34,47 @@ Route::get('/storage/{path}', function (string $path) {
 })->where('path', '.*');
 
 // Frontend
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/latest', [NewsController::class, 'latest'])->name('news.latest');
-Route::get('/api/photo-story', [HomeController::class, 'photoStoryData'])->name('photo-story.data');
-Route::get('/category/{parentSlug}', [CategoryController::class, 'showParent'])->name('category.parent');
-Route::get('/category/{parentSlug}/{childSlug}', [CategoryController::class, 'showChild'])->name('category.child');
-Route::get('/sitemap.xml', [CategoryController::class, 'sitemap'])->name('sitemap');
-foreach (['article', 'video', 'live', 'gallery', 'opinion'] as $fmt) {
-    Route::get("/{$fmt}/{postId}/{slug}", [PostController::class, 'showIdSlug'])
-        ->whereNumber('postId')
-        ->name("{$fmt}.id_slug");
-    Route::get("/{$fmt}/{postId}", [PostController::class, 'showId'])
-        ->whereNumber('postId')
-        ->name("{$fmt}.id");
-    Route::get("/{$fmt}/{slug}/amp", [PostController::class, 'amp'])->name("{$fmt}.amp");
-    Route::get("/{$fmt}/{slug}", [PostController::class, 'show'])->name("{$fmt}.show");
-}
-Route::get('/post/{slug}', [PostController::class, 'show'])->name('post.show');
-Route::get('/author/{username}', [\App\Http\Controllers\Front\AuthorController::class, 'show'])->name('author.show');
-Route::get('/api/saradesh/districts', [CategoryController::class, 'districts'])->name('saradesh.districts');
-Route::get('/api/saradesh/upazilas', [CategoryController::class, 'upazilas'])->name('saradesh.upazilas');
-Route::post('/posts/{post}/view', [PostController::class, 'incrementView'])->name('posts.view');
-Route::get('/{postId}', [PostController::class, 'showRootId'])
-    ->whereNumber('postId')
-    ->name('article.root_id');
-Route::get('/{slug}', [PostController::class, 'show'])
-    ->where('slug', '^(?!(admin|api|login|logout|latest|category|article|video|live|gallery|opinion|post|posts|author)(/|$)|sitemap\.xml$).+')
-    ->name('article.slug');
 
-// Auth
+$frontend = function (string $suffix = '') {
+    $n = $suffix ? fn ($name) => $name . '.' . $suffix : fn ($name) => $name;
+    Route::get('/', [HomeController::class, 'index'])->name($n('home'));
+    Route::get('/latest', [NewsController::class, 'latest'])->name($n('news.latest'));
+    Route::get('/api/photo-story', [HomeController::class, 'photoStoryData'])->name($n('photo-story.data'));
+    Route::get('/category/{parentSlug}', [CategoryController::class, 'showParent'])->name($n('category.parent'));
+    Route::get('/category/{parentSlug}/{childSlug}', [CategoryController::class, 'showChild'])->name($n('category.child'));
+    Route::get('/sitemap.xml', [CategoryController::class, 'sitemap'])->name($n('sitemap'));
+    foreach (['article', 'video', 'live', 'gallery', 'opinion'] as $fmt) {
+        Route::get("/{$fmt}/{postId}/{slug}", [PostController::class, 'showIdSlug'])
+            ->whereNumber('postId')->name($n("{$fmt}.id_slug"));
+        Route::get("/{$fmt}/{postId}", [PostController::class, 'showId'])
+            ->whereNumber('postId')->name($n("{$fmt}.id"));
+        Route::get("/{$fmt}/{slug}/amp", [PostController::class, 'amp'])->name($n("{$fmt}.amp"));
+        Route::get("/{$fmt}/{slug}", [PostController::class, 'show'])->name($n("{$fmt}.show"));
+    }
+    Route::get('/post/{slug}', [PostController::class, 'show'])->name($n('post.show'));
+    Route::get('/author/{username}', [\App\Http\Controllers\Front\AuthorController::class, 'show'])->name($n('author.show'));
+    Route::get('/api/saradesh/districts', [CategoryController::class, 'districts'])->name($n('saradesh.districts'));
+    Route::get('/api/saradesh/upazilas', [CategoryController::class, 'upazilas'])->name($n('saradesh.upazilas'));
+    Route::post('/posts/{post}/view', [PostController::class, 'incrementView'])->name($n('posts.view'));
+    Route::get('/{postId}', [PostController::class, 'showRootId'])
+        ->whereNumber('postId')->name($n('article.root_id'));
+    Route::get('/{slug}', [PostController::class, 'show'])
+        ->where('slug', '^(?!(admin|api|login|logout|latest|category|article|video|live|gallery|opinion|post|posts|author|en)(/|$)|sitemap\.xml$).+')
+        ->name($n('article.slug'));
+};
+
+// Bengali (root) — original names
+Route::middleware('set.locale')->group(function () use ($frontend) {
+    Route::redirect('/en', '/en/', 301);
+    $frontend('');
+});
+
+// English (/en/) — names suffixed with .en
+Route::prefix('en')->middleware('set.locale')->group(function () use ($frontend) {
+    $frontend('en');
+});
+
+// Auth (outside locale groups — admin handles its own locale)
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');

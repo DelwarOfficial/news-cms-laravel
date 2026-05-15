@@ -12,6 +12,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
     Route::resource('posts', \App\Http\Controllers\Admin\PostController::class)->middleware('permission:posts.create');
     Route::post('posts/{post}/clone', [\App\Http\Controllers\Admin\PostController::class, 'clone'])->middleware('permission:posts.create')->name('posts.clone');
+    Route::post('posts/translate', [\App\Http\Controllers\Admin\PostTranslationController::class, 'translate'])->middleware('permission:posts.create')->name('posts.translate');
     Route::post('categories/reorder', [\App\Http\Controllers\Admin\CategoryController::class, 'reorder'])->middleware('permission:categories.manage')->name('categories.reorder');
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)->middleware('permission:categories.manage');
     Route::resource('members', \App\Http\Controllers\Admin\MemberController::class)->middleware('permission:users.create');

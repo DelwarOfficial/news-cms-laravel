@@ -23,6 +23,7 @@ class NewsController extends Controller
 
     public function latest()
     {
+        $locale = app()->getLocale();
         $fallbackArticles = FallbackDataService::getArticles();
         $posts = $this->latestPosts($fallbackArticles);
         $topStory = $posts->firstItem() === 1 ? $posts->getCollection()->first() : null;
@@ -39,7 +40,8 @@ class NewsController extends Controller
             'metaTitle',
             'metaDescription',
             'canonicalUrl',
-            'pageImage'
+            'pageImage',
+            'locale'
         ));
     }
 
@@ -75,12 +77,13 @@ class NewsController extends Controller
 
     private function toNewsItem(Post $post): array
     {
+        $locale = app()->getLocale();
         $category = PostCategoryResolver::categoryFor($post);
         $publishedAt = $post->published_at ?: $post->created_at;
 
         return [
             'slug' => $post->slug,
-            'title' => $post->title,
+            'title' => $post->titleForLocale($locale),
             'category' => $category['name_bn'] ?? PostCategoryResolver::fallbackCategory()['name_bn'],
             'category_url' => PostCategoryResolver::categoryRoute($category),
             'excerpt' => Str::limit(strip_tags((string) ($post->excerpt ?: $post->content ?: $post->body)), 170),

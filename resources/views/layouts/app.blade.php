@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="{{ $locale ?? 'bn' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,10 +8,18 @@
         $pageDescription = trim($__env->yieldContent('meta_description', $metaDescription ?? 'ঢাকা ম্যাগাজিন - বাংলাদেশের নির্ভরযোগ্য অনলাইন নিউজ পোর্টাল'));
         $pageCanonical = $canonicalUrl ?? url()->current();
         $pageImageUrl = $pageImage ?? asset('images/dhaka-magazine-color-logo.svg');
+        $currentLocale = $locale ?? 'bn';
+        $baseUrl = url('/');
+        $urlBn = $currentLocale === 'en' ? str_replace('/en', '', url()->current()) : url()->current();
+        $urlEn = $currentLocale === 'en' ? url()->current() : $baseUrl . '/en' . str_replace($baseUrl, '', url()->current());
+        $urlEn = rtrim($urlEn, '/');
     @endphp
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
     <link rel="canonical" href="{{ $pageCanonical }}">
+    <link rel="alternate" hreflang="bn" href="{{ $urlBn }}">
+    <link rel="alternate" hreflang="en" href="{{ $urlEn }}">
+    <link rel="alternate" hreflang="x-default" href="{{ $urlBn }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">

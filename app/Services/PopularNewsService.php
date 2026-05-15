@@ -91,7 +91,7 @@ class PopularNewsService
 
     private function cacheKey(int $limit): string
     {
-        return "content:popular-news:v1:{$limit}";
+        return "content:popular-news:v1:{$limit}:" . app()->getLocale();
     }
 
     private function articleIdExcluded(array $article, array $exceptIds): bool

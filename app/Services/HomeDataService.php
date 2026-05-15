@@ -24,7 +24,7 @@ class HomeDataService
         }
 
         return Cache::remember(
-            config('homepage.cache.key', 'homepage:v1'),
+            config('homepage.cache.key', 'homepage:v1') . ':' . app()->getLocale(),
             now()->addSeconds((int) config('homepage.cache.ttl', 300)),
             fn () => $this->buildHomepageData(),
         );

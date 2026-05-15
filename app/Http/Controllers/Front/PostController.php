@@ -20,6 +20,7 @@ class PostController extends Controller
 
     public function show(Request $request, string $slug)
     {
+        $locale = app()->getLocale();
         $fallbackArticles = FallbackDataService::getArticles();
         $article = ArticleFeed::findArticle($slug, $fallbackArticles);
 
@@ -54,6 +55,7 @@ class PostController extends Controller
             'metaTitle',
             'metaDescription',
             'pageImage',
+            'locale'
         ));
     }
 
@@ -88,6 +90,7 @@ class PostController extends Controller
 
     private function renderPost(Post $post)
     {
+        $locale = app()->getLocale();
         $article = ArticleFeed::postToArticleArray($post->loadMissing([
             'author',
             'bylineAuthor',
@@ -123,6 +126,7 @@ class PostController extends Controller
             'metaTitle',
             'metaDescription',
             'pageImage',
+            'locale'
         ));
     }
 

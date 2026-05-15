@@ -80,25 +80,36 @@ class CategoryController extends Controller
 
     public function sitemap()
     {
-        $urls = CategoryRepository::flat()
-            ->map(fn(array $category) => [
-                'loc' => CategoryRepository::route($category),
-                'lastmod' => now()->toDateString(),
-            ]);
+        $now = now()->toDateString();
+        $urls = collect();
+
+        $categories = CategoryRepository::flat();
 
         try {
-            $postUrls = Post::query()
+            $posts = Post::query()
                 ->published()
                 ->latest('published_at')
-                ->get(['id', 'slug', 'updated_at', 'published_at'])
-                ->map(fn (Post $post) => [
-                    'loc' => route('article.id', $post->id),
-                    'lastmod' => optional($post->updated_at ?: $post->published_at)->toDateString() ?: now()->toDateString(),
-                ]);
-
-            $urls = $urls->merge($postUrls);
+                ->get(['id', 'slug', 'updated_at', 'published_at']);
         } catch (\Throwable) {
-            // Keep the sitemap available even during partial migrations.
+            $posts = collect();
+        }
+
+        // Bengali URLs
+        foreach ($categories as $category) {
+            $urls->push(['loc' => CategoryRepository::route($category), 'lastmod' => $now]);
+        }
+        foreach ($posts as $post) {
+            $lastmod = optional($post->updated_at ?: $post->published_at)->toDateString() ?: $now;
+            $urls->push(['loc' => route('article.id', $post->id), 'lastmod' => $lastmod]);
+        }
+
+        // English URLs (same content, /en/ prefix)
+        foreach ($categories as $category) {
+            $route = CategoryRepository::route($category);
+            $urls->push(['loc' => url('/en' . str_replace(url('/'), '', $route)), 'lastmod' => $now]);
+        }
+        foreach ($posts as $post) {
+            $urls->push(['loc' => route('article.id.en', $post->id), 'lastmod' => $now]);
         }
 
         return response()
@@ -108,6 +119,7 @@ class CategoryController extends Controller
 
     private function renderCategory(array $category, array $categoryArticles, array $breadcrumbs, ?string $division = null, ?string $district = null, ?string $upazila = null, array $divisions = [])
     {
+        $locale = app()->getLocale();
         $popularNews = $this->popularNews->get();
         $categoryName = $category['name_bn'];
 
@@ -142,7 +154,8 @@ class CategoryController extends Controller
             'division',
             'district',
             'upazila',
-            'divisions'
+            'divisions',
+            'locale'
         ));
     }
 

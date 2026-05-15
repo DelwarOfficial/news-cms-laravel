@@ -59,10 +59,22 @@
           <span class="text-[13px]">খুঁজুন</span>
         </a>
 
-        <a href="#" class="nav-item flex items-center gap-1 text-white hover:text-red-400">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span class="text-[13px]">Eng</span>
-        </a>
+        @php
+            $locale = app()->getLocale();
+            $currentPath = str_replace(url('/'), '', url()->current());
+            $urlBn = $locale === 'en' ? str_replace('/en', '', url()->current()) : url()->current();
+            $urlEn = $locale === 'en' ? url()->current() : url('/en' . ($currentPath ? '/' . ltrim($currentPath, '/') : ''));
+        @endphp
+        <div class="relative nav-lang-switcher">
+          <button class="nav-item flex items-center gap-1 text-white hover:text-red-400 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span class="text-[13px]">{{ $locale === 'bn' ? 'বাং' : 'Eng' }}</span>
+          </button>
+          <div class="hidden absolute top-full right-0 mt-1 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-1 min-w-[120px] z-50">
+            <a href="{{ $urlBn }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ $locale === 'bn' ? 'font-bold text-blue-600' : '' }}">বাংলা</a>
+            <a href="{{ $urlEn }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 {{ $locale === 'en' ? 'font-bold text-blue-600' : '' }}">English</a>
+          </div>
+        </div>
 
         <button id="theme-toggle-nav" class="flex items-center gap-1 text-white hover:text-red-400 transition-colors" aria-label="Toggle theme">
           <svg id="theme-icon-sun-nav" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
@@ -125,11 +137,15 @@
       @endforeach
 
       <div class="mt-4 pt-4 border-t border-border flex gap-2">
-        <button onclick="toggleTheme()" class="flex-1 py-2 px-4 bg-primary text-white rounded-lg flex items-center justify-center gap-2">
+        <a href="{{ $urlBn }}" class="flex-1 py-2 px-4 border border-border rounded-lg text-center text-sm font-semibold {{ $locale === 'bn' ? 'bg-primary text-white border-primary' : 'text-fg' }}">বাংলা</a>
+        <a href="{{ $urlEn }}" class="flex-1 py-2 px-4 border border-border rounded-lg text-center text-sm font-semibold {{ $locale === 'en' ? 'bg-primary text-white border-primary' : 'text-fg' }}">English</a>
+      </div>
+      <div class="mt-2 flex gap-2">
+        <button onclick="toggleTheme()" class="flex-1 py-2 px-4 bg-surface text-fg border border-border rounded-lg flex items-center justify-center gap-2 text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
           Dark Mode
         </button>
-        <button class="flex-1 py-2 px-4 border border-border rounded-lg flex items-center justify-center gap-2">
+        <button class="flex-1 py-2 px-4 border border-border rounded-lg flex items-center justify-center gap-2 text-sm text-fg">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
           ই-পেপার
         </button>
