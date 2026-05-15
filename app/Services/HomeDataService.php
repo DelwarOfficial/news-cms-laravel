@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\District;
+use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
 use App\ViewModels\HomepageSection;
 use Illuminate\Support\Facades\Cache;
@@ -66,7 +67,22 @@ class HomeDataService
         $videoArticles = $this->content->videoPosts(10);
         $videoLayout = $this->featureListLayout($videoArticles, 3);
         $entertainmentLayout = $this->entertainmentLayout($sections['entertainment']->articles);
-        $photoStoryPayload = $this->buildPhotoStoryPayload($this->content->photocard(20));
+        $photocardArticles = $this->content->photocard(20);
+        $photoStoryPayload = $this->buildPhotoStoryPayload($photocardArticles);
+
+        $allArticles = ArticleFeed::homepageArticles($fallbackArticles, 20);
+        $photoStoryPayload['latest'] = collect($allArticles)->take(8)->map(fn ($a) => [
+            'headline' => $a['title'], 'slug' => $a['slug'],
+            'shoulder' => $a['shoulder'] ?? null, 'url' => $a['url'] ?? null,
+            'timestamp' => $a['time_ago'],
+        ])->all();
+
+        $popularArticles = $this->popularNews->get(8);
+        $photoStoryPayload['popular'] = collect($popularArticles)->map(fn ($a) => [
+            'headline' => $a['title'], 'slug' => $a['slug'],
+            'shoulder' => $a['shoulder'] ?? null, 'url' => $a['url'] ?? null,
+            'timestamp' => $a['time_ago'],
+        ])->all();
 
         return [
             'homepageSections' => $sections,

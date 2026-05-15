@@ -54,7 +54,7 @@ class NewsController extends Controller
                 // Match ArticleFeed's eager-loaded graph so latest-page cards
                 // can be normalized without category/media/author lazy loads.
                 ->withContentRelations()
-                ->whereIn('status', ['published'])
+                ->published()
                 ->latest('published_at')
                 ->latest('id')
                 ->paginate(20)
