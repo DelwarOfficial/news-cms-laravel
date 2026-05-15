@@ -15,6 +15,8 @@ use App\Models\Upazila;
 use App\Models\User;
 use App\Support\AdminTableSort;
 use App\Support\FrontendCache;
+use App\Jobs\TranslatePostWithGoogle;
+use App\Services\GoogleTranslateService;
 use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -164,6 +166,45 @@ class PostController extends Controller
         $post->delete();
         FrontendCache::flushContent();
         return redirect()->route('admin.posts.index')->with('success', 'Post deleted successfully!');
+    }
+
+    public function translateWithGoogle(Post $post, GoogleTranslateService $translator)
+    {
+        $this->authorize('update', $post);
+
+        $source = config('google_translate.source_locale', 'bn');
+        $target = config('google_translate.target_locale', 'en');
+
+        $sourceField = "title_{$source}";
+        $content = $post->{$sourceField} ?? $post->title;
+
+        if (empty(trim((string) $content))) {
+            return redirect()->back()->with('error', 'No Bengali content found to translate.');
+        }
+
+        // Check monthly limit before dispatching
+        $estimate = 0;
+        foreach (config('google_translate.fields', ['title', 'summary', 'body', 'meta_title', 'meta_description']) as $field) {
+            $sf = "{$field}_{$source}";
+            $val = in_array($sf, $post->getRichTextAttributes())
+                ? ($post->{$sf}?->toPlainText() ?? '')
+                : ($post->{$sf} ?? '');
+            $estimate += mb_strlen((string) $val);
+        }
+
+        $remaining = $translator->getMonthlyRemaining();
+        if ($estimate > $remaining) {
+            return redirect()->back()->with('error', 'Monthly translation limit would be exceeded. '
+                . "Estimated: {$estimate} chars, Remaining: {$remaining} chars.");
+        }
+
+        TranslatePostWithGoogle::dispatch($post, $source, $target);
+
+        $used = $translator->getMonthlyUsage();
+        $limit = config('google_translate.monthly_limit', 0);
+        $limitDisplay = $limit > 0 ? " ({$used}/{$limit} chars used this month)" : '';
+
+        return redirect()->back()->with('success', "Translation job dispatched for Bengali → English.{$limitDisplay}");
     }
 
     public function clone(Post $post)

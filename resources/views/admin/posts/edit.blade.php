@@ -254,6 +254,31 @@
             </section>
 
             <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                <h2 class="text-sm font-bold text-gray-900">AI Translation</h2>
+                <p class="text-xs text-gray-500">Translate Bengali content to English using Google Cloud.</p>
+                @php
+                    $hasBn = filled($post->title_bn) || filled($post->body_bn);
+                    $usage = app(\App\Services\GoogleTranslateService::class)->getMonthlyUsage();
+                    $limit = config('google_translate.monthly_limit', 0);
+                @endphp
+                @if($hasBn)
+                    <form action="{{ route('admin.posts.translate-google', $post) }}" method="POST" onsubmit="return confirm('Dispatch translation job for this post?')">
+                        @csrf
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-xl font-semibold transition-colors text-sm">
+                            🌐 Translate with Google
+                        </button>
+                    </form>
+                    @if($limit > 0)
+                        <div class="text-xs text-gray-400 mt-1">
+                            Monthly usage: {{ number_format($usage) }} / {{ number_format($limit) }} chars
+                        </div>
+                    @endif
+                @else
+                    <p class="text-xs text-gray-400 italic">No Bengali content to translate.</p>
+                @endif
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
                 <h2 class="text-sm font-bold text-gray-900">Post Details</h2>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Author</label>
