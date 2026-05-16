@@ -313,18 +313,18 @@ class Post extends Model
     public function scopeWithContentRelations(Builder $query): Builder
     {
         return $query->with([
-            'author',
-            'bylineAuthor',
-            'language',
-            'primaryCategory.parent',
-            'category.parent',
-            'subcategory.parent',
-            'categories.parent',
-            'featuredMedia',
-            'divisionLocation',
-            'districtLocation',
-            'upazilaLocation',
-            'tags',
+            'author:id,name,username,avatar',
+            'bylineAuthor:id,name,username',
+            'language:id,name,code',
+            'primaryCategory:id,name,slug,color',
+            'category:id,name,slug',
+            'subcategory:id,name,slug',
+            'categories:id,name,slug',
+            'featuredMedia:id,file_name,file_path,file_url,alt_text,width,height',
+            'divisionLocation:id,name,name_en,slug',
+            'districtLocation:id,name,name_en,slug,division_id',
+            'upazilaLocation:id,name,name_en,slug,district_id',
+            'tags:id,name,slug',
         ]);
     }
 

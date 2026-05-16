@@ -10,12 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AdvertisementController extends Controller
 {
-    protected $allowedPositions = [
-        'header',
-        'sidebar',
-        'content_top',
-        'content_bottom',
-        'footer',
+    public const AD_POSITIONS = [
         'category-top',
         'category-in-feed',
         'category-bottom',
@@ -36,7 +31,7 @@ class AdvertisementController extends Controller
     {
         $this->authorize('create', Advertisement::class);
         
-        $positions = $this->allowedPositions;
+        $positions = self::AD_POSITIONS;
         $types = $this->allowedTypes;
         
         return view('admin.advertisements.create', compact('positions', 'types'));
@@ -48,7 +43,7 @@ class AdvertisementController extends Controller
         
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'position' => 'required|in:' . implode(',', $this->allowedPositions),
+            'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
             'image' => 'required_if:type,image|nullable|image|max:5120',
             'code' => 'required_if:type,code|nullable|max:5000',
@@ -88,7 +83,7 @@ class AdvertisementController extends Controller
     {
         $this->authorize('update', $advertisement);
         
-        $positions = $this->allowedPositions;
+        $positions = self::AD_POSITIONS;
         $types = $this->allowedTypes;
         
         return view('admin.advertisements.edit', compact('advertisement', 'positions', 'types'));
@@ -100,7 +95,7 @@ class AdvertisementController extends Controller
         
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'position' => 'required|in:' . implode(',', $this->allowedPositions),
+            'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
             'image' => 'nullable|image|max:5120',
             'code' => 'nullable|max:5000',

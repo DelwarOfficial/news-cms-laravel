@@ -15,10 +15,11 @@ return [
     ],
 
     'cache_keys' => [
-        'homepage_data',
-        'ticker_headlines',
-        'popular_news',
-        'site_categories',
+        'homepage'        => 'homepage_data',
+        'ticker'          => 'ticker_headlines',
+        'popular'         => 'popular_news',
+        'categories'      => 'site_categories',
+        'settings'        => 'cms_settings',
     ],
 
     'routes' => [

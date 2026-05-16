@@ -44,6 +44,7 @@ class CategoryController extends Controller
             'slug' => 'nullable|max:255|unique:categories,slug|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:1000',
             'parent_id' => 'nullable|exists:categories,id',
+            'color' => 'nullable|string|max:20',
             'meta_title' => 'nullable|max:70',
             'meta_description' => 'nullable|max:170',
         ]);
@@ -79,6 +80,7 @@ class CategoryController extends Controller
             'name' => 'required|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|max:1000',
             'parent_id' => 'nullable|exists:categories,id|not_in:' . $category->id,
+            'color' => 'nullable|string|max:20',
             'meta_title' => 'nullable|max:60',
             'meta_description' => 'nullable|max:160',
         ]);
