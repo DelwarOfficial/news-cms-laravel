@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
@@ -17,6 +18,8 @@ class UserControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(RolePermissionSeeder::class);
+
         $this->superAdmin = User::factory()->create();
         $this->superAdmin->assignRole('Super Admin');
 
@@ -30,7 +33,7 @@ class UserControllerTest extends TestCase
     public function test_non_admin_cannot_access_user_management(): void
     {
         $user = User::factory()->create();
-        $user->assignRole('Author');
+        $user->assignRole('Author/Reporter');
 
         $response = $this->actingAs($user)
             ->get(route('admin.users.index'));
@@ -62,7 +65,8 @@ class UserControllerTest extends TestCase
                 'email' => 'newuser@example.com',
                 'password' => 'SecurePassword123',
                 'password_confirmation' => 'SecurePassword123',
-                'role' => 'Author',
+                'role' => 'Author/Reporter',
+                'status' => 'active',
             ]);
 
         $response->assertRedirect(route('admin.users.index'));
@@ -81,7 +85,8 @@ class UserControllerTest extends TestCase
                 'email' => 'newuser@example.com',
                 'password' => 'weak',
                 'password_confirmation' => 'weak',
-                'role' => 'Author',
+                'role' => 'Author/Reporter',
+                'status' => 'active',
             ]);
 
         $response->assertSessionHasErrors(['password']);

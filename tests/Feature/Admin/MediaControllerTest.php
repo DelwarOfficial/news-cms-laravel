@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Admin;
 
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -20,13 +21,14 @@ class MediaControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(RolePermissionSeeder::class);
         Storage::fake('public');
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Admin');
 
         $this->author = User::factory()->create();
-        $this->author->assignRole('Author');
+        $this->author->assignRole('Author/Reporter');
     }
 
     /**

@@ -3,9 +3,12 @@
 namespace Tests\Feature\Api\V1;
 
 use App\Models\ApiKey;
+use App\Models\Language;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -18,6 +21,10 @@ class CmsApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Language::factory()->create(['code' => 'en', 'locale' => 'en_US', 'is_default' => true]);
+        User::factory()->create(['id' => 1]);
+        $this->seed(RolePermissionSeeder::class);
 
         $plain = 'nh_cms_key_' . bin2hex(random_bytes(16));
         ApiKey::create([

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Language;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
@@ -18,6 +20,9 @@ class CommentControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Language::factory()->create(['code' => 'en', 'locale' => 'en_US', 'is_default' => true]);
+        $this->seed(RolePermissionSeeder::class);
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Admin');
@@ -37,7 +42,7 @@ class CommentControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewHas('comments');
-        $this->assertEquals(3, $response.viewData('comments')->total());
+        $this->assertEquals(3, $response->viewData('comments')->total());
     }
 
     /**

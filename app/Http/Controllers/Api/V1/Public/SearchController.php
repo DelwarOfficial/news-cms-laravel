@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Http\Controllers\Api\V1\BaseApiController;
+use App\Http\Requests\Api\V1\Public\SearchRequest;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class SearchController extends BaseApiController
 {
-    public function index(Request $request)
+    public function index(SearchRequest $request)
     {
         $q = trim((string) $request->get('q', ''));
         $perPage = min((int) $request->get('limit', 15), 50);

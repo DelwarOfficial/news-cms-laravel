@@ -26,8 +26,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->middleware('permission:settings.manage')->name('settings.update');
     Route::get('settings/export', [\App\Http\Controllers\Admin\SettingController::class, 'export'])->middleware('permission:settings.manage')->name('settings.export');
     Route::post('settings/import', [\App\Http\Controllers\Admin\SettingController::class, 'import'])->middleware('permission:settings.manage')->name('settings.import');
-    Route::resource('comments', \App\Http\Controllers\Admin\CommentController::class)->only(['index'])->middleware('permission:comments.manage');
+    Route::resource('comments', \App\Http\Controllers\Admin\CommentController::class)->only(['index', 'destroy'])->middleware('permission:comments.manage');
     Route::post('comments/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->middleware('permission:comments.manage')->name('comments.approve');
+    Route::post('comments/{comment}/mark-spam', [\App\Http\Controllers\Admin\CommentController::class, 'markSpam'])->middleware('permission:comments.manage')->name('comments.markSpam');
 
     Route::post('sitemap/generate', [\App\Http\Controllers\Admin\SitemapController::class, 'generate'])->middleware('permission:settings.manage')->name('sitemap.generate');
 

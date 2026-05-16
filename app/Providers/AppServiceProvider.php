@@ -2,13 +2,16 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
-use App\Models\{Post, User, Category, Comment, ContentPlacement, Media, Widget, Advertisement, Tag, Setting};
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\ServiceProvider;
+use App\Models\{ApiKey, Post, User, Category, Comment, ContentPlacement, Media, Widget, Advertisement, Tag, Setting};
 use App\Observers\CategoryObserver;
 use App\Observers\ContentPlacementObserver;
 use App\Observers\AdvertisementObserver;
@@ -57,6 +60,27 @@ class AppServiceProvider extends ServiceProvider
                 now()->addSeconds((int) config('homepage.cache.ttl', 300)),
                 fn () => CategoryRepository::parents(),
             ));
+        });
+
+        // Named rate limiter for frontend API — higher limits when API key provided
+        RateLimiter::for('api.frontend', function (Request $request) {
+            $key = $request->header('X-API-Key')
+                ?: $request->bearerToken();
+
+            if ($key) {
+                $prefix = ApiKey::prefixFromKey($key);
+                $hash = hash('sha256', $key);
+                $exists = ApiKey::active()
+                    ->where('key_prefix', $prefix)
+                    ->where('key_hash', $hash)
+                    ->exists();
+
+                if ($exists) {
+                    return Limit::perMinute(300)->by($key);
+                }
+            }
+
+            return Limit::perMinute(60)->by($request->ip());
         });
     }
 

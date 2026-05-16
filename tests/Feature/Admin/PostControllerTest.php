@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Language;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -21,12 +23,15 @@ class PostControllerTest extends TestCase
     {
         parent::setUp();
 
+        Language::factory()->create(['code' => 'en', 'locale' => 'en_US', 'is_default' => true]);
+        $this->seed(RolePermissionSeeder::class);
+
         // Create users with roles
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Admin');
 
         $this->author = User::factory()->create();
-        $this->author->assignRole('Author');
+        $this->author->assignRole('Author/Reporter');
 
         $this->category = Category::factory()->create();
     }
@@ -67,10 +72,12 @@ class PostControllerTest extends TestCase
     {
         $response = $this->actingAs($this->admin)
             ->post(route('admin.posts.store'), [
-                'title' => 'Test Post',
-                'content' => 'Test content',
+                'title_bn' => 'Test Post',
+                'body_bn' => 'Test content',
                 'status' => 'published',
-                'category_ids' => [$this->category->id],
+                'visibility' => 'public',
+                'post_format' => 'standard',
+                'category_id' => $this->category->id,
             ]);
 
         $response->assertRedirect(route('admin.posts.index'));
@@ -87,9 +94,12 @@ class PostControllerTest extends TestCase
     {
         $this->actingAs($this->author)
             ->post(route('admin.posts.store'), [
-                'title' => 'Test Post',
-                'content' => 'Test content',
+                'title_bn' => 'Test Post',
+                'body_bn' => 'Test content',
                 'status' => 'published',
+                'visibility' => 'public',
+                'post_format' => 'standard',
+                'category_id' => $this->category->id,
             ]);
 
         $this->assertDatabaseHas('posts', [
@@ -106,10 +116,13 @@ class PostControllerTest extends TestCase
         $post = Post::factory()->create(['user_id' => $this->admin->id]);
 
         $response = $this->actingAs($this->author)
-            ->post(route('admin.posts.update', $post), [
-                'title' => 'Updated Title',
-                'content' => 'Updated content',
+            ->put(route('admin.posts.update', $post), [
+                'title_bn' => 'Updated Title',
+                'body_bn' => 'Updated content',
                 'status' => 'draft',
+                'visibility' => 'public',
+                'post_format' => 'standard',
+                'category_id' => $this->category->id,
             ]);
 
         $response->assertStatus(403);
@@ -122,12 +135,12 @@ class PostControllerTest extends TestCase
     {
         $response = $this->actingAs($this->admin)
             ->post(route('admin.posts.store'), [
-                'title' => '',
-                'content' => '',
+                'title_bn' => '',
+                'body_bn' => '',
                 'status' => 'invalid_status',
             ]);
 
-        $response->assertSessionHasErrors(['title', 'content', 'status']);
+        $response->assertSessionHasErrors(['title_bn', 'body_bn', 'status']);
     }
 
     /**
@@ -137,12 +150,14 @@ class PostControllerTest extends TestCase
     {
         $response = $this->actingAs($this->admin)
             ->post(route('admin.posts.store'), [
-                'title' => 'Test',
-                'content' => 'Content',
+                'title_bn' => 'Test',
+                'body_bn' => 'Content',
                 'status' => 'draft',
-                'category_ids' => [9999],
+                'visibility' => 'public',
+                'post_format' => 'standard',
+                'category_id' => 9999,
             ]);
 
-        $response->assertSessionHasErrors('category_ids.0');
+        $response->assertSessionHasErrors('category_id');
     }
 }

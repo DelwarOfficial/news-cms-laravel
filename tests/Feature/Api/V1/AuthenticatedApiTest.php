@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api\V1;
 
 use App\Models\ApiKey;
+use App\Models\Language;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\User;
@@ -13,11 +14,14 @@ class AuthenticatedApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $apiKeyHeader;
+    private array $apiKeyHeader;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        Language::factory()->create(['code' => 'en', 'locale' => 'en_US', 'is_default' => true]);
+        User::factory()->create(['id' => 1]);
 
         $plain = 'nh_test_key_' . bin2hex(random_bytes(16));
         ApiKey::create([

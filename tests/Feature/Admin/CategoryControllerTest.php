@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Language;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Models\User;
@@ -16,6 +18,9 @@ class CategoryControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        Language::factory()->create(['code' => 'en', 'locale' => 'en_US', 'is_default' => true]);
+        $this->seed(RolePermissionSeeder::class);
 
         $this->admin = User::factory()->create();
         $this->admin->assignRole('Admin');

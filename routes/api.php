@@ -9,9 +9,14 @@ use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\Admin\AdminPostApiController;
 use App\Http\Controllers\Api\Admin\AdminMediaApiController;
 use App\Http\Controllers\Api\Admin\AdminCommentApiController;
-use App\Http\Controllers\Api\V1\Public\PostController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
+use App\Http\Controllers\Api\V1\Public\CommentController;
+use App\Http\Controllers\Api\V1\Public\MediaController as PublicMediaController;
+use App\Http\Controllers\Api\V1\Public\PageController;
+use App\Http\Controllers\Api\V1\Public\PostController;
 use App\Http\Controllers\Api\V1\Public\SearchController;
+use App\Http\Controllers\Api\V1\Public\SettingController;
+use App\Http\Controllers\Api\V1\Public\TagController;
 
 // ===========================================================================
 // LEGACY PUBLIC API (backward compatible)
@@ -59,19 +64,56 @@ Route::prefix('v1')->group(function () {
         Route::get('/revisions', [\App\Http\Controllers\Api\V1\RevisionController::class, 'index']);
     });
 
-    // V1 — public (no auth, read-only)
-    Route::middleware('throttle:60,1')->group(function () {
+    // V1 — public (read-only, rate-limited per API key or IP)
+    Route::middleware('throttle:api.frontend')->group(function () {
+        // Homepage
+        Route::get('/homepage', [\App\Http\Controllers\Api\V1\Public\HomepageController::class, 'index']);
+        Route::get('/photo-story', [\App\Http\Controllers\Api\V1\Public\PhotoStoryController::class, 'index']);
+        Route::get('/ticker', [\App\Http\Controllers\Api\V1\Public\TickerController::class, 'index']);
+
+        // Posts
+        Route::get('/posts/related', [\App\Http\Controllers\Api\V1\Public\RelatedController::class, 'index']);
         Route::get('/posts', [PostController::class, 'index']);
         Route::get('/posts/breaking', [PostController::class, 'breaking']);
         Route::get('/posts/trending', [PostController::class, 'trending']);
         Route::get('/posts/popular', [PostController::class, 'popular']);
         Route::get('/posts/featured', [PostController::class, 'featured']);
         Route::get('/posts/editors-pick', [PostController::class, 'editorsPick']);
-        Route::get('/posts/{slug}', [PostController::class, 'show']);
+        Route::get('/posts/{postId}/comments', [CommentController::class, 'index'])->whereNumber('postId');
+        Route::get('/posts/{slug}', [PostController::class, 'show'])->name('v1.posts.show');
         Route::post('/posts/{id}/view', [PostController::class, 'view'])->middleware('throttle:1,60');
+
+        // Categories
         Route::get('/categories', [CategoryController::class, 'index']);
+        Route::get('/categories/tree', [\App\Http\Controllers\Api\V1\Public\HomepageController::class, 'categories']);
         Route::get('/categories/{slug}/posts', [CategoryController::class, 'posts']);
+
+        // Tags
+        Route::get('/tags', [TagController::class, 'index']);
+        Route::get('/tags/{slug}', [TagController::class, 'show']);
+        Route::get('/tags/{slug}/posts', [TagController::class, 'posts']);
+
+        // Search
         Route::get('/search', [SearchController::class, 'index']);
+
+        // Locations
+        Route::get('/locations/divisions', [\App\Http\Controllers\Api\V1\Public\LocationController::class, 'divisions']);
+        Route::get('/locations/divisions/{division}/districts/{district}/upazilas', [\App\Http\Controllers\Api\V1\Public\LocationController::class, 'upazilas']);
+        Route::get('/locations/divisions/{division}/districts', [\App\Http\Controllers\Api\V1\Public\LocationController::class, 'districts']);
+        Route::get('/locations/all', [\App\Http\Controllers\Api\V1\Public\LocationController::class, 'all']);
+
+        // Pages
+        Route::get('/pages', [PageController::class, 'index']);
+        Route::get('/pages/{slug}', [PageController::class, 'show'])->name('v1.pages.show');
+
+        // Media (public read-only)
+        Route::get('/media', [PublicMediaController::class, 'index']);
+        Route::get('/media/{id}', [PublicMediaController::class, 'show'])->whereNumber('id');
+
+        // Settings (public-safe groups only)
+        Route::get('/settings/public', [SettingController::class, 'index']);
+        Route::get('/settings/public/{key}', [SettingController::class, 'show']);
+        Route::get('/settings/public/group/{group}', [SettingController::class, 'group']);
     });
 
     // V1 — CMS API (requires cms scope — for external push/sync)

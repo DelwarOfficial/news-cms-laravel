@@ -13,11 +13,34 @@ trait ApiResponse
         return response()->json($response, $code);
     }
 
+    protected function successWithMeta(mixed $data, array $meta, int $code = 200): JsonResponse
+    {
+        return response()->json([
+            'data' => $data,
+            'meta' => $meta,
+        ], $code);
+    }
+
     protected function error(string $error, string $message, int $code = 400, mixed $details = null): JsonResponse
     {
         $response = [
             'error' => $error,
             'message' => $message,
+        ];
+
+        if ($details !== null) {
+            $response['details'] = $details;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    protected function errorWithMeta(string $error, string $message, int $code = 400, ?array $meta = null, mixed $details = null): JsonResponse
+    {
+        $response = [
+            'error' => $error,
+            'message' => $message,
+            'meta' => $meta ?? [],
         ];
 
         if ($details !== null) {

@@ -74,7 +74,9 @@ class MediaController extends Controller
         $this->authorize('delete', $media);
 
         try {
-            Storage::disk('public')->delete($media->file_path);
+            if ($media->file_path) {
+                Storage::disk('public')->delete($media->file_path);
+            }
             $media->delete();
             return back()->with('success', 'File deleted successfully!');
         } catch (\Exception $e) {

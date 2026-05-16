@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Public;
 
 use App\Http\Controllers\Api\V1\BaseApiController;
+use App\Http\Requests\Api\V1\Public\CategoryPostsRequest;
 use App\Http\Resources\Api\V1\CategoryResource;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Category;
 use App\Models\Post;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class CategoryController extends BaseApiController
@@ -36,7 +36,7 @@ class CategoryController extends BaseApiController
         return $this->success($categories);
     }
 
-    public function posts(Request $request, $slug)
+    public function posts(CategoryPostsRequest $request, $slug)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         $perPage = min((int) $request->get('limit', 15), 50);
