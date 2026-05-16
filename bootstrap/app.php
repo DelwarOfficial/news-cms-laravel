@@ -17,9 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
             \App\Http\Middleware\SetAdminLocale::class,
+            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\IdentifyTenant::class,
+        ]);
+        $middleware->api(append: [
+            \App\Http\Middleware\IdentifyTenant::class,
         ]);
         $middleware->alias([
             'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'tenant' => \App\Http\Middleware\IdentifyTenant::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,

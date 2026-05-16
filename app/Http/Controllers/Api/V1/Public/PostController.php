@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\V1\BaseApiController;
 use App\Http\Requests\Api\V1\Public\PostListRequest;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Post;
+use App\Support\CacheLock;
+use App\Support\ViewCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,8 +18,8 @@ class PostController extends BaseApiController
         $perPage = min((int) $request->get('limit', 15), 50);
         $cacheKey = 'v1:posts:' . md5(json_encode($request->all()));
 
-        $posts = Cache::remember($cacheKey, 300, function () use ($request, $perPage) {
-            $query = Post::withContentRelations()->published();
+        $posts = CacheLock::remember($cacheKey, 300, function () use ($request, $perPage) {
+            $query = Post::withListRelations()->published();
 
             // Category filter
             if ($request->filled('category_slug')) {
@@ -90,7 +92,7 @@ class PostController extends BaseApiController
     {
         $cacheKey = "v1:post:{$slug}";
 
-        $post = Cache::remember($cacheKey, 300, function () use ($slug) {
+        $post = CacheLock::rememberWithStale($cacheKey, 300, function () use ($slug) {
             return Post::withContentRelations()
                 ->published()
                 ->where('slug', $slug)
@@ -101,15 +103,15 @@ class PostController extends BaseApiController
             return $this->error('Not Found', 'Post not found.', 404);
         }
 
-        $post->increment('view_count');
+        app(ViewCounter::class)->increment($post->id);
 
         return $this->success(new PostResource($post));
     }
 
     public function breaking()
     {
-        $posts = Cache::remember('v1:posts:breaking', 120, function () {
-            return Post::withContentRelations()
+        $posts = CacheLock::remember('v1:posts:breaking', 120, function () {
+            return Post::withListRelations()
                 ->published()->breaking()
                 ->latest('published_at')
                 ->take(10)->get();
@@ -120,8 +122,8 @@ class PostController extends BaseApiController
 
     public function trending()
     {
-        $posts = Cache::remember('v1:posts:trending', 120, function () {
-            return Post::withContentRelations()
+        $posts = CacheLock::remember('v1:posts:trending', 120, function () {
+            return Post::withListRelations()
                 ->published()->trending()
                 ->latest('published_at')
                 ->take(10)->get();
@@ -132,8 +134,8 @@ class PostController extends BaseApiController
 
     public function popular()
     {
-        $posts = Cache::remember('v1:posts:popular', 300, function () {
-            return Post::withContentRelations()
+        $posts = CacheLock::remember('v1:posts:popular', 300, function () {
+            return Post::withListRelations()
                 ->published()->popular()
                 ->take(10)->get();
         });
@@ -143,8 +145,8 @@ class PostController extends BaseApiController
 
     public function featured()
     {
-        $posts = Cache::remember('v1:posts:featured', 120, function () {
-            return Post::withContentRelations()
+        $posts = CacheLock::remember('v1:posts:featured', 120, function () {
+            return Post::withListRelations()
                 ->published()->featured()
                 ->latest('published_at')
                 ->take(5)->get();
@@ -155,8 +157,8 @@ class PostController extends BaseApiController
 
     public function editorsPick()
     {
-        $posts = Cache::remember('v1:posts:editors-pick', 120, function () {
-            return Post::withContentRelations()
+        $posts = CacheLock::remember('v1:posts:editors-pick', 120, function () {
+            return Post::withListRelations()
                 ->published()->editorsPick()
                 ->latest('published_at')
                 ->take(5)->get();
@@ -168,10 +170,10 @@ class PostController extends BaseApiController
     public function view(Request $request, $id)
     {
         $post = Post::findOrFail($id);
-        $post->incrementViews();
+        app(ViewCounter::class)->increment($post->id);
 
         Cache::forget("v1:post:{$post->slug}");
 
-        return $this->success(['views' => $post->view_count]);
+        return $this->success(['views' => $post->view_count + app(ViewCounter::class)->get($post->id)]);
     }
 }

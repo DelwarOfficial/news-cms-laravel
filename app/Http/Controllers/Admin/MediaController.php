@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\ProcessMediaUpload;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\MediaFolder;
@@ -52,7 +53,7 @@ class MediaController extends Controller
                 throw new \Exception('Failed to store file.');
             }
 
-            Media::create([
+            $media = Media::create([
                 'folder_id' => $request->folder_id,
                 'user_id' => Auth::id(),
                 'name' => $file->getClientOriginalName(),
@@ -62,6 +63,8 @@ class MediaController extends Controller
                 'file_type' => $file->getMimeType(),
                 'file_size' => $file->getSize(),
             ]);
+
+            ProcessMediaUpload::dispatch($media)->onQueue('media');
 
             return back()->with('success', 'File uploaded successfully!');
         } catch (\Exception $e) {

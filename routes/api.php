@@ -19,17 +19,19 @@ use App\Http\Controllers\Api\V1\Public\SettingController;
 use App\Http\Controllers\Api\V1\Public\TagController;
 
 // ===========================================================================
-// LEGACY PUBLIC API (backward compatible)
+// LEGACY PUBLIC API (backward compatible — rate limited)
 // ===========================================================================
-Route::get('/posts', [PostApiController::class, 'index']);
-Route::get('/posts/{slug}', [PostApiController::class, 'show']);
-Route::get('/categories', [CategoryApiController::class, 'index']);
-Route::get('/categories/{slug}/posts', [CategoryApiController::class, 'posts']);
-Route::get('/tags/{slug}/posts', [TagApiController::class, 'posts']);
-Route::get('/search', [SearchApiController::class, 'index']);
-Route::get('/trending', [PostApiController::class, 'trending']);
-Route::get('/breaking', [PostApiController::class, 'breaking']);
-Route::get('/featured', [PostApiController::class, 'featured']);
+Route::middleware('throttle:api.frontend')->group(function () {
+    Route::get('/posts', [PostApiController::class, 'index']);
+    Route::get('/posts/{slug}', [PostApiController::class, 'show']);
+    Route::get('/categories', [CategoryApiController::class, 'index']);
+    Route::get('/categories/{slug}/posts', [CategoryApiController::class, 'posts']);
+    Route::get('/tags/{slug}/posts', [TagApiController::class, 'posts']);
+    Route::get('/search', [SearchApiController::class, 'index']);
+    Route::get('/trending', [PostApiController::class, 'trending']);
+    Route::get('/breaking', [PostApiController::class, 'breaking']);
+    Route::get('/featured', [PostApiController::class, 'featured']);
+});
 
 // ===========================================================================
 // V1 API — versioned, consistent {data, meta} responses
@@ -131,16 +133,16 @@ Route::prefix('v1')->group(function () {
 });
 
 // ===========================================================================
-// AUTH (Sanctum — admin login)
+// AUTH (Sanctum — admin login, brute-force protected)
 // ===========================================================================
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthApiController::class, 'login']);
+    Route::post('/login', [AuthApiController::class, 'login'])->middleware('throttle:10,1');
 });
 
 // ===========================================================================
-// AUTHENTICATED API (Sanctum session — admin use)
+// AUTHENTICATED API (Sanctum session — admin use, rate limited)
 // ===========================================================================
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthApiController::class, 'logout']);
         Route::get('/me', [AuthApiController::class, 'me']);

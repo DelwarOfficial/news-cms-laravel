@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Post;
 use App\Support\FrontendCache;
+use App\Support\ViewCounter;
 use Illuminate\Support\Facades\Cache;
 
 class PostObserver
@@ -15,9 +16,16 @@ class PostObserver
 
     public function updated(Post $post): void
     {
-        $changedColumns = array_keys($post->getChanges());
+        $changed = $post->wasRecentlyCreated
+            ? array_keys($post->getDirty())
+            : array_keys($post->getChanges());
 
-        if (empty(array_diff($changedColumns, ['view_count', 'updated_at']))) {
+        $trackedOnly = empty(array_diff($changed, ['view_count', 'updated_at', 'reading_time']));
+
+        if ($trackedOnly) {
+            if (in_array('view_count', $changed, true)) {
+                app(ViewCounter::class)->syncToDatabase($post->id);
+            }
             return;
         }
 
@@ -41,9 +49,9 @@ class PostObserver
 
     private function clearCaches(Post $post): void
     {
+        Post::forgetCached($post);
         FrontendCache::flushContent();
 
-        Cache::forget("post_{$post->slug}");
         Cache::forget("placement_home.breaking");
         Cache::forget("placement_home.featured");
         Cache::forget("placement_home.sticky");

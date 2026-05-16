@@ -15,17 +15,20 @@ class ProcessPostPublishing implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $post;
+    public int $timeout = 60;
+    public int $tries = 3;
 
-    public function __construct(Post $post)
-    {
-        $this->post = $post;
+    public function __construct(
+        public Post $post,
+    ) {
+        $this->onQueue('publishing');
     }
 
     public function handle()
     {
-        // Clear frontend caches so published post appears immediately
         FrontendCache::flushContent();
+
+        Post::forgetCached($this->post);
         Cache::forget("post_{$this->post->slug}");
 
         if ($this->post->primaryCategory) {
@@ -33,9 +36,5 @@ class ProcessPostPublishing implements ShouldQueue
         }
 
         \Log::info("Post published: {$this->post->title}");
-
-        // TODO: Send notification to subscribers
-        // TODO: Update sitemap
-        // TODO: Push notification via WebSocket / Firebase
     }
 }

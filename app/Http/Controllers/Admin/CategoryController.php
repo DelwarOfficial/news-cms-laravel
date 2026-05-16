@@ -41,12 +41,25 @@ class CategoryController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|max:255|unique:categories',
+            'name_bn' => 'nullable|max:255',
+            'name_en' => 'nullable|max:255',
             'slug' => 'nullable|max:255|unique:categories,slug|regex:/^[a-z0-9-]+$/',
+            'slug_bn' => 'nullable|max:255|unique:categories,slug_bn|regex:/^[a-z0-9-]+$/',
+            'slug_en' => 'nullable|max:255|unique:categories,slug_en|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:1000',
+            'description_bn' => 'nullable|max:1000',
+            'description_en' => 'nullable|max:1000',
             'parent_id' => 'nullable|exists:categories,id',
             'color' => 'nullable|string|max:20',
+            'status' => 'nullable|in:active,inactive',
+            'image' => 'nullable|string|max:500',
+            'icon' => 'nullable|string|max:100',
             'meta_title' => 'nullable|max:70',
+            'meta_title_bn' => 'nullable|max:70',
+            'meta_title_en' => 'nullable|max:70',
             'meta_description' => 'nullable|max:170',
+            'meta_description_bn' => 'nullable|max:170',
+            'meta_description_en' => 'nullable|max:170',
         ]);
 
         // Prevent circular references
@@ -78,11 +91,24 @@ class CategoryController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|max:255|unique:categories,name,' . $category->id,
+            'name_bn' => 'nullable|max:255',
+            'name_en' => 'nullable|max:255',
+            'slug_bn' => 'nullable|max:255|unique:categories,slug_bn,' . $category->id . '|regex:/^[a-z0-9-]+$/',
+            'slug_en' => 'nullable|max:255|unique:categories,slug_en,' . $category->id . '|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:1000',
+            'description_bn' => 'nullable|max:1000',
+            'description_en' => 'nullable|max:1000',
             'parent_id' => 'nullable|exists:categories,id|not_in:' . $category->id,
             'color' => 'nullable|string|max:20',
-            'meta_title' => 'nullable|max:60',
-            'meta_description' => 'nullable|max:160',
+            'status' => 'nullable|in:active,inactive',
+            'image' => 'nullable|string|max:500',
+            'icon' => 'nullable|string|max:100',
+            'meta_title' => 'nullable|max:70',
+            'meta_title_bn' => 'nullable|max:70',
+            'meta_title_en' => 'nullable|max:70',
+            'meta_description' => 'nullable|max:170',
+            'meta_description_bn' => 'nullable|max:170',
+            'meta_description_en' => 'nullable|max:170',
         ]);
 
         // Prevent circular references

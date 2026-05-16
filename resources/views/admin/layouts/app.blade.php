@@ -306,6 +306,15 @@
                             'ads' => ['route' => 'admin.advertisements.index', 'icon' => 'fa-rectangle-ad', 'perm' => 'ads.manage', 'label' => 'Ads'],
                         ],
                     ],
+                    'translations' => [
+                        'label' => 'Translations',
+                        'icon' => 'fa-language',
+                        'items' => [
+                            'trans-settings' => ['route' => 'admin.translations.settings', 'icon' => 'fa-sliders', 'perm' => 'posts.create', 'label' => 'AI Settings'],
+                            'trans-bulk' => ['route' => 'admin.translations.bulk', 'icon' => 'fa-language', 'perm' => 'posts.create', 'label' => 'Bulk Translate'],
+                            'trans-usage' => ['route' => 'admin.translations.usage', 'icon' => 'fa-chart-simple', 'perm' => 'posts.create', 'label' => 'Usage'],
+                        ],
+                    ],
                     'members' => [
                         'label' => 'Members',
                         'icon' => 'fa-id-card',

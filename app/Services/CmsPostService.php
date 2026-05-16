@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessPostPublishing;
 use App\Models\Category;
 use App\Models\Media;
 use App\Models\Post;
@@ -96,6 +97,10 @@ class CmsPostService
         $post->categories()->sync([$category->id => ['is_primary' => true]]);
         $post->tags()->sync($tagIds);
 
+        if (($data['status'] ?? null) === 'published') {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+        }
+
         FrontendCache::flushContent();
 
         return $post;
@@ -150,10 +155,16 @@ class CmsPostService
             ['updated_from_cms' => now()->toIso8601String()],
         );
 
+        $oldStatus = $post->status;
         $post->update($updatable);
 
         if (isset($data['primary_category_id'])) {
             $post->categories()->sync([$data['primary_category_id'] => ['is_primary' => true]]);
+        }
+
+        $newStatus = $data['status'] ?? $oldStatus;
+        if ($newStatus === 'published' && $oldStatus !== 'published') {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
         }
 
         FrontendCache::flushContent();
@@ -219,6 +230,11 @@ class CmsPostService
     public function downloadImage(string $url, int $userId): ?Media
     {
         try {
+            $parsed = parse_url($url);
+            if (! in_array($parsed['scheme'] ?? '', ['http', 'https'], true)) {
+                return null;
+            }
+
             $response = Http::timeout(15)->get($url);
             if (! $response->successful()) {
                 return null;

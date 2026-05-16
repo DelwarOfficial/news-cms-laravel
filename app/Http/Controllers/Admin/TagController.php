@@ -42,10 +42,20 @@ class TagController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|max:100|unique:tags,name',
+            'name_bn' => 'nullable|max:100',
+            'name_en' => 'nullable|max:100',
             'slug' => 'nullable|max:100|unique:tags,slug|regex:/^[a-z0-9-]+$/',
+            'slug_bn' => 'nullable|max:100|unique:tags,slug_bn|regex:/^[a-z0-9-]+$/',
+            'slug_en' => 'nullable|max:100|unique:tags,slug_en|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:500',
+            'description_bn' => 'nullable|max:500',
+            'description_en' => 'nullable|max:500',
             'meta_title' => 'nullable|max:70',
+            'meta_title_bn' => 'nullable|max:70',
+            'meta_title_en' => 'nullable|max:70',
             'meta_description' => 'nullable|max:170',
+            'meta_description_bn' => 'nullable|max:170',
+            'meta_description_en' => 'nullable|max:170',
         ]);
 
         try {
@@ -70,8 +80,19 @@ class TagController extends Controller
         
         $validated = $request->validate([
             'name' => 'required|max:100|unique:tags,name,' . $tag->id,
+            'name_bn' => 'nullable|max:100',
+            'name_en' => 'nullable|max:100',
+            'slug_bn' => 'nullable|max:100|unique:tags,slug_bn,' . $tag->id . '|regex:/^[a-z0-9-]+$/',
+            'slug_en' => 'nullable|max:100|unique:tags,slug_en,' . $tag->id . '|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|max:500',
-            'meta_description' => 'nullable|max:160',
+            'description_bn' => 'nullable|max:500',
+            'description_en' => 'nullable|max:500',
+            'meta_title' => 'nullable|max:70',
+            'meta_title_bn' => 'nullable|max:70',
+            'meta_title_en' => 'nullable|max:70',
+            'meta_description' => 'nullable|max:170',
+            'meta_description_bn' => 'nullable|max:170',
+            'meta_description_en' => 'nullable|max:170',
         ]);
 
         try {

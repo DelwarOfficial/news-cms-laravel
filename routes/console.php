@@ -1,11 +1,24 @@
 <?php
 
+use App\Support\ViewCounter;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote')->hourly();
+
+// Sync Redis view counters to database every 5 minutes
+Schedule::call(function () {
+    app(ViewCounter::class)->syncAll();
+})->everyFiveMinutes()->name('view-counter-sync')->onOneServer();
+
+// Warm critical caches every 15 minutes
+Schedule::command('cache:warm')
+    ->everyFifteenMinutes()
+    ->name('cache-warm')
+    ->onOneServer();
 
 // Scheduled database backups
 Schedule::call(function () {

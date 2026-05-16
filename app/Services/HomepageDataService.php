@@ -6,6 +6,7 @@ use App\Models\ContentPlacement;
 use App\Models\Post;
 use App\Models\Division;
 use App\Http\Resources\Api\V1\PostResource;
+use App\Support\CacheLock;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -20,9 +21,11 @@ class HomepageDataService
 
     public function get(array $sections, ?string $locale = null): array
     {
-        return Cache::remember(self::CACHE_KEY . ':' . ($locale ?? 'bn'), self::CACHE_TTL, function () use ($sections, $locale) {
-            return $this->build($sections, $locale);
-        });
+        return CacheLock::rememberWithStale(
+            self::CACHE_KEY . ':' . ($locale ?? 'bn'),
+            self::CACHE_TTL,
+            fn () => $this->build($sections, $locale),
+        );
     }
 
     public function flush(): void
@@ -113,17 +116,21 @@ class HomepageDataService
 
     public function getTicker(int $limit = 10, ?string $locale = null): array
     {
-        return Cache::remember('api:v1:ticker:' . $limit, 120, function () use ($limit) {
-            return PostResource::collection(
-                Post::withContentRelations()
-                    ->published()
-                    ->where('is_breaking', true)
-                    ->latest('published_at')
-                    ->latest('id')
-                    ->take($limit)
-                    ->get()
-            )->toArray(request());
-        });
+        return CacheLock::remember(
+            'api:v1:ticker:' . $limit,
+            120,
+            function () use ($limit) {
+                return PostResource::collection(
+                    Post::withContentRelations()
+                        ->published()
+                        ->where('is_breaking', true)
+                        ->latest('published_at')
+                        ->latest('id')
+                        ->take($limit)
+                        ->get()
+                )->toArray(request());
+            }
+        );
     }
 
     public function getRelated(int $postId, int $limit = 4, ?string $locale = null): array
@@ -157,7 +164,7 @@ class HomepageDataService
 
     public function getCategories(): array
     {
-        return Cache::remember('api:v1:categories:tree', 300, function () {
+        return CacheLock::remember('api:v1:categories:tree', 300, function () {
             $all = \App\Models\Category::withCount('posts')
                 ->where('status', 'active')
                 ->orderBy('order')
@@ -229,7 +236,6 @@ class HomepageDataService
     {
         try {
             $posts = Post::withContentRelations()
-                ->with(['divisionLocation', 'districtLocation', 'upazilaLocation'])
                 ->published()
                 ->whereNotNull('division_id')
                 ->whereNotNull('district_id')

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
@@ -9,11 +10,14 @@ use Spatie\Sluggable\SlugOptions;
 
 class Category extends Model
 {
-    use HasFactory, HasSlug;
+    use BelongsToTenant, HasFactory, HasSlug;
 
     protected $fillable = [
-        'parent_id', 'name', 'slug', 'description', 'image', 'icon',
-        'color', 'order', 'status', 'meta_title', 'meta_description'
+        'tenant_id', 'parent_id', 'name', 'name_bn', 'name_en', 'slug', 'slug_bn', 'slug_en',
+        'description', 'description_bn', 'description_en', 'image', 'icon',
+        'color', 'order', 'status',
+        'meta_title', 'meta_title_bn', 'meta_title_en',
+        'meta_description', 'meta_description_bn', 'meta_description_en',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -22,6 +26,18 @@ class Category extends Model
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug')
             ->skipGenerateWhen(fn () => filled($this->slug));
+    }
+
+    public function nameForLocale(?string $locale = null): string
+    {
+        $locale = $locale ?? config('app.locale', 'bn');
+        return $this->{"name_{$locale}"} ?: $this->name;
+    }
+
+    public function slugForLocale(?string $locale = null): string
+    {
+        $locale = $locale ?? config('app.locale', 'bn');
+        return $this->{"slug_{$locale}"} ?: $this->slug;
     }
 
     public function parent()

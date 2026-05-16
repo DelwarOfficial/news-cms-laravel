@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Jobs\ProcessPostPublishing;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Post;
 use App\Models\Category;
@@ -134,6 +135,10 @@ class PostManageController extends BaseApiController
         $post->categories()->sync([$validated['category_id'] => ['is_primary' => true]]);
         $post->tags()->sync($validated['tag_ids'] ?? []);
 
+        if ($validated['status'] === 'published') {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+        }
+
         FrontendCache::flushContent();
 
         $post->load('author', 'categories', 'tags', 'featuredMedia', 'primaryCategory');
@@ -216,6 +221,7 @@ class PostManageController extends BaseApiController
             }
         }
 
+        $oldStatus = $post->status;
         $post->update($updateData);
 
         if (isset($validated['category_id'])) {
@@ -223,6 +229,10 @@ class PostManageController extends BaseApiController
         }
         if (isset($validated['tag_ids'])) {
             $post->tags()->sync($validated['tag_ids']);
+        }
+
+        if (isset($validated['status']) && $validated['status'] === 'published' && $oldStatus !== 'published') {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
         }
 
         FrontendCache::flushContent();

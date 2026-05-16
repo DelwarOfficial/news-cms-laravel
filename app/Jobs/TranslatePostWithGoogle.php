@@ -24,6 +24,7 @@ class TranslatePostWithGoogle implements ShouldQueue
         public string $from = 'bn',
         public string $to = 'en',
     ) {
+        $this->onQueue('translations');
     }
 
     public function handle(GoogleTranslateService $translator): void

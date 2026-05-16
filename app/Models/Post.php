@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
+use App\Support\ViewCounter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use App\Support\RichTextSanitizer;
 use Spatie\Sluggable\HasSlug;
@@ -17,25 +20,26 @@ use Tonysm\RichTextLaravel\Models\Traits\HasRichText;
 
 class Post extends Model
 {
-    use HasFactory, SoftDeletes, HasSlug, HasRichText;
+    use BelongsToTenant, HasFactory, SoftDeletes, HasSlug, HasRichText;
+
+    public const CACHE_PREFIX = 'post_model:';
+    public const CACHE_TTL = 300;
 
     protected $fillable = [
-        'user_id', 'author_id', 'language_id', 'category_id', 'subcategory_id',
-        'primary_category_id', 'division_id', 'district_id', 'upazila_id', 'shoulder',
+        'tenant_id', 'user_id', 'author_id', 'language_id', 'primary_category_id',
+        'division_id', 'district_id', 'upazila_id', 'shoulder',
         'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
-        'excerpt', 'body', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn',
-        'featured_image', 'featured_media_id', 'image_path', 'featured_image_alt',
-        'featured_image_caption', 'featured_image_credit', 'featured_image_source',
-        'featured_image_width', 'featured_image_height', 'source_url', 'source_name',
-        'category', 'category_slug', 'subcategory_slug', 'post_format', 'status', 'visibility',
+        'excerpt', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn',
+        'featured_image', 'featured_media_id', 'featured_image_alt',
+        'featured_image_caption',
+        'source_url', 'source_name', 'post_format', 'status', 'visibility',
         'published_at', 'scheduled_at', 'is_breaking', 'is_featured', 'is_sticky',
         'is_photocard',
-        'is_trending', 'is_editors_pick', 'is_breaking_news', 'breaking_news_order',
-        'featured_order', 'sticky_order', 'trending_order', 'editors_pick_order',
-        'urgency_level', 'view_count', 'reading_time', 'comment_count',
-        'allow_comments', 'show_author', 'show_publish_date', 'needs_editorial_review', 'raw_import_payload', 'meta_title',
-        'meta_title_en', 'meta_title_bn', 'meta_description', 'meta_description_en',
-        'meta_description_bn', 'canonical_url', 'og_image',
+        'is_trending', 'is_editors_pick',
+        'allow_comments', 'show_author', 'show_publish_date', 'raw_import_payload',
+        'meta_title', 'meta_title_en', 'meta_title_bn',
+        'meta_description', 'meta_description_en', 'meta_description_bn',
+        'canonical_url', 'og_image',
     ];
 
     protected $richTextAttributes = [
@@ -328,6 +332,18 @@ class Post extends Model
         ]);
     }
 
+    public function scopeWithListRelations(Builder $query): Builder
+    {
+        return $query->with([
+            'author:id,name,username',
+            'bylineAuthor:id,name,username',
+            'primaryCategory:id,name,slug,color',
+            'categories:id,name,slug',
+            'featuredMedia:id,file_name,file_path,file_url,alt_text',
+            'tags:id,name,slug',
+        ]);
+    }
+
     public function scopeLocalLocated(Builder $query): Builder
     {
         return $query
@@ -346,7 +362,44 @@ class Post extends Model
 
     public function incrementViews(int $amount = 1): bool
     {
-        return (bool) $this->increment('view_count', $amount);
+        app(ViewCounter::class)->increment($this->id, $amount);
+        return true;
+    }
+
+    public function syncViewCount(): void
+    {
+        app(ViewCounter::class)->syncToDatabase($this->id);
+    }
+
+    public static function findCached(int $id): ?self
+    {
+        return Cache::remember(self::CACHE_PREFIX . $id, self::CACHE_TTL, function () use ($id) {
+            return self::withContentRelations()->find($id);
+        });
+    }
+
+    public static function findBySlugCached(string $slug): ?self
+    {
+        return Cache::remember(self::CACHE_PREFIX . "slug:{$slug}", self::CACHE_TTL, function () use ($slug) {
+            return self::withContentRelations()->published()
+                ->where('slug', $slug)
+                ->orWhere('slug_en', $slug)
+                ->orWhere('slug_bn', $slug)
+                ->first();
+        });
+    }
+
+    public static function forgetCached(int|self $post): void
+    {
+        $id = is_object($post) ? $post->id : $post;
+        $slugs = is_object($post)
+            ? array_filter([$post->slug, $post->slug_en, $post->slug_bn])
+            : [];
+
+        Cache::forget(self::CACHE_PREFIX . $id);
+        foreach ($slugs as $slug) {
+            Cache::forget(self::CACHE_PREFIX . "slug:{$slug}");
+        }
     }
 
     private function calculateReadingTime(): int

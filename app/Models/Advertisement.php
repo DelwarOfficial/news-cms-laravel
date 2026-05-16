@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -9,10 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class Advertisement extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $fillable = [
-        'title', 'position', 'type', 'image', 'url', 'code',
+        'tenant_id', 'title', 'position', 'type', 'image', 'url', 'code',
         'start_date', 'end_date', 'is_active'
     ];
 

@@ -4,29 +4,24 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->segment(1) === 'en' ? 'en' : 'bn';
+        $locale = $request->segment(1);
 
-        // ?lang=en fallback — redirect to /en/ prefix
-        if ($request->has('lang') && in_array($request->get('lang'), ['en', 'bn'])) {
-            $targetLocale = $request->get('lang');
-            if ($targetLocale !== $locale) {
-                $path = $request->path();
-                $query = $request->except('lang');
-                $url = $targetLocale === 'en' ? url('/en/' . $path) : url('/' . $path);
-                if (! empty($query)) {
-                    $url .= '?' . http_build_query($query);
-                }
-                return redirect($url, 302);
-            }
+        if (in_array($locale, ['en', 'bn'])) {
+            App::setLocale($locale);
+            Session::put('locale', $locale);
+        } elseif (Session::has('locale')) {
+            App::setLocale(Session::get('locale'));
+        } else {
+            App::setLocale(config('app.locale', 'bn'));
         }
-
-        app()->setLocale($locale);
 
         return $next($request);
     }

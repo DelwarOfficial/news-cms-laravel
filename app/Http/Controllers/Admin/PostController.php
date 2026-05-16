@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Jobs\ProcessPostPublishing;
 use App\Models\Category;
 use App\Models\District;
 use App\Models\Division;
@@ -20,6 +21,7 @@ use App\Services\GoogleTranslateService;
 use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -116,6 +118,11 @@ class PostController extends Controller
         
         $post->categories()->sync([$validated['category_id'] => ['is_primary' => true]]);
         $post->tags()->sync($validated['tag_ids'] ?? []);
+
+        if ($validated['status'] === 'published') {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+        }
+
         FrontendCache::flushContent();
 
         return redirect()->route('admin.posts.index')->with('success', 'Post created successfully!');
@@ -154,6 +161,11 @@ class PostController extends Controller
         
         $post->categories()->sync([$validated['category_id'] => ['is_primary' => true]]);
         $post->tags()->sync($validated['tag_ids'] ?? []);
+
+        if ($validated['status'] === 'published' && $post->wasChanged('status')) {
+            ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+        }
+
         FrontendCache::flushContent();
         
         return redirect()->route('admin.posts.edit', $post)->with('success', 'Post updated successfully!');
@@ -251,8 +263,9 @@ class PostController extends Controller
             'show_publish_date' => $post->show_publish_date,
         ]);
 
-        // Clone category and tag associations
-        $categoryIds = $post->categories()->pluck('categories.id')->toArray();
+        $post->load(['categories', 'tags']);
+
+        $categoryIds = $post->categories->pluck('id')->toArray();
         if ($categoryIds) {
             $syncData = [];
             foreach ($categoryIds as $cid) {
@@ -260,7 +273,7 @@ class PostController extends Controller
             }
             $clone->categories()->sync($syncData);
         }
-        $clone->tags()->sync($post->tags()->pluck('tags.id')->toArray());
+        $clone->tags()->sync($post->tags->pluck('id')->toArray());
 
         FrontendCache::flushContent();
 

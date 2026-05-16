@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class MediaFolder extends Model
 {
-    protected $fillable = ['name', 'slug', 'parent_id'];
+    use BelongsToTenant;
+
+    protected $fillable = ['tenant_id', 'name', 'slug', 'parent_id'];
 }

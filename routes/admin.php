@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ContentPlacementController;
 use App\Http\Controllers\Admin\LocationController;
+use App\Http\Controllers\Admin\TranslationAdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
@@ -50,6 +51,15 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::resource('widgets', \App\Http\Controllers\Admin\WidgetController::class)->middleware('permission:menus.manage');
     Route::post('widgets/{widget}/toggle', [\App\Http\Controllers\Admin\WidgetController::class, 'toggle'])->middleware('permission:menus.manage')->name('widgets.toggle');
     Route::resource('advertisements', \App\Http\Controllers\Admin\AdvertisementController::class)->middleware('permission:ads.manage');
+
+    Route::prefix('translations')->name('translations.')->middleware('permission:posts.create')->group(function () {
+        Route::get('settings', [TranslationAdminController::class, 'settings'])->name('settings');
+        Route::post('settings', [TranslationAdminController::class, 'updateSettings'])->name('settings.update');
+        Route::get('bulk', [TranslationAdminController::class, 'bulkTranslateForm'])->name('bulk');
+        Route::post('bulk', [TranslationAdminController::class, 'bulkTranslate'])->name('bulk.process');
+        Route::post('translate', [TranslationAdminController::class, 'singleTranslate'])->name('translate');
+        Route::get('usage', [TranslationAdminController::class, 'usage'])->name('usage');
+    });
 
     Route::post('locale/switch', function (\Illuminate\Http\Request $request) {
         $locale = $request->input('locale');

@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class ApiKey extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
-        'user_id', 'name', 'key_prefix', 'key_hash', 'scopes',
+        'tenant_id', 'user_id', 'name', 'key_prefix', 'key_hash', 'scopes',
         'rate_limit', 'expires_at', 'last_used_at', 'is_active',
     ];
 

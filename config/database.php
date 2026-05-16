@@ -39,6 +39,8 @@ return [
         ],
     ],
 
+    'slow_query_threshold' => env('SLOW_QUERY_THRESHOLD', 200),
+
     'migrations' => [
         'table' => 'migrations',
         'update_date_on_publish' => true,

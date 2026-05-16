@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
+use App\Jobs\ProcessPostPublishing;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Category;
@@ -53,6 +54,10 @@ class AdminPostApiController extends Controller
                 $post->categories()->sync($validated['categories']);
             }
 
+            if ($validated['status'] === 'published') {
+                ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Post created successfully',
@@ -90,10 +95,28 @@ class AdminPostApiController extends Controller
         ]);
 
         try {
-            $post->update($validated);
+            $post->update([
+                'title' => $validated['title'] ?? $post->title,
+                'content' => $validated['content'] ?? $post->content,
+                'status' => $validated['status'] ?? $post->status,
+                'excerpt' => $validated['excerpt'] ?? $post->excerpt,
+                'meta_title' => $validated['meta_title'] ?? $post->meta_title,
+                'meta_description' => $validated['meta_description'] ?? $post->meta_description,
+                'is_breaking' => $validated['is_breaking'] ?? $post->is_breaking,
+                'is_featured' => $validated['is_featured'] ?? $post->is_featured,
+                'is_trending' => $validated['is_trending'] ?? $post->is_trending,
+                'is_photocard' => $validated['is_photocard'] ?? $post->is_photocard,
+            ]);
+
+            $wasPublished = ($validated['status'] ?? $post->status) === 'published'
+                && $post->status !== 'published';
 
             if (isset($validated['categories'])) {
                 $post->categories()->sync($validated['categories'] ?? []);
+            }
+
+            if ($wasPublished) {
+                ProcessPostPublishing::dispatch($post)->onQueue('publishing');
             }
 
             return response()->json([
@@ -144,7 +167,13 @@ class AdminPostApiController extends Controller
         ]);
 
         try {
+            $oldStatus = $post->status;
             $post->update(['status' => $validated['status']]);
+
+            if ($validated['status'] === 'published' && $oldStatus !== 'published') {
+                ProcessPostPublishing::dispatch($post)->onQueue('publishing');
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Post status updated',
