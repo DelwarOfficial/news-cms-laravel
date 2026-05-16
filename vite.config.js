@@ -13,10 +13,10 @@ export default defineConfig({
     ],
     server: {
         host: '0.0.0.0',
-        origin: 'http://dhaka-magazine-laravel.test:5173',
+        origin: 'http://dhaka-magazine-cms.test:5173',
         cors: true,
         hmr: {
-            host: 'dhaka-magazine-laravel.test',
+            host: 'dhaka-magazine-cms.test',
         },
         watch: {
             ignored: ['**/storage/framework/views/**'],
