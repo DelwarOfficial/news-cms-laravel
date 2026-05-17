@@ -108,8 +108,6 @@ news-cms/
 │       ├── admin/
 │       │   ├── categories/
 │       │   │   └── index.blade.php
-│       │   ├── comments/
-│       │   │   └── index.blade.php
 │       │   ├── media/
 │       │   │   └── index.blade.php
 │       │   ├── posts/
