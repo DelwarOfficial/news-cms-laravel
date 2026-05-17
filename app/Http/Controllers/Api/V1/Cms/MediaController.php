@@ -3,29 +3,31 @@
 namespace App\Http\Controllers\Api\V1\Cms;
 
 use App\Http\Controllers\Api\V1\BaseApiController;
+use App\Jobs\ProcessMediaUpload;
+use App\Models\Media;
+use App\Support\FileUploadSecurity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class MediaController extends BaseApiController
 {
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'file' => 'required|file|max:10240|mimetypes:image/jpeg,image/png,image/gif,image/webp,application/pdf',
+            'file' => ['required', ...FileUploadSecurity::mediaRules()],
             'alt_text' => 'nullable|string|max:500',
         ]);
 
         $file = $request->file('file');
-        $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $fileName = FileUploadSecurity::storageName($file);
         $path = $file->storeAs('media', $fileName, 'public');
 
         if (! $path) {
             return $this->error('Upload Failed', 'Could not store file.', 500);
         }
 
-        $media = \App\Models\Media::create([
+        $media = Media::create([
             'user_id' => $request->get('api_key_owner') ?: 1,
             'name' => $file->getClientOriginalName(),
             'file_name' => $fileName,
@@ -35,6 +37,8 @@ class MediaController extends BaseApiController
             'file_size' => $file->getSize(),
             'alt_text' => $validated['alt_text'] ?? null,
         ]);
+
+        ProcessMediaUpload::dispatch($media)->onQueue('media');
 
         return $this->created([
             'id' => $media->id,

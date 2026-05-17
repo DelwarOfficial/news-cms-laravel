@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Support\FileUploadSecurity;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMediaRequest extends FormRequest
 {
-    protected $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
-
     public function authorize(): bool
     {
         return true;
@@ -16,7 +15,7 @@ class StoreMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|max:10240|mimetypes:' . implode(',', $this->allowedMimes),
+            'file' => ['required', ...FileUploadSecurity::mediaRules()],
             'folder_id' => 'nullable|exists:media_folders,id',
             'alt_text' => 'nullable|max:255',
         ];
@@ -26,7 +25,7 @@ class StoreMediaRequest extends FormRequest
     {
         return [
             'file.mimetypes' => 'File type not allowed. Allowed types: JPG, PNG, GIF, WebP, PDF',
-            'file.max' => 'File size cannot exceed 10MB.',
+            'file.max' => 'File size cannot exceed 5MB.',
         ];
     }
 }

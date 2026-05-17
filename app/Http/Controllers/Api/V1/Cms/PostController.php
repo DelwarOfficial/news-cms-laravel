@@ -22,7 +22,7 @@ class PostController extends BaseApiController
 
         $post = $this->cmsPostService->create($request->validated(), $userId);
 
-        $post->load('author', 'categories', 'tags', 'featuredMedia', 'primaryCategory');
+        $post->load(Post::contentRelations());
 
         return $this->created(new PostResource($post));
     }
@@ -33,7 +33,7 @@ class PostController extends BaseApiController
 
         $post = $this->cmsPostService->update($post, $request->validated());
 
-        $post->load('author', 'categories', 'tags', 'featuredMedia', 'primaryCategory');
+        $post->load(Post::contentRelations());
 
         return $this->success(new PostResource($post));
     }

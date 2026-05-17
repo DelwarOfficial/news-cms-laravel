@@ -6,9 +6,10 @@ use Illuminate\Support\Facades\Cache;
 
 class CacheLock
 {
-    public static function remember(string $key, int $ttl, callable $callback, int $lockTimeout = 10): mixed
+    public static function remember(string $key, int $ttl, callable $callback, int $lockTimeout = 10, array $tags = []): mixed
     {
-        $value = Cache::get($key);
+        $cache = self::cache($tags);
+        $value = $cache->get($key);
 
         if ($value !== null) {
             return $value;
@@ -18,12 +19,12 @@ class CacheLock
 
         if ($lock->get()) {
             try {
-                $value = Cache::get($key);
+                $value = $cache->get($key);
                 if ($value !== null) {
                     return $value;
                 }
                 $value = $callback();
-                Cache::put($key, $value, $ttl);
+                $cache->put($key, $value, $ttl);
                 return $value;
             } finally {
                 $lock->release();
@@ -33,7 +34,7 @@ class CacheLock
         $retries = 0;
         while ($retries < 5) {
             usleep(100_000);
-            $value = Cache::get($key);
+            $value = $cache->get($key);
             if ($value !== null) {
                 return $value;
             }
@@ -43,27 +44,28 @@ class CacheLock
         return $callback();
     }
 
-    public static function rememberWithStale(string $key, int $ttl, callable $callback, int $staleTtlMultiplier = 10, int $lockTimeout = 10): mixed
+    public static function rememberWithStale(string $key, int $ttl, callable $callback, int $staleTtlMultiplier = 10, int $lockTimeout = 10, array $tags = []): mixed
     {
-        $value = Cache::get($key);
+        $cache = self::cache($tags);
+        $value = $cache->get($key);
 
         if ($value !== null) {
             return $value;
         }
 
         $staleKey = $key . ':stale';
-        $stale = Cache::get($staleKey);
+        $stale = $cache->get($staleKey);
         $lock = Cache::lock($key . ':lock', $lockTimeout);
 
         if ($lock->get()) {
             try {
-                $value = Cache::get($key);
+                $value = $cache->get($key);
                 if ($value !== null) {
                     return $value;
                 }
                 $value = $callback();
-                Cache::put($key, $value, $ttl);
-                Cache::put($staleKey, $value, $ttl * $staleTtlMultiplier);
+                $cache->put($key, $value, $ttl);
+                $cache->put($staleKey, $value, $ttl * $staleTtlMultiplier);
                 return $value;
             } finally {
                 $lock->release();
@@ -77,7 +79,7 @@ class CacheLock
         $retries = 0;
         while ($retries < 5) {
             usleep(100_000);
-            $value = Cache::get($key);
+            $value = $cache->get($key);
             if ($value !== null) {
                 return $value;
             }
@@ -85,8 +87,21 @@ class CacheLock
         }
 
         $value = $callback();
-        Cache::put($key, $value, $ttl);
-        Cache::put($staleKey, $value, $ttl * $staleTtlMultiplier);
+        $cache->put($key, $value, $ttl);
+        $cache->put($staleKey, $value, $ttl * $staleTtlMultiplier);
         return $value;
+    }
+
+    private static function cache(array $tags)
+    {
+        if ($tags === []) {
+            return Cache::store();
+        }
+
+        try {
+            return Cache::tags($tags);
+        } catch (\Throwable) {
+            return Cache::store();
+        }
     }
 }

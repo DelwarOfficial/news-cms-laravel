@@ -7,14 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\MediaFolder;
 use App\Support\AdminTableSort;
+use App\Support\FileUploadSecurity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class MediaController extends Controller
 {
-    protected $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    protected $allowedMimes = FileUploadSecurity::IMAGE_MIMES;
     
     public function index(Request $request)
     {
@@ -38,7 +38,7 @@ class MediaController extends Controller
         $this->authorize('create', Media::class);
 
         $request->validate([
-            'file' => 'required|file|max:10240|mimetypes:' . implode(',', $this->allowedMimes),
+            'file' => ['required', ...FileUploadSecurity::mediaRules()],
             'folder_id' => 'nullable|exists:media_folders,id',
         ], [
             'file.mimetypes' => 'File type not allowed. Allowed types: JPG, PNG, GIF, WebP, PDF, DOC, DOCX',
@@ -46,7 +46,7 @@ class MediaController extends Controller
 
         try {
             $file = $request->file('file');
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $fileName = FileUploadSecurity::storageName($file);
             $path = $file->storeAs('media', $fileName, 'public');
 
             if (!$path) {

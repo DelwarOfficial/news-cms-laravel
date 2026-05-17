@@ -13,15 +13,27 @@ class CheckApiScope
         $apiKeyId = $request->get('api_key_id');
 
         if (! $apiKeyId) {
-            return response()->json(['error' => 'Unauthorized', 'message' => 'API key context missing.'], 401);
+            return $this->error('Unauthorized', 'API key context missing.', 401);
         }
 
         $apiKey = \App\Models\ApiKey::find($apiKeyId);
 
         if (! $apiKey || ! $apiKey->hasScope($scope)) {
-            return response()->json(['error' => 'Forbidden', 'message' => "Scope '{$scope}' required."], 403);
+            return $this->error('Forbidden', "Scope '{$scope}' required.", 403);
         }
 
         return $next($request);
+    }
+
+    private function error(string $code, string $message, int $status): Response
+    {
+        return response()->json([
+            'data' => null,
+            'meta' => [],
+            'error' => [
+                'code' => $code,
+                'message' => $message,
+            ],
+        ], $status);
     }
 }

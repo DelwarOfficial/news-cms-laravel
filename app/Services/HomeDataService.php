@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Models\District;
 use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
+use App\Support\FrontendCache;
 use App\ViewModels\HomepageSection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class HomeDataService
@@ -23,9 +23,10 @@ class HomeDataService
             return $this->buildHomepageData();
         }
 
-        return Cache::remember(
+        return FrontendCache::remember(
+            [FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE],
             config('homepage.cache.key', 'homepage:v1') . ':' . app()->getLocale(),
-            now()->addSeconds((int) config('homepage.cache.ttl', 300)),
+            max(600, min(3600, (int) config('homepage.cache.ttl', 600))),
             fn () => $this->buildHomepageData(),
         );
     }

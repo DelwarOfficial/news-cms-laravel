@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Public\PostListRequest;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Post;
 use App\Support\CacheLock;
+use App\Support\FrontendCache;
 use App\Support\ViewCounter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -18,7 +19,7 @@ class PostController extends BaseApiController
         $perPage = min((int) $request->get('limit', 15), 50);
         $cacheKey = 'v1:posts:' . md5(json_encode($request->all()));
 
-        $posts = CacheLock::remember($cacheKey, 300, function () use ($request, $perPage) {
+        $posts = CacheLock::remember($cacheKey, 600, function () use ($request, $perPage) {
             $query = Post::withListRelations()->published();
 
             // Category filter
@@ -83,7 +84,7 @@ class PostController extends BaseApiController
             return $query->orderBy($sortField, $sortDir)
                 ->latest('id')
                 ->paginate($perPage);
-        });
+        }, tags: [FrontendCache::TAG_CONTENT]);
 
         return $this->paginated(PostResource::collection($posts));
     }
@@ -110,59 +111,59 @@ class PostController extends BaseApiController
 
     public function breaking()
     {
-        $posts = CacheLock::remember('v1:posts:breaking', 120, function () {
+        $posts = CacheLock::remember('v1:posts:breaking', 600, function () {
             return Post::withListRelations()
                 ->published()->breaking()
                 ->latest('published_at')
                 ->take(10)->get();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_TICKER]);
 
         return $this->success(PostResource::collection($posts));
     }
 
     public function trending()
     {
-        $posts = CacheLock::remember('v1:posts:trending', 120, function () {
+        $posts = CacheLock::remember('v1:posts:trending', 600, function () {
             return Post::withListRelations()
                 ->published()->trending()
                 ->latest('published_at')
                 ->take(10)->get();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE]);
 
         return $this->success(PostResource::collection($posts));
     }
 
     public function popular()
     {
-        $posts = CacheLock::remember('v1:posts:popular', 300, function () {
+        $posts = CacheLock::remember('v1:posts:popular', 600, function () {
             return Post::withListRelations()
                 ->published()->popular()
                 ->take(10)->get();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_POPULAR]);
 
         return $this->success(PostResource::collection($posts));
     }
 
     public function featured()
     {
-        $posts = CacheLock::remember('v1:posts:featured', 120, function () {
+        $posts = CacheLock::remember('v1:posts:featured', 600, function () {
             return Post::withListRelations()
                 ->published()->featured()
                 ->latest('published_at')
                 ->take(5)->get();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE]);
 
         return $this->success(PostResource::collection($posts));
     }
 
     public function editorsPick()
     {
-        $posts = CacheLock::remember('v1:posts:editors-pick', 120, function () {
+        $posts = CacheLock::remember('v1:posts:editors-pick', 600, function () {
             return Post::withListRelations()
                 ->published()->editorsPick()
                 ->latest('published_at')
                 ->take(5)->get();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE]);
 
         return $this->success(PostResource::collection($posts));
     }

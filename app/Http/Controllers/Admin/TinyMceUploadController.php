@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\FileUploadSecurity;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class TinyMceUploadController extends Controller
 {
@@ -17,11 +17,10 @@ class TinyMceUploadController extends Controller
         abort_unless($file, 422, 'No image was uploaded.');
 
         validator(['file' => $file], [
-            'file' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+            'file' => ['required', ...FileUploadSecurity::imageRules()],
         ])->validate();
 
-        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'jpg');
-        $filename = Str::uuid()->toString().'.'.$extension;
+        $filename = FileUploadSecurity::storageName($file);
 
         Storage::disk('public')->putFileAs('news', $file, $filename);
 

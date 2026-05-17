@@ -12,7 +12,7 @@ class CategoryManageController extends BaseApiController
 {
     public function index()
     {
-        $categories = Category::with('parent')->withCount('posts')
+        $categories = Category::with(Category::apiRelations())->withCount('posts')
             ->orderBy('order')->orderBy('name')->get();
 
         return $this->success(CategoryResource::collection($categories));
@@ -49,7 +49,7 @@ class CategoryManageController extends BaseApiController
 
     public function show($id)
     {
-        $category = Category::with('parent')->withCount('posts')->findOrFail($id);
+        $category = Category::with(Category::apiRelations())->withCount('posts')->findOrFail($id);
         return $this->success(new CategoryResource($category));
     }
 
@@ -76,7 +76,7 @@ class CategoryManageController extends BaseApiController
 
         FrontendCache::flushCategories();
 
-        return $this->success(new CategoryResource($category->load('parent')));
+        return $this->success(new CategoryResource($category->load(Category::apiRelations())));
     }
 
     public function destroy($id)

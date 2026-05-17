@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Post;
 use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
+use App\Support\FrontendCache;
 use App\Support\SchemaReadyCheck;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -19,9 +20,10 @@ class PopularNewsService
             return $this->build($limit, $exceptIds);
         }
 
-        return Cache::remember(
+        return FrontendCache::remember(
+            [FrontendCache::TAG_CONTENT, FrontendCache::TAG_POPULAR],
             $this->cacheKey($limit),
-            now()->addSeconds((int) config('homepage.cache.ttl', 300)),
+            max(600, min(3600, (int) config('homepage.cache.ttl', 600))),
             fn () => $this->build($limit),
         );
     }
@@ -29,6 +31,7 @@ class PopularNewsService
     public static function forget(int $limit = 5): void
     {
         Cache::forget((new self())->cacheKey($limit));
+        FrontendCache::flushTags([FrontendCache::TAG_CONTENT, FrontendCache::TAG_POPULAR]);
     }
 
     private function build(int $limit, array $exceptIds = []): array

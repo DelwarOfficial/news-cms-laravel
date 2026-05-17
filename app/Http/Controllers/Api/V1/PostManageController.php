@@ -141,7 +141,7 @@ class PostManageController extends BaseApiController
 
         FrontendCache::flushContent();
 
-        $post->load('author', 'categories', 'tags', 'featuredMedia', 'primaryCategory');
+        $post->load(Post::contentRelations());
         return $this->created(new PostResource($post));
     }
 
@@ -237,7 +237,7 @@ class PostManageController extends BaseApiController
 
         FrontendCache::flushContent();
 
-        return $this->success(new PostResource($post->load('author', 'categories', 'tags', 'featuredMedia', 'primaryCategory')));
+        return $this->success(new PostResource($post->load(Post::contentRelations())));
     }
 
     public function destroy($id)

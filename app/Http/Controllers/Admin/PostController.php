@@ -15,6 +15,7 @@ use App\Models\Tag;
 use App\Models\Upazila;
 use App\Models\User;
 use App\Support\AdminTableSort;
+use App\Support\FileUploadSecurity;
 use App\Support\FrontendCache;
 use App\Jobs\TranslatePostWithGoogle;
 use App\Services\GoogleTranslateService;
@@ -377,7 +378,9 @@ class PostController extends Controller
 
     private function storeImage(Request $request, string $field, string $directory): string
     {
-        return 'storage/'.$request->file($field)->store("posts/{$directory}", 'public');
+        $file = $request->file($field);
+
+        return 'storage/'.$file->storeAs("posts/{$directory}", FileUploadSecurity::storageName($file), 'public');
     }
 
     private function uniqueSlug(?string $requestedSlug, ?string $title, string $column, ?Post $post = null): ?string

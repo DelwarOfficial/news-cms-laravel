@@ -8,8 +8,8 @@ use App\Models\Language;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Support\FileUploadSecurity;
 use App\Support\FrontendCache;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -242,7 +242,16 @@ class CmsPostService
             }
 
             $body = $response->body();
-            $extension = $this->guessExtension($url, $response->header('Content-Type'));
+            $contentType = strtolower(trim(explode(';', (string) $response->header('Content-Type'))[0]));
+            if (! in_array($contentType, FileUploadSecurity::IMAGE_MIMES, true)) {
+                return null;
+            }
+
+            if (strlen($body) > FileUploadSecurity::MAX_UPLOAD_KB * 1024) {
+                return null;
+            }
+
+            $extension = $this->guessExtension($url, $contentType);
             $fileName = Str::uuid() . '.' . $extension;
             $path = 'media/' . $fileName;
 
@@ -254,7 +263,7 @@ class CmsPostService
                 'file_name' => $fileName,
                 'file_path' => $path,
                 'file_url' => Storage::url($path),
-                'file_type' => $response->header('Content-Type') ?: 'image/jpeg',
+                'file_type' => $contentType,
                 'file_size' => strlen($body),
             ]);
         } catch (\Throwable $e) {
@@ -266,15 +275,13 @@ class CmsPostService
     private function guessExtension(string $url, ?string $contentType): string
     {
         $ext = pathinfo(parse_url($url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION);
-        if (in_array($ext, ['jpg','jpeg','png','gif','webp','svg','pdf'], true)) {
+        if (in_array($ext, ['jpg','jpeg','png','gif','webp'], true)) {
             return $ext;
         }
         return match ($contentType) {
             'image/png' => 'png',
             'image/gif' => 'gif',
             'image/webp' => 'webp',
-            'image/svg+xml' => 'svg',
-            'application/pdf' => 'pdf',
             default => 'jpg',
         };
     }

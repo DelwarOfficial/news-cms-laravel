@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Advertisement;
+use App\Support\FileUploadSecurity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +46,7 @@ class AdvertisementController extends Controller
             'title' => 'required|max:255',
             'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
-            'image' => 'required_if:type,image|nullable|image|max:5120',
+            'image' => ['required_if:type,image', 'nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'required_if:type,code|nullable|max:5000',
             'url' => 'nullable|url',
             'start_date' => 'nullable|date',
@@ -64,7 +65,7 @@ class AdvertisementController extends Controller
             $advertisement->is_active = $request->boolean('is_active', true);
 
             if ($validated['type'] === 'image' && $request->hasFile('image')) {
-                $path = $request->file('image')->store('advertisements', 'public');
+                $path = $request->file('image')->storeAs('advertisements', FileUploadSecurity::storageName($request->file('image')), 'public');
                 $advertisement->image = $path;
             } elseif ($validated['type'] === 'code') {
                 $advertisement->code = $validated['code'] ?? null;
@@ -97,7 +98,7 @@ class AdvertisementController extends Controller
             'title' => 'required|max:255',
             'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
-            'image' => 'nullable|image|max:5120',
+            'image' => ['nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'nullable|max:5000',
             'url' => 'nullable|url',
             'start_date' => 'nullable|date',
@@ -120,7 +121,7 @@ class AdvertisementController extends Controller
                     if ($advertisement->image) {
                         Storage::disk('public')->delete($advertisement->image);
                     }
-                    $path = $request->file('image')->store('advertisements', 'public');
+                    $path = $request->file('image')->storeAs('advertisements', FileUploadSecurity::storageName($request->file('image')), 'public');
                     $advertisement->image = $path;
                 }
                 $advertisement->code = null;

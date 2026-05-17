@@ -7,11 +7,11 @@ use App\Support\ViewCounter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +23,7 @@ use App\Observers\PostObserver;
 use App\Policies\{PostPolicy, UserPolicy, CategoryPolicy, CommentPolicy, MediaPolicy, WidgetPolicy, AdvertisementPolicy, TagPolicy, SettingPolicy};
 use App\Services\TickerHeadlineService;
 use App\Support\CategoryRepository;
+use App\Support\FrontendCache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Model::preventSilentlyDiscardingAttributes($this->app->isLocal());
+
         // Enable Bootstrap pagination
         Paginator::useBootstrapFive();
 
@@ -69,9 +72,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.app', function ($view) {
             $view->with('tickerHeadlines', app(TickerHeadlineService::class)->get());
 
-            $view->with('siteCategories', Cache::remember(
+            $view->with('siteCategories', FrontendCache::remember(
+                [FrontendCache::TAG_CONTENT, FrontendCache::TAG_CATEGORY_FEEDS],
                 'layout:site-categories:v2',
-                now()->addSeconds((int) config('homepage.cache.ttl', 300)),
+                max(600, min(3600, (int) config('homepage.cache.ttl', 600))),
                 fn () => CategoryRepository::parents(),
             ));
         });

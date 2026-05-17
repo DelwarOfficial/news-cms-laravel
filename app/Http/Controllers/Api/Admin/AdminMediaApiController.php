@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessMediaUpload;
 use App\Models\Media;
-use App\Models\MediaFolder;
+use App\Support\FileUploadSecurity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class AdminMediaApiController extends Controller
 {
-    protected $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+    protected $allowedMimes = FileUploadSecurity::IMAGE_MIMES;
 
     public function index(Request $request)
     {
@@ -45,14 +45,14 @@ class AdminMediaApiController extends Controller
         }
 
         $validated = $request->validate([
-            'file' => 'required|file|max:10240|mimetypes:' . implode(',', $this->allowedMimes),
+            'file' => ['required', ...FileUploadSecurity::mediaRules()],
             'folder_id' => 'nullable|exists:media_folders,id',
             'alt_text' => 'nullable|max:255',
         ]);
 
         try {
             $file = $request->file('file');
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $fileName = FileUploadSecurity::storageName($file);
             $path = $file->storeAs('media', $fileName, 'public');
 
             if (!$path) {
@@ -71,8 +71,7 @@ class AdminMediaApiController extends Controller
                 'alt_text' => $validated['alt_text'] ?? null,
             ]);
 
-            // Dispatch background job for optimization if needed
-            // \App\Jobs\ProcessMediaUpload::dispatch($media->id);
+            ProcessMediaUpload::dispatch($media)->onQueue('media');
 
             return response()->json([
                 'status' => 'success',

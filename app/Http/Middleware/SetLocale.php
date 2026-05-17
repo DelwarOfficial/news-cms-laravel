@@ -2,27 +2,44 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Locale;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $locale = $request->segment(1);
+        $locale = $this->resolveLocale($request);
 
-        if (in_array($locale, ['en', 'bn'])) {
-            App::setLocale($locale);
-            Session::put('locale', $locale);
-        } elseif (Session::has('locale')) {
-            App::setLocale(Session::get('locale'));
-        } else {
-            App::setLocale(config('app.locale', 'bn'));
+        App::setLocale($locale);
+
+        if ($request->hasSession()) {
+            $request->session()->put('locale', $locale);
         }
 
         return $next($request);
+    }
+
+    private function resolveLocale(Request $request): string
+    {
+        $segmentLocale = $request->segment(1);
+        if (Locale::isSupported($segmentLocale) && $segmentLocale !== Locale::default()) {
+            return Locale::normalize($segmentLocale);
+        }
+
+        $queryLocale = $request->query('locale');
+        if (Locale::isSupported($queryLocale)) {
+            return Locale::normalize($queryLocale);
+        }
+
+        $headerLocale = $request->header('X-Locale');
+        if (Locale::isSupported($headerLocale)) {
+            return Locale::normalize($headerLocale);
+        }
+
+        return Locale::default();
     }
 }

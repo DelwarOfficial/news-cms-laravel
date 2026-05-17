@@ -17,7 +17,7 @@ class ApiKeyMiddleware
             ?: $request->query('api_key');
 
         if (! $key || ! Str::startsWith($key, 'nh_')) {
-            return response()->json(['error' => 'Unauthorized', 'message' => 'Valid API key required.'], 401);
+            return $this->error('Unauthorized', 'Valid API key required.', 401);
         }
 
         $prefix = ApiKey::prefixFromKey($key);
@@ -29,11 +29,11 @@ class ApiKeyMiddleware
             ->first();
 
         if (! $apiKey) {
-            return response()->json(['error' => 'Unauthorized', 'message' => 'Invalid or inactive API key.'], 401);
+            return $this->error('Unauthorized', 'Invalid or inactive API key.', 401);
         }
 
         if ($scope && ! $apiKey->hasScope($scope)) {
-            return response()->json(['error' => 'Forbidden', 'message' => "Scope '{$scope}' required."], 403);
+            return $this->error('Forbidden', "Scope '{$scope}' required.", 403);
         }
 
         $apiKey->update(['last_used_at' => now()]);
@@ -41,5 +41,17 @@ class ApiKeyMiddleware
         $request->merge(['api_key_id' => $apiKey->id, 'api_key_owner' => $apiKey->user_id]);
 
         return $next($request);
+    }
+
+    private function error(string $code, string $message, int $status): Response
+    {
+        return response()->json([
+            'data' => null,
+            'meta' => [],
+            'error' => [
+                'code' => $code,
+                'message' => $message,
+            ],
+        ], $status);
     }
 }

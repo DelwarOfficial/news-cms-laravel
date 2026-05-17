@@ -16,7 +16,7 @@ class SearchApiController extends Controller
             return response()->json(['status' => 'success', 'data' => []]);
         }
 
-        $posts = Post::with(['author:id,name', 'categories:id,name,slug'])
+        $posts = Post::withContentRelations()
             ->published()
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")

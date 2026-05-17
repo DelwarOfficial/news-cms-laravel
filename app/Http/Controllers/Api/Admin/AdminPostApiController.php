@@ -61,7 +61,7 @@ class AdminPostApiController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Post created successfully',
-                'data' => $post->load('categories')
+                'data' => $post->load(Post::contentRelations())
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -122,7 +122,7 @@ class AdminPostApiController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Post updated successfully',
-                'data' => $post->load('categories')
+                'data' => $post->load(Post::contentRelations())
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -177,7 +177,7 @@ class AdminPostApiController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Post status updated',
-                'data' => $post
+                'data' => $post->load(Post::contentRelations())
             ]);
         } catch (\Exception $e) {
             return response()->json([

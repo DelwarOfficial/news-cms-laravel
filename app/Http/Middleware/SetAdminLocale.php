@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Locale;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -13,12 +14,12 @@ class SetAdminLocale
     {
         if ($request->has('admin_locale')) {
             $locale = $request->get('admin_locale');
-            if (in_array($locale, ['en', 'bn'])) {
-                session(['admin_locale' => $locale]);
+            if (Locale::isSupported($locale)) {
+                session(['admin_locale' => Locale::normalize($locale)]);
             }
         }
 
-        $locale = session('admin_locale', config('app.locale', 'bn'));
+        $locale = Locale::normalize(session('admin_locale', Locale::default()));
         App::setLocale($locale);
 
         return $next($request);

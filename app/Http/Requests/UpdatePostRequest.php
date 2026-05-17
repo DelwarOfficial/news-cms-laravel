@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Support\FileUploadSecurity;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -45,8 +46,8 @@ class UpdatePostRequest extends FormRequest
             "meta_description_{$otherLocale}" => ['nullable', 'string', 'max:170'],
             'canonical_url' => ['nullable', 'url', 'max:500'],
             'featured_media_id' => ['nullable', 'exists:media,id'],
-            'featured_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
-            'og_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:5120'],
+            'featured_image' => ['nullable', ...FileUploadSecurity::imageRules()],
+            'og_image' => ['nullable', ...FileUploadSecurity::imageRules()],
             'featured_image_alt' => ['nullable', 'string', 'max:255'],
             'featured_image_caption' => ['nullable', 'string', 'max:500'],
             'division_id' => ['nullable', 'exists:divisions,id'],

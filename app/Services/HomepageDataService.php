@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Division;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Support\CacheLock;
+use App\Support\FrontendCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -14,7 +15,7 @@ use Illuminate\Support\Str;
 
 class HomepageDataService
 {
-    private const CACHE_TTL = 300;
+    private const CACHE_TTL = 600;
     private const CACHE_KEY = 'api:v1:homepage';
 
     private static array $postResourceCache = [];
@@ -25,6 +26,7 @@ class HomepageDataService
             self::CACHE_KEY . ':' . ($locale ?? 'bn'),
             self::CACHE_TTL,
             fn () => $this->build($sections, $locale),
+            tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE],
         );
     }
 
@@ -32,6 +34,7 @@ class HomepageDataService
     {
         Cache::forget(self::CACHE_KEY . ':bn');
         Cache::forget(self::CACHE_KEY . ':en');
+        FrontendCache::flushTags([FrontendCache::TAG_CONTENT, FrontendCache::TAG_HOMEPAGE]);
     }
 
     private function build(array $sections, ?string $locale): array
@@ -118,7 +121,7 @@ class HomepageDataService
     {
         return CacheLock::remember(
             'api:v1:ticker:' . $limit,
-            120,
+            600,
             function () use ($limit) {
                 return PostResource::collection(
                     Post::withContentRelations()
@@ -129,7 +132,8 @@ class HomepageDataService
                         ->take($limit)
                         ->get()
                 )->toArray(request());
-            }
+            },
+            tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_TICKER],
         );
     }
 
@@ -164,7 +168,7 @@ class HomepageDataService
 
     public function getCategories(): array
     {
-        return CacheLock::remember('api:v1:categories:tree', 300, function () {
+        return CacheLock::remember('api:v1:categories:tree', 3600, function () {
             $all = \App\Models\Category::withCount('posts')
                 ->where('status', 'active')
                 ->orderBy('order')
@@ -186,7 +190,7 @@ class HomepageDataService
                     ])->values()->all(),
                 ];
             })->values()->all();
-        });
+        }, tags: [FrontendCache::TAG_CONTENT, FrontendCache::TAG_CATEGORY_FEEDS]);
     }
 
     private function placementPosts(string $key, int $limit, array $exceptIds = []): array

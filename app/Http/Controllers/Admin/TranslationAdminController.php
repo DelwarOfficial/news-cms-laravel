@@ -10,8 +10,8 @@ use App\Models\TranslationUsage;
 use App\Services\AiTranslatorService;
 use App\Services\GoogleTranslateService;
 use App\Support\FrontendCache;
+use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TranslationAdminController extends Controller
 {
@@ -115,36 +115,14 @@ class TranslationAdminController extends Controller
         $posts = Post::whereIn('id', $data['post_ids'])->get();
 
         foreach ($posts as $post) {
-            if ($data['method'] === 'ai') {
-                try {
-                    $translated = $this->ai->translatePost($post, $data['from'], $data['to']);
-                    if (! empty($translated)) {
-                        $post->update($translated);
-                        $count++;
-                    }
-                } catch (\Throwable $e) {
-                    Log::warning('Bulk AI translation failed for post', [
-                        'post_id' => $post->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            } elseif ($data['method'] === 'google') {
-                try {
-                    $translated = $this->google->translatePost($post, $data['from'], $data['to']);
-                    if (! empty($translated)) {
-                        $post->update($translated);
-                        $count++;
-                    }
-                } catch (\Throwable $e) {
-                    Log::warning('Bulk Google translation failed for post', [
-                        'post_id' => $post->id,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            } else {
-                TranslatePostJob::dispatch($post, $data['from'], $data['to'], true);
-                $count++;
-            }
+            TranslatePostJob::dispatch(
+                $post,
+                $data['from'],
+                $data['to'],
+                $data['method'] === 'ai_then_google',
+                $data['method'],
+            );
+            $count++;
         }
 
         FrontendCache::flushContent();
@@ -181,10 +159,10 @@ class TranslationAdminController extends Controller
                 return response()->json(['error' => 'Translation failed or returned empty'], 422);
             }
 
-            $post->update($translated);
+            $post->update($this->sanitizeTranslatedFields($translated));
             FrontendCache::flushContent();
 
-            return response()->json(['success' => true] + $translated);
+            return response()->json(['success' => true] + $this->sanitizeTranslatedFields($translated));
         }
 
         // Live translate (no post_id - used in create form)
@@ -228,6 +206,17 @@ class TranslationAdminController extends Controller
     private function saveSetting(string $key, string $value): void
     {
         Setting::updateOrCreate(['key' => $key], ['value' => $value, 'group' => 'translation']);
+    }
+
+    private function sanitizeTranslatedFields(array $translated): array
+    {
+        foreach (['body_en', 'body_bn', 'summary_en', 'summary_bn'] as $field) {
+            if (isset($translated[$field]) && is_string($translated[$field])) {
+                $translated[$field] = app(RichTextSanitizer::class)->sanitize($translated[$field]);
+            }
+        }
+
+        return $translated;
     }
 
     private function saveSettingEncrypted(string $key, string $value): void

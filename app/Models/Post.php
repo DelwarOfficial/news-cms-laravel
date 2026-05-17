@@ -12,7 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use App\Support\Locale;
 use App\Support\RichTextSanitizer;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
@@ -24,6 +26,8 @@ class Post extends Model
 
     public const CACHE_PREFIX = 'post_model:';
     public const CACHE_TTL = 300;
+
+    private static ?bool $translationTableReady = null;
 
     protected $fillable = [
         'tenant_id', 'user_id', 'author_id', 'language_id', 'primary_category_id',
@@ -96,19 +100,28 @@ class Post extends Model
     {
         $locale = $this->normalizeLocale($locale);
 
-        return $this->{"title_{$locale}"} ?: $this->title;
+        return $this->translationValue($locale, 'title')
+            ?: $this->{"title_{$locale}"}
+            ?: $this->title;
     }
 
     public function slugForLocale(?string $locale = null): string
     {
         $locale = $this->normalizeLocale($locale);
 
-        return $this->{"slug_{$locale}"} ?: $this->slug;
+        return $this->translationValue($locale, 'slug')
+            ?: $this->{"slug_{$locale}"}
+            ?: $this->slug;
     }
 
     public function summaryForLocale(?string $locale = null): string
     {
         $locale = $this->normalizeLocale($locale);
+        $translatedSummary = $this->translationValue($locale, 'summary');
+        if (filled($translatedSummary)) {
+            return (string) $translatedSummary;
+        }
+
         $field = "summary_{$locale}";
         $richText = $this->{$field};
         $summary = $richText ? trim($richText->toPlainText()) : '';
@@ -119,6 +132,11 @@ class Post extends Model
     public function bodyHtmlForLocale(?string $locale = null): string
     {
         $locale = $this->normalizeLocale($locale);
+        $translatedBody = $this->translationValue($locale, 'body');
+        if (filled($translatedBody)) {
+            return app(RichTextSanitizer::class)->sanitize((string) $translatedBody);
+        }
+
         $field = "body_{$locale}";
         $richText = $this->{$field};
         $html = $richText ? trim($richText->toHtml()) : '';
@@ -136,14 +154,18 @@ class Post extends Model
     {
         $locale = $this->normalizeLocale($locale);
 
-        return $this->{"meta_title_{$locale}"} ?: $this->meta_title ?: $this->titleForLocale($locale);
+        return $this->translationValue($locale, 'meta_title')
+            ?: $this->{"meta_title_{$locale}"}
+            ?: $this->meta_title
+            ?: $this->titleForLocale($locale);
     }
 
     public function metaDescriptionForLocale(?string $locale = null): string
     {
         $locale = $this->normalizeLocale($locale);
 
-        return $this->{"meta_description_{$locale}"}
+        return $this->translationValue($locale, 'meta_description')
+            ?: $this->{"meta_description_{$locale}"}
             ?: $this->meta_description
             ?: Str::limit($this->summaryForLocale($locale), 160, '');
     }
@@ -217,6 +239,31 @@ class Post extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(PostTranslation::class);
+    }
+
+    public function translationFor(?string $locale = null): ?PostTranslation
+    {
+        if (! self::translationTableReady()) {
+            return null;
+        }
+
+        $locale = $this->normalizeLocale($locale);
+
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale);
+        }
+
+        return $this->translations()->where('locale', $locale)->first();
+    }
+
+    public function setTranslationValue(string $locale, string $field, mixed $value): PostTranslation
+    {
+        $locale = $this->normalizeLocale($locale);
+
+        return $this->translations()->updateOrCreate(
+            ['locale' => $locale],
+            [$field => $value],
+        );
     }
 
     public function revisions(): HasMany
@@ -316,7 +363,17 @@ class Post extends Model
 
     public function scopeWithContentRelations(Builder $query): Builder
     {
-        return $query->with([
+        return $query->with(self::contentRelations());
+    }
+
+    public function scopeWithListRelations(Builder $query): Builder
+    {
+        return $query->with(self::listRelations());
+    }
+
+    public static function contentRelations(): array
+    {
+        $relations = [
             'author:id,name,username,avatar',
             'bylineAuthor:id,name,username',
             'language:id,name,code',
@@ -325,23 +382,39 @@ class Post extends Model
             'subcategory:id,name,slug',
             'categories:id,name,slug',
             'featuredMedia:id,file_name,file_path,file_url,alt_text,width,height',
+            'division:id,name,name_en,slug',
             'divisionLocation:id,name,name_en,slug',
+            'district:id,name,name_en,slug,division_id',
             'districtLocation:id,name,name_en,slug,division_id',
+            'upazila:id,name,name_en,slug,district_id',
             'upazilaLocation:id,name,name_en,slug,district_id',
             'tags:id,name,slug',
-        ]);
+        ];
+
+        if (class_exists(PostTranslation::class) && self::translationTableReady()) {
+            $relations[] = 'translations';
+        }
+
+        return $relations;
     }
 
-    public function scopeWithListRelations(Builder $query): Builder
+    public static function listRelations(): array
     {
-        return $query->with([
+        $relations = [
             'author:id,name,username',
             'bylineAuthor:id,name,username',
             'primaryCategory:id,name,slug,color',
+            'category:id,name,slug',
             'categories:id,name,slug',
             'featuredMedia:id,file_name,file_path,file_url,alt_text',
             'tags:id,name,slug',
-        ]);
+        ];
+
+        if (class_exists(PostTranslation::class) && self::translationTableReady()) {
+            $relations[] = 'translations';
+        }
+
+        return $relations;
     }
 
     public function scopeLocalLocated(Builder $query): Builder
@@ -433,6 +506,16 @@ class Post extends Model
 
     private function normalizeLocale(?string $locale = null): string
     {
-        return in_array($locale, ['en', 'bn'], true) ? $locale : 'en';
+        return Locale::normalize($locale ?: app()->getLocale());
+    }
+
+    private function translationValue(string $locale, string $field): mixed
+    {
+        return $this->translationFor($locale)?->{$field};
+    }
+
+    private static function translationTableReady(): bool
+    {
+        return self::$translationTableReady ??= Schema::hasTable('post_translations');
     }
 }

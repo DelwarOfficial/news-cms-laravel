@@ -10,8 +10,8 @@ use App\Services\PopularNewsService;
 use App\Services\TickerHeadlineService;
 use App\Services\HomeDataService as BackendHomeDataService;
 use App\Support\CategoryRepository;
+use App\Support\FrontendCache;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
 
 class CacheWarm extends Command
 {
@@ -36,9 +36,10 @@ class CacheWarm extends Command
                 $this->components->info('[DRY-RUN] Would warm layout:site-categories:v2');
                 return;
             }
-            Cache::remember(
+            FrontendCache::remember(
+                [FrontendCache::TAG_CONTENT, FrontendCache::TAG_CATEGORY_FEEDS],
                 'layout:site-categories:v2',
-                now()->addSeconds((int) config('homepage.cache.ttl', 300)),
+                max(600, min(3600, (int) config('homepage.cache.ttl', 600))),
                 fn () => CategoryRepository::parents(),
             );
         });

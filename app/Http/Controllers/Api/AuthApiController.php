@@ -18,7 +18,8 @@ class AuthApiController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $user->createToken('api-token')->plainTextToken;
+            $expiresAt = now()->addMinutes((int) config('sanctum.expiration', 1440));
+            $token = $user->createToken('api-token', ['*'], $expiresAt)->plainTextToken;
 
             return response()->json([
                 'status' => 'success',

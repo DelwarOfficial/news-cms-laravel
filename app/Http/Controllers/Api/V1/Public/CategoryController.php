@@ -8,14 +8,15 @@ use App\Http\Resources\Api\V1\CategoryResource;
 use App\Http\Resources\Api\V1\PostResource;
 use App\Models\Category;
 use App\Models\Post;
-use Illuminate\Support\Facades\Cache;
+use App\Support\FrontendCache;
 
 class CategoryController extends BaseApiController
 {
     public function index()
     {
-        $categories = Cache::remember('v1:categories', 300, function () {
-            $all = Category::withCount('posts')
+        $categories = FrontendCache::remember([FrontendCache::TAG_CONTENT, FrontendCache::TAG_CATEGORY_FEEDS], 'v1:categories', 3600, function () {
+            $all = Category::with(Category::apiRelations())
+                ->withCount('posts')
                 ->where('status', 'active')
                 ->orderBy('order')
                 ->orderBy('name')
@@ -38,11 +39,11 @@ class CategoryController extends BaseApiController
 
     public function posts(CategoryPostsRequest $request, $slug)
     {
-        $category = Category::where('slug', $slug)->firstOrFail();
+        $category = Category::with(Category::apiRelations())->where('slug', $slug)->firstOrFail();
         $perPage = min((int) $request->get('limit', 15), 50);
         $cacheKey = "v1:categories:{$slug}:posts:" . md5(json_encode($request->all()));
 
-        $posts = Cache::remember($cacheKey, 300, function () use ($category, $request, $perPage) {
+        $posts = FrontendCache::remember([FrontendCache::TAG_CONTENT, FrontendCache::TAG_CATEGORY_FEEDS], $cacheKey, 1800, function () use ($category, $request, $perPage) {
             $query = Post::withContentRelations()
                 ->published()
                 ->where(function ($q) use ($category) {

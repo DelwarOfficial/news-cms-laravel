@@ -3,7 +3,7 @@
 return [
     'cache' => [
         'enabled' => env('HOMEPAGE_CACHE_ENABLED', true),
-        'ttl' => (int) env('HOMEPAGE_CACHE_TTL', 300),
+        'ttl' => (int) env('HOMEPAGE_CACHE_TTL', 600),
         'key' => 'homepage:v1',
     ],
 

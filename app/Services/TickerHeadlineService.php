@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Support\ArticleFeed;
 use App\Support\FallbackDataService;
+use App\Support\FrontendCache;
 use Illuminate\Support\Facades\Cache;
 
 class TickerHeadlineService
@@ -12,9 +13,10 @@ class TickerHeadlineService
     {
         $limit = max(1, $limit);
 
-        return Cache::remember(
+        return FrontendCache::remember(
+            [FrontendCache::TAG_CONTENT, FrontendCache::TAG_TICKER],
             $this->cacheKey($limit),
-            now()->addSeconds((int) config('homepage.cache.ttl', 300)),
+            max(600, min(3600, (int) config('homepage.cache.ttl', 600))),
             fn () => ArticleFeed::breakingNews(FallbackDataService::getArticles(), $limit),
         );
     }
@@ -22,6 +24,7 @@ class TickerHeadlineService
     public static function forget(int $limit = 10): void
     {
         Cache::forget((new self())->cacheKey($limit));
+        FrontendCache::flushTags([FrontendCache::TAG_CONTENT, FrontendCache::TAG_TICKER]);
     }
 
     private function cacheKey(int $limit): string

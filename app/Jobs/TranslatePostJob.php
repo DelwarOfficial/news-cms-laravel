@@ -7,6 +7,7 @@ use App\Models\TranslationUsage;
 use App\Services\AiTranslatorService;
 use App\Services\GoogleTranslateService;
 use App\Support\FrontendCache;
+use App\Support\RichTextSanitizer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -27,6 +28,7 @@ class TranslatePostJob implements ShouldQueue
         public string $from = 'bn',
         public string $to = 'en',
         public bool $useGoogleFallback = true,
+        public string $method = 'ai_then_google',
     ) {
         $this->onQueue('translations');
     }
@@ -35,29 +37,29 @@ class TranslatePostJob implements ShouldQueue
     {
         $translated = [];
 
-        // Try AI provider first
-        try {
-            $translated = $ai->translatePost($this->post, $this->from, $this->to);
+        if ($this->method !== 'google') {
+            try {
+                $translated = $ai->translatePost($this->post, $this->from, $this->to);
 
-            if (empty($translated)) {
-                Log::info('AI translation returned empty, will use fallback', [
+                if (empty($translated)) {
+                    Log::info('AI translation returned empty, will use fallback', [
+                        'post_id' => $this->post->id,
+                    ]);
+                } else {
+                    Log::info('AI translation completed', [
+                        'post_id' => $this->post->id,
+                        'provider' => config('translators.default', config('ai.provider')),
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('AI translation failed, attempting fallback', [
                     'post_id' => $this->post->id,
-                ]);
-            } else {
-                Log::info('AI translation completed', [
-                    'post_id' => $this->post->id,
-                    'provider' => config('ai.provider'),
+                    'error' => $e->getMessage(),
                 ]);
             }
-        } catch (\Throwable $e) {
-            Log::warning('AI translation failed, attempting fallback', [
-                'post_id' => $this->post->id,
-                'error' => $e->getMessage(),
-            ]);
         }
 
-        // Fallback to Google Translate if AI failed and fallback is enabled
-        if (empty($translated) && $this->useGoogleFallback) {
+        if (empty($translated) && ($this->method === 'google' || $this->useGoogleFallback)) {
             try {
                 $translated = $google->translatePost($this->post, $this->from, $this->to);
 
@@ -90,7 +92,7 @@ class TranslatePostJob implements ShouldQueue
         $updateData = [];
         foreach ($translated as $field => $value) {
             if ($value !== null && $value !== '') {
-                $updateData[$field] = $value;
+                $updateData[$field] = $this->cleanTranslatedValue($field, $value);
             }
         }
 
@@ -138,5 +140,14 @@ class TranslatePostJob implements ShouldQueue
         } catch (\Throwable $e) {
             Log::warning('Failed to log translation usage', ['error' => $e->getMessage()]);
         }
+    }
+
+    private function cleanTranslatedValue(string $field, mixed $value): mixed
+    {
+        if (! is_string($value) || ! in_array($field, ['body_en', 'body_bn', 'summary_en', 'summary_bn'], true)) {
+            return $value;
+        }
+
+        return app(RichTextSanitizer::class)->sanitize($value);
     }
 }

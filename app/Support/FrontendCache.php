@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Cache;
 
 class FrontendCache
 {
+    public const TAG_CONTENT = 'content';
+    public const TAG_HOMEPAGE = 'homepage';
+    public const TAG_POPULAR = 'popular-news';
+    public const TAG_TICKER = 'ticker-headlines';
+    public const TAG_CATEGORY_FEEDS = 'category-feeds';
+
     public const HOMEPAGE_KEYS = [
         'homepage:v1',
     ];
@@ -55,6 +61,8 @@ class FrontendCache
 
     public static function flushContent(): void
     {
+        self::flushTags([self::TAG_CONTENT]);
+
         self::forget([
             config('homepage.cache.key', 'homepage:v1'),
             ...self::HOMEPAGE_KEYS,
@@ -65,6 +73,8 @@ class FrontendCache
 
     public static function flushCategories(): void
     {
+        self::flushTags([self::TAG_CONTENT, self::TAG_CATEGORY_FEEDS]);
+
         self::forget([
             ...self::CATEGORY_KEYS,
         ]);
@@ -96,6 +106,24 @@ class FrontendCache
     {
         foreach (array_values(array_unique(array_filter($keys))) as $key) {
             Cache::forget($key);
+        }
+    }
+
+    public static function flushTags(array $tags): void
+    {
+        try {
+            Cache::tags($tags)->flush();
+        } catch (\Throwable) {
+            // Tagged cache requires Redis or Memcached. Key fallback remains below.
+        }
+    }
+
+    public static function remember(array $tags, string $key, int $ttl, callable $callback): mixed
+    {
+        try {
+            return Cache::tags($tags)->remember($key, $ttl, $callback);
+        } catch (\Throwable) {
+            return Cache::remember($key, $ttl, $callback);
         }
     }
 }

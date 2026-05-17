@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class TagApiController extends Controller
         $tag = Tag::where('slug', $slug)->firstOrFail();
         
         $posts = $tag->posts()
-            ->with(['author:id,name', 'categories:id,name,slug'])
+            ->with(Post::contentRelations())
             ->published()
             ->latest()
             ->paginate($request->get('per_page', 15));

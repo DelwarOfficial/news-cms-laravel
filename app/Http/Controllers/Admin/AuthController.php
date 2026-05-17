@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -17,15 +18,15 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        // Rate limiting to prevent brute force attacks
-        $throttleKey = 'login_attempts:' . $request->ip();
-        
-        if (RateLimiter::tooManyAttempts($throttleKey, 5, 15)) {
+        $email = strtolower((string) $request->input('email'));
+        $throttleKey = 'admin-login:' . sha1($email . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             Log::warning('Login rate limit exceeded', [
                 'ip' => $request->ip(),
-                'time' => now()
+                'time' => now(),
             ]);
-            
+
             return back()->withErrors([
                 'email' => 'Too many login attempts. Please try again in ' . RateLimiter::availableIn($throttleKey) . ' seconds.',
             ])->onlyInput('email');
@@ -41,33 +42,32 @@ class AuthController extends Controller
 
             // Clear rate limiter on successful login
             RateLimiter::clear($throttleKey);
-            
+
             Log::info('User logged in successfully', [
                 'user_id' => Auth::id(),
-                'ip' => $request->ip()
+                'ip' => $request->ip(),
             ]);
 
             return redirect()->route('admin.dashboard');
         }
 
-        // Increment failed attempt counter
-        RateLimiter::hit($throttleKey, 60);
+        RateLimiter::hit($throttleKey, 900);
 
         Log::warning('Failed login attempt', [
             'email' => $credentials['email'],
-            'ip' => $request->ip()
+            'ip' => $request->ip(),
         ]);
 
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+        throw ValidationException::withMessages([
+            'email' => __('auth.failed'),
+        ]);
     }
 
     public function logout(Request $request)
     {
         Log::info('User logged out', [
             'user_id' => Auth::id(),
-            'ip' => $request->ip()
+            'ip' => $request->ip(),
         ]);
 
         Auth::logout();

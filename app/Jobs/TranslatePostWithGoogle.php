@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Post;
 use App\Services\GoogleTranslateService;
 use App\Support\FrontendCache;
+use App\Support\RichTextSanitizer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -42,7 +43,7 @@ class TranslatePostWithGoogle implements ShouldQueue
             $updateData = [];
 
             foreach ($translated as $field => $value) {
-                $updateData[$field] = $value;
+                $updateData[$field] = $this->cleanTranslatedValue($field, $value);
             }
 
             if (! empty($updateData)) {
@@ -81,5 +82,14 @@ class TranslatePostWithGoogle implements ShouldQueue
 
             throw $e;
         }
+    }
+
+    private function cleanTranslatedValue(string $field, mixed $value): mixed
+    {
+        if (! is_string($value) || ! in_array($field, ['body_en', 'body_bn', 'summary_en', 'summary_bn'], true)) {
+            return $value;
+        }
+
+        return app(RichTextSanitizer::class)->sanitize($value);
     }
 }

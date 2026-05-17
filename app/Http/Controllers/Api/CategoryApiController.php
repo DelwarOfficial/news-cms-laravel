@@ -12,7 +12,7 @@ class CategoryApiController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::with('parent')
+        $categories = Category::with(Category::apiRelations())
             ->where('status', 'active')
             ->orderBy('order')
             ->orderBy('name')
@@ -26,7 +26,7 @@ class CategoryApiController extends Controller
 
     public function posts(Request $request, $slug)
     {
-        $category = Category::where('slug', $slug)->firstOrFail();
+        $category = Category::with(Category::apiRelations())->where('slug', $slug)->firstOrFail();
 
         $perPage = (int) $request->get('per_page', 15);
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Models\Advertisement;
+use App\Support\FileUploadSecurity;
 use App\Support\FrontendCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class AdvertisementController extends BaseApiController
             'title' => 'required|string|max:255',
             'position' => 'required|string|max:100',
             'type' => 'required|in:image,code',
-            'image' => 'required_if:type,image|nullable|image|max:5120',
+            'image' => ['required_if:type,image', 'nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'required_if:type,code|nullable|string|max:5000',
             'url' => 'nullable|url|max:500',
             'start_date' => 'nullable|date',
@@ -39,7 +40,7 @@ class AdvertisementController extends BaseApiController
         $ad->is_active = $request->boolean('is_active', true);
 
         if ($validated['type'] === 'image' && $request->hasFile('image')) {
-            $ad->image = $request->file('image')->store('advertisements', 'public');
+            $ad->image = $request->file('image')->storeAs('advertisements', FileUploadSecurity::storageName($request->file('image')), 'public');
         } elseif ($validated['type'] === 'code') {
             $ad->code = $validated['code'] ?? null;
         }
@@ -63,7 +64,7 @@ class AdvertisementController extends BaseApiController
             'title' => 'sometimes|string|max:255',
             'position' => 'sometimes|string|max:100',
             'type' => 'sometimes|in:image,code',
-            'image' => 'nullable|image|max:5120',
+            'image' => ['nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'nullable|string|max:5000',
             'url' => 'nullable|url|max:500',
             'start_date' => 'nullable|date',
@@ -81,7 +82,7 @@ class AdvertisementController extends BaseApiController
 
         if ($request->hasFile('image')) {
             if ($ad->image) { Storage::disk('public')->delete($ad->image); }
-            $ad->image = $request->file('image')->store('advertisements', 'public');
+            $ad->image = $request->file('image')->storeAs('advertisements', FileUploadSecurity::storageName($request->file('image')), 'public');
             $ad->code = null;
         } elseif ($request->filled('code')) {
             if ($ad->image) { Storage::disk('public')->delete($ad->image); $ad->image = null; }

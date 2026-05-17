@@ -3,70 +3,72 @@
 namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 trait ApiResponse
 {
     protected function success(mixed $data, int $code = 200, array $extra = []): JsonResponse
     {
-        $response = array_merge(['data' => $data], $extra);
+        $response = $this->envelope(
+            data: $data,
+            meta: $extra['meta'] ?? [],
+            error: null,
+        );
+
+        unset($extra['meta']);
+        $response = array_merge($response, $extra);
 
         return response()->json($response, $code);
     }
 
     protected function successWithMeta(mixed $data, array $meta, int $code = 200): JsonResponse
     {
-        return response()->json([
-            'data' => $data,
-            'meta' => $meta,
-        ], $code);
+        return response()->json($this->envelope($data, $meta), $code);
     }
 
     protected function error(string $error, string $message, int $code = 400, mixed $details = null): JsonResponse
     {
-        $response = [
-            'error' => $error,
+        return response()->json($this->envelope(null, [], [
+            'code' => $error,
             'message' => $message,
-        ];
-
-        if ($details !== null) {
-            $response['details'] = $details;
-        }
-
-        return response()->json($response, $code);
+            'details' => $details,
+        ]), $code);
     }
 
     protected function errorWithMeta(string $error, string $message, int $code = 400, ?array $meta = null, mixed $details = null): JsonResponse
     {
-        $response = [
-            'error' => $error,
+        return response()->json($this->envelope(null, $meta ?? [], [
+            'code' => $error,
             'message' => $message,
-            'meta' => $meta ?? [],
-        ];
-
-        if ($details !== null) {
-            $response['details'] = $details;
-        }
-
-        return response()->json($response, $code);
+            'details' => $details,
+        ]), $code);
     }
 
     protected function paginated(mixed $paginator): JsonResponse
     {
-        $resource = $paginator instanceof \Illuminate\Http\Resources\Json\ResourceCollection
-            ? $paginator->response()->getData()
-            : $paginator;
+        $resourceData = null;
+        $source = $paginator;
 
-        $data = $resource->data ?? $resource->items() ?? $resource;
+        if ($paginator instanceof ResourceCollection) {
+            $resourceData = $paginator->response()->getData(true);
+            $source = $paginator->resource;
+        }
 
-        return response()->json([
-            'data' => $data,
-            'meta' => [
-                'page' => $paginator->currentPage(),
-                'limit' => (int) $paginator->perPage(),
-                'total' => $paginator->total(),
-                'totalPages' => $paginator->lastPage(),
-            ],
-        ]);
+        $data = $resourceData['data'] ?? (
+            $source instanceof LengthAwarePaginator ? $source->items() : $source
+        );
+
+        if (! $source instanceof LengthAwarePaginator) {
+            return $this->success($data);
+        }
+
+        return response()->json($this->envelope($data, [
+            'page' => $source->currentPage(),
+            'limit' => (int) $source->perPage(),
+            'total' => $source->total(),
+            'totalPages' => $source->lastPage(),
+        ]));
     }
 
     protected function created(mixed $data = null): JsonResponse
@@ -77,5 +79,18 @@ trait ApiResponse
     protected function noContent(): JsonResponse
     {
         return response()->json(null, 204);
+    }
+
+    private function envelope(mixed $data = null, array $meta = [], mixed $error = null): array
+    {
+        if (is_array($error)) {
+            $error = array_filter($error, fn ($value) => $value !== null);
+        }
+
+        return [
+            'data' => $data,
+            'meta' => $meta,
+            'error' => $error,
+        ];
     }
 }

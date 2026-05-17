@@ -13,7 +13,7 @@ class CategoryController extends BaseApiController
 {
     public function index(): JsonResponse
     {
-        return $this->success(Category::with('parent')->orderBy('name')->get(['id', 'name', 'slug', 'parent_id']));
+        return $this->success(Category::with(Category::apiRelations())->orderBy('name')->get(['id', 'name', 'slug', 'parent_id']));
     }
 
     public function store(Request $request): JsonResponse
