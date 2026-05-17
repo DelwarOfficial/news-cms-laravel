@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\TranslatePostJob;
 use App\Models\Post;
 use App\Support\FrontendCache;
 use App\Support\ViewCounter;
@@ -11,6 +12,7 @@ class PostObserver
 {
     public function created(Post $post): void
     {
+        $this->maybeAutoTranslate($post);
         $this->clearCaches($post);
     }
 
@@ -27,6 +29,7 @@ class PostObserver
             return;
         }
 
+        $this->maybeAutoTranslate($post);
         $this->clearCaches($post);
     }
 
@@ -43,6 +46,26 @@ class PostObserver
     public function forceDeleted(Post $post): void
     {
         $this->clearCaches($post);
+    }
+
+    private function maybeAutoTranslate(Post $post): void
+    {
+        if (! config('translation.auto_translate_on_publish', false)) {
+            return;
+        }
+
+        if ($post->status !== 'published') {
+            return;
+        }
+
+        $sourceLocale = app()->getLocale();
+        $targetLocale = $sourceLocale === 'bn' ? 'en' : 'bn';
+
+        if ($post->translationFor($targetLocale)?->exists()) {
+            return;
+        }
+
+        TranslatePostJob::dispatch($post, $sourceLocale, $targetLocale);
     }
 
     private function clearCaches(Post $post): void

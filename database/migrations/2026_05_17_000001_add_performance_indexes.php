@@ -153,25 +153,6 @@ return new class extends Migration
         }
 
         // =====================================================================
-        // COMMENTS
-        // =====================================================================
-        if (Schema::hasTable('comments')) {
-            $existing = $this->existingIndexes('comments');
-
-            Schema::table('comments', function (Blueprint $table) use ($existing) {
-                if (! in_array('comments_post_id_status_idx', $existing, true)
-                    && Schema::hasColumn('comments', 'post_id')
-                    && Schema::hasColumn('comments', 'status')) {
-                    $table->index(['post_id', 'status'], 'comments_post_id_status_idx');
-                }
-                if (! in_array('comments_created_at_index', $existing, true)
-                    && Schema::hasColumn('comments', 'created_at')) {
-                    $table->index('created_at');
-                }
-            });
-        }
-
-        // =====================================================================
         // PAGES
         // =====================================================================
         if (Schema::hasTable('pages')) {
@@ -214,10 +195,6 @@ return new class extends Migration
             ],
             'post_tags' => [
                 'post_tags_tag_id_index',
-            ],
-            'comments' => [
-                'comments_post_id_status_idx',
-                'comments_created_at_index',
             ],
             'pages' => [
                 'pages_status_order_idx',

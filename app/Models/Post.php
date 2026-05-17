@@ -33,6 +33,11 @@ class Post extends Model
         'tenant_id', 'author_id', 'language_id', 'primary_category_id',
         'division_id', 'district_id', 'upazila_id', 'shoulder',
         'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
+
+    protected $fillable = [
+        'tenant_id', 'author_id', 'language_id', 'primary_category_id',
+        'division_id', 'district_id', 'upazila_id', 'shoulder',
+        'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
         'excerpt', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn',
         'featured_image', 'featured_media_id', 'featured_image_alt',
         'featured_image_caption',
@@ -40,7 +45,7 @@ class Post extends Model
         'published_at', 'scheduled_at', 'is_breaking', 'is_featured', 'is_sticky',
         'is_photocard',
         'is_trending', 'is_editors_pick',
-        'allow_comments', 'show_author', 'show_publish_date', 'raw_import_payload',
+        'show_author', 'show_publish_date', 'raw_import_payload',
         'meta_title', 'meta_title_en', 'meta_title_bn',
         'meta_description', 'meta_description_en', 'meta_description_bn',
         'canonical_url', 'og_image',
@@ -63,13 +68,11 @@ class Post extends Model
         'is_photocard' => 'boolean',
         'is_trending' => 'boolean',
         'is_editors_pick' => 'boolean',
-        'allow_comments' => 'boolean',
         'show_author' => 'boolean',
         'show_publish_date' => 'boolean',
         'needs_editorial_review' => 'boolean',
         'view_count' => 'integer',
         'reading_time' => 'integer',
-        'comment_count' => 'integer',
         'featured_image_width' => 'integer',
         'featured_image_height' => 'integer',
         'breaking_news_order' => 'integer',
@@ -227,11 +230,6 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, 'post_tags');
-    }
-
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
     }
 
     public function relatedPosts(): BelongsToMany

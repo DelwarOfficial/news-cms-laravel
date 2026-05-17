@@ -25,7 +25,7 @@
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-3">Scopes</label>
             <div class="grid grid-cols-2 gap-3">
-                @foreach(['read' => 'Read content', 'write' => 'Write content', 'media' => 'Media access', 'comments' => 'Manage comments', 'cms' => 'CMS push/sync', 'admin' => 'Admin access'] as $value => $label)
+                @foreach(['read' => 'Read content', 'write' => 'Write content', 'media' => 'Media access', 'cms' => 'CMS push/sync', 'admin' => 'Admin access'] as $value => $label)
                     <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
                         <input type="checkbox" name="scopes[]" value="{{ $value }}" @checked(in_array($value, old('scopes', ['read']))) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         <span class="text-sm font-medium text-gray-700">{{ $label }}</span>

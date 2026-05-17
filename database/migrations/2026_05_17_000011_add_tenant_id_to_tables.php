@@ -13,7 +13,6 @@ return new class extends Migration
         'tags' => ['index' => true, 'nullable' => true],
         'media' => ['index' => true, 'nullable' => true],
         'media_folders' => ['index' => true, 'nullable' => true],
-        'comments' => ['index' => true, 'nullable' => true],
         'pages' => ['index' => true, 'nullable' => true],
         'menus' => ['index' => true, 'nullable' => true],
         'menu_items' => ['index' => true, 'nullable' => true],

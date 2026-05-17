@@ -13,18 +13,27 @@ class FrontendCache
     public const TAG_CATEGORY_FEEDS = 'category-feeds';
 
     public const HOMEPAGE_KEYS = [
+        'homepage:v1:bn',
+        'homepage:v1:en',
         'homepage:v1',
     ];
 
     public const TICKER_KEYS = [
+        'layout:ticker-headlines:v2:bn:10',
+        'layout:ticker-headlines:v2:en:10',
+        'layout:ticker-headlines:v2:bn',
+        'layout:ticker-headlines:v2:en',
         'layout:ticker-headlines:v1',
-        'layout:ticker-headlines:v2:10',
     ];
 
     public const POPULAR_KEYS = [
-        'layout:popular-news:v1',
+        'content:popular-news:v1:bn:5',
+        'content:popular-news:v1:en:5',
+        'content:popular-news:v1:bn',
+        'content:popular-news:v1:en',
+        'content:popular-news:v1',
         'layout:popular-news:v1:5',
-        'content:popular-news:v1:5',
+        'layout:popular-news:v1',
     ];
 
     public const CATEGORY_KEYS = [

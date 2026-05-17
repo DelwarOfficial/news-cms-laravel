@@ -22,7 +22,6 @@ class PermissionService
         'categories.manage',
         'tags.manage',
         'media.manage',
-        'comments.manage',
         'menus.manage',
         'users.manage',
         'users.create',
@@ -57,7 +56,6 @@ class PermissionService
             'categories.manage',
             'tags.manage',
             'media.manage',
-            'comments.manage',
             'dashboard.view',
         ],
         self::ROLE_CONTRIBUTOR => [
@@ -84,7 +82,6 @@ class PermissionService
             'categories.manage',
             'tags.manage',
             'media.manage',
-            'comments.manage',
             'menus.manage',
             'users.manage',
             'users.create',

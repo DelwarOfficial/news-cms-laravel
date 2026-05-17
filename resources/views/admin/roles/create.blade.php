@@ -83,7 +83,7 @@
         const roleTemplates = {
             Editor: allPermissions.filter((permission) => {
                 return permission.startsWith('posts.')
-                    || ['categories.manage', 'tags.manage', 'comments.manage', 'media.manage'].includes(permission);
+                    || ['categories.manage', 'tags.manage', 'media.manage'].includes(permission);
             }),
             Admin: allPermissions.filter((permission) => {
                 return !['roles.manage', 'roles.create', 'api_keys.manage', 'settings.manage'].includes(permission);

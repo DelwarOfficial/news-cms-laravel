@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\User;
 use App\Models\Category;
-use App\Models\Comment;
 use App\Models\Media;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -33,8 +32,6 @@ class DashboardController extends Controller
                 'draft_posts' => (clone $query)->where('status', 'draft')->count(),
                 'total_users' => $user->can('users.manage') ? User::count() : 1,
                 'total_categories' => Category::count(),
-                'total_comments' => Comment::count(),
-                'pending_comments' => Comment::where('status', 'pending')->count(),
                 'total_media' => Media::count(),
                 'total_media_size' => Media::sum('file_size') ?? 0,
             ];
@@ -54,12 +51,6 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $recentComments = Comment::with('post', 'user')
-            ->where('status', 'pending')
-            ->latest()
-            ->take(5)
-            ->get();
-
         $userActivity = User::latest()
             ->take(5)
             ->get();
@@ -68,7 +59,6 @@ class DashboardController extends Controller
             'stats',
             'recentPosts',
             'popularPosts',
-            'recentComments',
             'userActivity'
         ));
     }

@@ -8,9 +8,7 @@ use App\Http\Controllers\Api\SearchApiController;
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\Admin\AdminPostApiController;
 use App\Http\Controllers\Api\Admin\AdminMediaApiController;
-use App\Http\Controllers\Api\Admin\AdminCommentApiController;
 use App\Http\Controllers\Api\V1\Public\CategoryController;
-use App\Http\Controllers\Api\V1\Public\CommentController;
 use App\Http\Controllers\Api\V1\Public\MediaController as PublicMediaController;
 use App\Http\Controllers\Api\V1\Public\PageController;
 use App\Http\Controllers\Api\V1\Public\PostController;
@@ -81,7 +79,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/posts/popular', [PostController::class, 'popular']);
         Route::get('/posts/featured', [PostController::class, 'featured']);
         Route::get('/posts/editors-pick', [PostController::class, 'editorsPick']);
-        Route::get('/posts/{postId}/comments', [CommentController::class, 'index'])->whereNumber('postId');
         Route::get('/posts/{slug}', [PostController::class, 'show'])->name('v1.posts.show');
         Route::post('/posts/{id}/view', [PostController::class, 'view'])->middleware('throttle:60,1');
 
@@ -157,8 +154,5 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::get('/media', [AdminMediaApiController::class, 'index']);
         Route::post('/media/upload', [AdminMediaApiController::class, 'store']);
         Route::delete('/media/{id}', [AdminMediaApiController::class, 'destroy']);
-
-        Route::get('/comments', [AdminCommentApiController::class, 'index']);
-        Route::patch('/comments/{id}', [AdminCommentApiController::class, 'status']);
     });
 });

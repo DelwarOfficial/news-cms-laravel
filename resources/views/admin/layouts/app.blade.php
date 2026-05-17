@@ -293,7 +293,6 @@
                             'categories' => ['route' => 'admin.categories.index', 'icon' => 'fa-folder-tree', 'perm' => 'categories.manage', 'label' => 'Categories'],
                             'tags' => ['route' => 'admin.tags.index', 'icon' => 'fa-tags', 'perm' => 'tags.manage', 'label' => 'Tags'],
                             'media' => ['route' => 'admin.media.index', 'icon' => 'fa-images', 'perm' => 'media.manage', 'label' => 'Media'],
-                            'comments' => ['route' => 'admin.comments.index', 'icon' => 'fa-comments', 'perm' => 'comments.manage', 'label' => 'Comments'],
                         ],
                     ],
                     'display' => [

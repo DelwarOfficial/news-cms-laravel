@@ -28,7 +28,7 @@ class ApiKeyController extends Controller
             'name' => 'required|max:255',
             'user_id' => 'nullable|exists:users,id',
             'scopes' => 'required|array|min:1',
-            'scopes.*' => 'in:read,write,media,comments,cms,admin',
+            'scopes.*' => 'in:read,write,media,cms,admin',
             'rate_limit' => 'nullable|integer|min:1|max:10000',
             'expires_at' => 'nullable|date|after:now',
         ]);

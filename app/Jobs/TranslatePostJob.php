@@ -70,7 +70,7 @@ class TranslatePostJob implements ShouldQueue
                 ['post_id' => $this->post->id, 'locale' => $this->to],
                 [
                     'title' => $t['title'] ?? null,
-                    'content' => $t['body'] ?? null,
+                    'body' => $t['body'] ?? null,
                     'slug' => $t['slug'] ?? null,
                     'summary' => $t['summary'] ?? null,
                     'meta_title' => $t['meta_title'] ?? null,

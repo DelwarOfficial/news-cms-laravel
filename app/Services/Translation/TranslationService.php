@@ -6,7 +6,6 @@ use App\Models\AiProvider;
 use App\Models\Post;
 use App\Models\TranslationLog;
 use App\Models\TranslationPrompt;
-use App\Translation\Contracts\TranslationProvider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;

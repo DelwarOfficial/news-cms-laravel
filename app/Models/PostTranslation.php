@@ -18,7 +18,6 @@ class PostTranslation extends Model
         'slug',
         'summary',
         'body',
-        'content',
         'meta_title',
         'meta_description',
         'status',

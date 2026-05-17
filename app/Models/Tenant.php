@@ -55,11 +55,6 @@ class Tenant extends Model
         return $this->hasMany(Page::class);
     }
 
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
-    }
-
     public function menus(): HasMany
     {
         return $this->hasMany(Menu::class);

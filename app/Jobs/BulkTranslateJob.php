@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Models\Post;
+use App\Services\GoogleTranslateService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
@@ -18,22 +20,25 @@ class BulkTranslateJob implements ShouldQueue
         public readonly array $postIds,
         public readonly string $from = 'bn',
         public readonly string $to = 'en',
-        public readonly ?string $provider = null,
+        public readonly string $method = 'ai',
     ) {
         $this->onQueue('translations');
     }
 
     public function handle(): void
     {
-        $posts = \App\Models\Post::whereIn('id', $this->postIds)->get();
+        $posts = Post::whereIn('id', $this->postIds)->get();
+
+        if ($this->method === 'google') {
+            $google = app(GoogleTranslateService::class);
+            foreach ($posts as $post) {
+                $google->translatePost($post, $this->from, $this->to);
+            }
+            return;
+        }
 
         foreach ($posts as $post) {
-            TranslatePostJob::dispatch(
-                $post,
-                $this->from,
-                $this->to,
-                $this->provider,
-            );
+            TranslatePostJob::dispatch($post, $this->from, $this->to);
         }
     }
 }

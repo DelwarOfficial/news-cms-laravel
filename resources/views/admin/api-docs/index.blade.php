@@ -96,7 +96,6 @@ curl -H "X-API-Key: nh_your_key" \
                     <div><span class="scope-badge bg-green-100 text-green-700">read</span> <span class="text-xs text-gray-500 ml-1">View content</span></div>
                     <div><span class="scope-badge bg-blue-100 text-blue-700">write</span> <span class="text-xs text-gray-500 ml-1">Create/edit content</span></div>
                     <div><span class="scope-badge bg-purple-100 text-purple-700">media</span> <span class="text-xs text-gray-500 ml-1">Upload media</span></div>
-                    <div><span class="scope-badge bg-sky-100 text-sky-700">comments</span> <span class="text-xs text-gray-500 ml-1">Manage comments</span></div>
                     <div><span class="scope-badge bg-amber-100 text-amber-700">cms</span> <span class="text-xs text-gray-500 ml-1">External push</span></div>
                     <div><span class="scope-badge bg-red-100 text-red-700">admin</span> <span class="text-xs text-gray-500 ml-1">Full access</span></div>
                 </div>
