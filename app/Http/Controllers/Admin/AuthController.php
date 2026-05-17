@@ -37,6 +37,8 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
             // Clear rate limiter on successful login
             RateLimiter::clear($throttleKey);
             

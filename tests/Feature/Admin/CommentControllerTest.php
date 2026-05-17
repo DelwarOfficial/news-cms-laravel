@@ -4,7 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Language;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Comment;
@@ -12,7 +12,7 @@ use App\Models\Post;
 
 class CommentControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private User $admin;
     private Post $post;

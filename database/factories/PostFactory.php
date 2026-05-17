@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Language;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PostFactory extends Factory
@@ -12,7 +13,9 @@ class PostFactory extends Factory
 
         return [
             'user_id' => \App\Models\User::factory(),
-            'language_id' => 1,
+            'language_id' => function (array $attributes) {
+                return Language::query()->value('id') ?? Language::factory()->create()->id;
+            },
             'title' => $title,
             'slug' => strtolower(str_replace(' ', '-', $title)) . '-' . fake()->unique()->randomNumber(5),
             'content' => '<p>' . fake()->paragraphs(3, true) . '</p>',

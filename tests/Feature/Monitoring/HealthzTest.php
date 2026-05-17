@@ -2,12 +2,12 @@
 
 namespace Tests\Feature\Monitoring;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class HealthzTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_healthz_returns_ok(): void
     {

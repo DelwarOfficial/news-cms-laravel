@@ -7,12 +7,12 @@ use App\Models\Language;
 use App\Models\Post;
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class AuthenticatedApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private array $apiKeyHeader;
 

@@ -3,12 +3,12 @@
 namespace Tests\Feature\Monitoring;
 
 use App\Models\Language;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
 class RequestIdTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_api_responses_include_request_id_header(): void
     {

@@ -83,7 +83,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/posts/editors-pick', [PostController::class, 'editorsPick']);
         Route::get('/posts/{postId}/comments', [CommentController::class, 'index'])->whereNumber('postId');
         Route::get('/posts/{slug}', [PostController::class, 'show'])->name('v1.posts.show');
-        Route::post('/posts/{id}/view', [PostController::class, 'view'])->middleware('throttle:1,60');
+        Route::post('/posts/{id}/view', [PostController::class, 'view'])->middleware('throttle:60,1');
 
         // Categories
         Route::get('/categories', [CategoryController::class, 'index']);

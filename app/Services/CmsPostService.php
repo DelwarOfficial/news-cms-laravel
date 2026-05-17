@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Jobs\ProcessPostPublishing;
 use App\Models\Category;
+use App\Models\Language;
 use App\Models\Media;
 use App\Models\Post;
 use App\Models\Tag;
@@ -48,7 +49,7 @@ class CmsPostService
         // Default status
         $data['status'] ??= 'draft';
         $data['post_format'] ??= 'standard';
-        $data['language_id'] ??= 1;
+        $data['language_id'] ??= Language::query()->value('id') ?? 1;
 
         if (empty($data['published_at']) && $data['status'] === 'published') {
             $data['published_at'] = now();
