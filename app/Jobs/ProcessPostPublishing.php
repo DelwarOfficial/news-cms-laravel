@@ -21,6 +21,7 @@ class ProcessPostPublishing implements ShouldQueue
     public function __construct(
         public Post $post,
     ) {
+        $this->post->loadMissing('primaryCategory');
         $this->onQueue('publishing');
     }
 
@@ -31,7 +32,7 @@ class ProcessPostPublishing implements ShouldQueue
         Post::forgetCached($this->post);
         Cache::forget("post_{$this->post->slug}");
 
-        if ($this->post->primaryCategory) {
+        if ($this->post->relationLoaded('primaryCategory') && $this->post->primaryCategory) {
             Cache::forget("category_{$this->post->primaryCategory->slug}");
         }
 

@@ -18,6 +18,15 @@ class AuthApiController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+
+            if ($user->must_change_password) {
+                Auth::logout();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Password change required. Please log in via the web interface.'
+                ], 403);
+            }
+
             $expiresAt = now()->addMinutes((int) config('sanctum.expiration', 1440));
             $token = $user->createToken('api-token', ['*'], $expiresAt)->plainTextToken;
 
@@ -51,7 +60,7 @@ class AuthApiController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => $request->user()->load('roles', 'permissions')
+            'data' => $request->user()->load(['roles:name,id', 'permissions:name,id'])
         ]);
     }
 }
