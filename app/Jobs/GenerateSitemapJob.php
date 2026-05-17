@@ -10,8 +10,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Spatie\Sitemap\Sitemap;
-use Spatie\Sitemap\Tags\Url;
 
 class GenerateSitemapJob implements ShouldQueue
 {
@@ -28,36 +26,39 @@ class GenerateSitemapJob implements ShouldQueue
 
     public function handle(): void
     {
-        $sitemap = Sitemap::create();
-
-        $sitemap->add(Url::create(route('home'))->setPriority(1.0));
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+        $urls = [[
+            'loc' => $frontendUrl.'/',
+            'lastmod' => null,
+            'priority' => '1.0',
+        ]];
 
         Post::published()
-            ->select(['id', 'updated_at'])
-            ->chunkById(500, function ($posts) use ($sitemap) {
+            ->select(['id', 'slug', 'updated_at'])
+            ->chunkById(500, function ($posts) use (&$urls) {
                 foreach ($posts as $post) {
-                    $sitemap->add(
-                        Url::create(route('article.id', $post->id))
-                            ->setLastModificationDate($post->updated_at)
-                            ->setPriority(0.8)
-                    );
+                    $urls[] = [
+                        'loc' => $this->frontendUrl('/article/'.$post->slug),
+                        'lastmod' => $post->updated_at?->toAtomString(),
+                        'priority' => '0.8',
+                    ];
                 }
             });
 
         Category::query()
             ->select(['id', 'slug', 'updated_at'])
-            ->chunkById(500, function ($categories) use ($sitemap) {
+            ->chunkById(500, function ($categories) use (&$urls) {
                 foreach ($categories as $category) {
-                    $sitemap->add(
-                        Url::create(route('category.show', $category->slug))
-                            ->setLastModificationDate($category->updated_at)
-                            ->setPriority(0.6)
-                    );
+                    $urls[] = [
+                        'loc' => $this->frontendUrl('/category/'.$category->slug),
+                        'lastmod' => $category->updated_at?->toAtomString(),
+                        'priority' => '0.6',
+                    ];
                 }
             });
 
         $sitemapPath = public_path('sitemap.xml');
-        $sitemap->writeToFile($sitemapPath);
+        file_put_contents($sitemapPath, $this->toXml($urls));
 
         Log::info('Sitemap generated successfully', [
             'file' => $sitemapPath,
@@ -72,5 +73,37 @@ class GenerateSitemapJob implements ShouldQueue
             'trace' => $e->getTraceAsString(),
             'user_id' => $this->userId,
         ]);
+    }
+
+    private function frontendUrl(string $path = ''): string
+    {
+        return rtrim((string) config('app.frontend_url'), '/').'/'.ltrim($path, '/');
+    }
+
+    private function toXml(array $urls): string
+    {
+        $xml = ['<?xml version="1.0" encoding="UTF-8"?>'];
+        $xml[] = '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
+        foreach ($urls as $url) {
+            $xml[] = '  <url>';
+            $xml[] = '    <loc>'.$this->escapeXml($url['loc']).'</loc>';
+
+            if (! empty($url['lastmod'])) {
+                $xml[] = '    <lastmod>'.$this->escapeXml($url['lastmod']).'</lastmod>';
+            }
+
+            $xml[] = '    <priority>'.$this->escapeXml($url['priority']).'</priority>';
+            $xml[] = '  </url>';
+        }
+
+        $xml[] = '</urlset>';
+
+        return implode(PHP_EOL, $xml).PHP_EOL;
+    }
+
+    private function escapeXml(string $value): string
+    {
+        return htmlspecialchars($value, ENT_XML1 | ENT_COMPAT, 'UTF-8');
     }
 }

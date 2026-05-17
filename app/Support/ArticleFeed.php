@@ -161,13 +161,11 @@ class ArticleFeed
             $imageUrl = self::videoThumbnailUrl($post) ?: $imageUrl;
         }
 
-        $prefix = self::formatRoutePrefix($post->post_format);
-
         $article = [
             'id' => $post->id,
             'slug' => $post->slug,
-            'url' => route("{$prefix}.id_slug", ['postId' => $post->id, 'slug' => $post->slug]),
-            'canonical_url' => route("{$prefix}.id_slug", ['postId' => $post->id, 'slug' => $post->slug]),
+            'url' => route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]),
+            'canonical_url' => route('article.id_slug', ['postId' => $post->id, 'slug' => $post->slug]),
             'title' => $title,
             'headline' => $title,
             'shoulder' => $post->shoulder,

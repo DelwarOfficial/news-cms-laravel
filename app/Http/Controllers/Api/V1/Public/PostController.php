@@ -17,7 +17,7 @@ class PostController extends BaseApiController
     public function index(PostListRequest $request)
     {
         $perPage = min((int) $request->get('limit', 15), 50);
-        $cacheKey = 'v1:posts:' . md5(json_encode($request->all()));
+        $cacheKey = 'v1:posts:' . app()->getLocale() . ':' . md5(json_encode($request->all()));
 
         $posts = CacheLock::remember($cacheKey, 600, function () use ($request, $perPage) {
             $query = Post::withListRelations()->published();
@@ -91,12 +91,16 @@ class PostController extends BaseApiController
 
     public function show($slug)
     {
-        $cacheKey = "v1:post:{$slug}";
+        $cacheKey = 'v1:post:' . app()->getLocale() . ":{$slug}";
 
         $post = CacheLock::rememberWithStale($cacheKey, 300, function () use ($slug) {
             return Post::withContentRelations()
                 ->published()
-                ->where('slug', $slug)
+                ->where(function ($query) use ($slug): void {
+                    $query->where('slug', $slug)
+                        ->orWhere('slug_en', $slug)
+                        ->orWhere('slug_bn', $slug);
+                })
                 ->first();
         });
 
@@ -170,10 +174,12 @@ class PostController extends BaseApiController
 
     public function view(Request $request, $id)
     {
-        $post = Post::findOrFail($id);
+        $post = Post::published()->findOrFail($id);
         app(ViewCounter::class)->increment($post->id);
 
-        Cache::forget("v1:post:{$post->slug}");
+        foreach (array_filter([$post->slug, $post->slug_en, $post->slug_bn]) as $slug) {
+            Cache::forget('v1:post:' . app()->getLocale() . ":{$slug}");
+        }
 
         return $this->success(['views' => $post->view_count + app(ViewCounter::class)->get($post->id)]);
     }

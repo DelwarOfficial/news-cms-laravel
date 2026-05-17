@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\ApiKey;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,8 +14,7 @@ class ApiKeyMiddleware
     public function handle(Request $request, Closure $next, ?string $scope = null): Response
     {
         $key = $request->header('X-API-Key')
-            ?: $request->bearerToken()
-            ?: $request->query('api_key');
+            ?: $request->bearerToken();
 
         if (! $key || ! Str::startsWith($key, 'nh_')) {
             return $this->error('Unauthorized', 'Valid API key required.', 401);
@@ -36,7 +36,11 @@ class ApiKeyMiddleware
             return $this->error('Forbidden', "Scope '{$scope}' required.", 403);
         }
 
-        $apiKey->update(['last_used_at' => now()]);
+        $touchKey = "api-key:last-used:{$apiKey->id}";
+
+        if (Cache::add($touchKey, true, now()->addMinute())) {
+            $apiKey->forceFill(['last_used_at' => now()])->saveQuietly();
+        }
 
         $request->merge(['api_key_id' => $apiKey->id, 'api_key_owner' => $apiKey->user_id]);
 

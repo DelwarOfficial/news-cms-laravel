@@ -175,7 +175,10 @@ class Post extends Model
         return collect(['en', 'bn'])
             ->filter(fn (string $locale): bool => filled($this->{"slug_{$locale}"}))
             ->mapWithKeys(fn (string $locale): array => [
-                $locale => route('article.id', $this->id),
+                $locale => route('article.id_slug', [
+                    'postId' => $this->id,
+                    'slug' => $this->slugForLocale($locale),
+                ]),
             ])
             ->all();
     }
@@ -455,9 +458,11 @@ class Post extends Model
     {
         return Cache::remember(self::CACHE_PREFIX . "slug:{$slug}", self::CACHE_TTL, function () use ($slug) {
             return self::withContentRelations()->published()
-                ->where('slug', $slug)
-                ->orWhere('slug_en', $slug)
-                ->orWhere('slug_bn', $slug)
+                ->where(function (Builder $query) use ($slug): void {
+                    $query->where('slug', $slug)
+                        ->orWhere('slug_en', $slug)
+                        ->orWhere('slug_bn', $slug);
+                })
                 ->first();
         });
     }

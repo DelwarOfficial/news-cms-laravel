@@ -31,8 +31,10 @@ Route::get('/storage/{path}', function (string $path) {
 })->where('path', '.*');
 
 // Frontend article preview (used by admin panel "View" links)
-Route::get('/article/{postId}/{slug}', function () {
-    return redirect()->to(config('app.frontend_url', 'http://localhost:3000'));
+Route::get('/article/{postId}/{slug}', function (int $postId, string $slug) {
+    $frontendUrl = rtrim((string) config('app.frontend_url', 'http://localhost:3000'), '/');
+
+    return redirect()->to($frontendUrl.'/article/'.rawurlencode($slug));
 })->name('article.id_slug');
 
 // Admin authentication

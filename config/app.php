@@ -29,6 +29,10 @@ return [
     */
     'url' => env('APP_URL', 'http://localhost'),
 
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost'),
+
+    'cms_url' => env('CMS_URL', env('APP_URL', 'http://localhost').'/admin'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
