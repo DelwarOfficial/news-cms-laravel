@@ -3,7 +3,7 @@
 return [
     'name' => env('APP_NAME', 'Dhaka Magazine'),
     'version' => '1.0.0',
-    'description' => 'Unified NewsCore CMS and Dhaka Magazine frontend application',
+    'description' => 'NewsCore CMS — backend for Dhaka Magazine',
 
     'posts_per_page' => 12,
     'enable_comments' => true,

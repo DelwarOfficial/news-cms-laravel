@@ -9,6 +9,7 @@ class PermissionService
     public const ROLE_EDITOR = 'Editor';
     public const ROLE_AUTHOR_REPORTER = 'Author/Reporter';
     public const ROLE_CONTRIBUTOR = 'Contributor';
+    public const ROLE_TRANSLATOR = 'Translator';
 
     public const PERMISSIONS = [
         'posts.create',
@@ -33,6 +34,7 @@ class PermissionService
         'themes.manage',
         'api_keys.manage',
         'backups.manage',
+        'translations.manage',
     ];
 
     public const ROLE_PERMISSIONS = [
@@ -64,6 +66,12 @@ class PermissionService
             'posts.submit_review',
             'tags.manage',
             'media.manage',
+            'dashboard.view',
+        ],
+        self::ROLE_TRANSLATOR => [
+            'translations.manage',
+            'posts.create',
+            'posts.edit.own',
             'dashboard.view',
         ],
         self::ROLE_ADMIN => [

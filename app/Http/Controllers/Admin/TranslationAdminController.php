@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\BulkTranslateJob;
 use App\Jobs\TranslatePostJob;
+use App\Models\AiProvider;
 use App\Models\Post;
 use App\Models\Setting;
+use App\Models\TranslationLog;
+use App\Models\TranslationPrompt;
 use App\Models\TranslationUsage;
 use App\Services\AiTranslatorService;
 use App\Services\GoogleTranslateService;
@@ -23,14 +27,12 @@ class TranslationAdminController extends Controller
 
     public function settings()
     {
-        $providers = ['deepseek', 'openai', 'grok', 'claude', 'gemini'];
-        $currentProvider = config('ai.provider', 'deepseek');
-        $usage = TranslationUsage::query()
-            ->selectRaw("DATE(created_at) as date, from_locale, to_locale, SUM(character_count) as total_chars, COUNT(*) as total_jobs, status")
-            ->groupBy('date', 'from_locale', 'to_locale', 'status')
-            ->orderByDesc('date')
-            ->take(30)
-            ->get();
+        $monthlyCost = TranslationLog::completed()
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->sum('cost_usd');
+
+        $monthlyCostLimit = (float) (config('translation.monthly_cost_limit') ?? 0);
+        $monthlyCostPercent = $monthlyCostLimit > 0 ? ($monthlyCost / $monthlyCostLimit) * 100 : 0;
 
         $monthlyChars = TranslationUsage::query()
             ->whereYear('created_at', now()->year)
@@ -38,10 +40,28 @@ class TranslationAdminController extends Controller
             ->where('status', 'completed')
             ->sum('character_count');
 
-        $monthlyLimit = (int) config('google_translate.monthly_limit', 0);
+        $totalJobs = TranslationLog::where('created_at', '>=', now()->subDays(30))->count();
+        $failedJobs = TranslationLog::where('created_at', '>=', now()->subDays(30))->where('status', 'failed')->count();
+
+        $costByProvider = TranslationLog::completed()
+            ->where('created_at', '>=', now()->startOfMonth())
+            ->selectRaw("provider_name, SUM(cost_usd) as total_cost, COUNT(*) as total")
+            ->groupBy('provider_name')
+            ->orderByDesc('total_cost')
+            ->get();
+
+        $maxCost = $costByProvider->max('total_cost') ?? 0;
+
+        $recentLogs = TranslationLog::latest()->take(15)->get();
+
+        $activeProviders = AiProvider::active()->count();
+        $activePrompts = TranslationPrompt::where('is_active', true)->count();
 
         return view('admin.translations.settings', compact(
-            'providers', 'currentProvider', 'usage', 'monthlyChars', 'monthlyLimit'
+            'monthlyCost', 'monthlyCostLimit', 'monthlyCostPercent',
+            'monthlyChars', 'totalJobs', 'failedJobs',
+            'costByProvider', 'maxCost', 'recentLogs',
+            'activeProviders', 'activePrompts',
         ));
     }
 
@@ -111,19 +131,12 @@ class TranslationAdminController extends Controller
             'method' => 'required|in:ai,google,ai_then_google',
         ]);
 
-        $count = 0;
-        $posts = Post::whereIn('id', $data['post_ids'])->get();
-
-        foreach ($posts as $post) {
-            TranslatePostJob::dispatch(
-                $post,
-                $data['from'],
-                $data['to'],
-                $data['method'] === 'ai_then_google',
-                $data['method'],
-            );
-            $count++;
-        }
+        BulkTranslateJob::dispatch(
+            $data['post_ids'],
+            $data['from'],
+            $data['to'],
+            $data['method'],
+        );
 
         FrontendCache::flushContent();
 
@@ -165,7 +178,6 @@ class TranslationAdminController extends Controller
             return response()->json(['success' => true] + $this->sanitizeTranslatedFields($translated));
         }
 
-        // Live translate (no post_id - used in create form)
         $promptData = [
             'title_bn' => $data['title_bn'] ?? '',
             'summary_bn' => $data['summary_bn'] ?? '',
@@ -186,21 +198,24 @@ class TranslationAdminController extends Controller
 
     public function usage()
     {
-        $usage = TranslationUsage::query()
-            ->with('post:id,title,title_bn')
-            ->latest()
-            ->paginate(50);
+        $logs = TranslationLog::latest()->paginate(50);
 
-        $monthlyStats = TranslationUsage::query()
-            ->selectRaw("from_locale, to_locale, status, SUM(character_count) as total_chars, COUNT(*) as total")
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
-            ->groupBy('from_locale', 'to_locale', 'status')
+        $totalCost = TranslationLog::completed()->sum('cost_usd');
+        $totalChars = TranslationLog::completed()->sum('total_chars');
+        $totalJobs = TranslationLog::count();
+        $completedJobs = TranslationLog::completed()->count();
+        $failedJobs = TranslationLog::failed()->count();
+
+        $costByProvider = TranslationLog::completed()
+            ->selectRaw("provider_name, SUM(cost_usd) as total_cost, COUNT(*) as total, SUM(input_tokens + output_tokens) as total_tokens, SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed")
+            ->groupBy('provider_name')
+            ->orderByDesc('total_cost')
             ->get();
 
-        $totalMonthlyChars = $monthlyStats->where('status', 'completed')->sum('total_chars');
-
-        return view('admin.translations.usage', compact('usage', 'monthlyStats', 'totalMonthlyChars'));
+        return view('admin.translations.usage', compact(
+            'logs', 'totalCost', 'totalChars', 'totalJobs',
+            'completedJobs', 'failedJobs', 'costByProvider',
+        ));
     }
 
     private function saveSetting(string $key, string $value): void

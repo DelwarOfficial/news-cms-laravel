@@ -71,6 +71,16 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'must.change.
         Route::get('usage', [TranslationAdminController::class, 'usage'])->name('usage');
     });
 
+    Route::prefix('translation')->name('translation.')->middleware('permission:translations.manage')->group(function () {
+        Route::resource('providers', \App\Http\Controllers\Admin\Translation\AiProviderController::class)
+            ->except(['show']);
+        Route::post('providers/{provider}/toggle', [\App\Http\Controllers\Admin\Translation\AiProviderController::class, 'toggle'])
+            ->name('providers.toggle');
+
+        Route::resource('prompts', \App\Http\Controllers\Admin\Translation\TranslationPromptController::class)
+            ->only(['index', 'edit', 'update']);
+    });
+
     Route::post('locale/switch', function (\Illuminate\Http\Request $request) {
         $locale = $request->input('locale');
         if (in_array($locale, ['en', 'bn'])) {

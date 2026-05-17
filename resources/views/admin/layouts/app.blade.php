@@ -309,8 +309,11 @@
                     'translations' => [
                         'label' => 'Translations',
                         'icon' => 'fa-language',
+                        'perm' => 'translations.manage',
                         'items' => [
-                            'trans-settings' => ['route' => 'admin.translations.settings', 'icon' => 'fa-sliders', 'perm' => 'posts.create', 'label' => 'AI Settings'],
+                            'trans-dashboard' => ['route' => 'admin.translations.settings', 'icon' => 'fa-sliders', 'perm' => 'posts.create', 'label' => 'Dashboard'],
+                            'trans-providers' => ['route' => 'admin.translation.providers.index', 'icon' => 'fa-microchip', 'perm' => 'translations.manage', 'label' => 'AI Providers'],
+                            'trans-prompts' => ['route' => 'admin.translation.prompts.index', 'icon' => 'fa-pen', 'perm' => 'translations.manage', 'label' => 'Prompts'],
                             'trans-bulk' => ['route' => 'admin.translations.bulk', 'icon' => 'fa-language', 'perm' => 'posts.create', 'label' => 'Bulk Translate'],
                             'trans-usage' => ['route' => 'admin.translations.usage', 'icon' => 'fa-chart-simple', 'perm' => 'posts.create', 'label' => 'Usage'],
                         ],

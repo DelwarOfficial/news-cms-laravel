@@ -27,4 +27,6 @@ return [
     'queue' => env('TRANSLATION_QUEUE', 'translations'),
 
     'auto_translate_on_publish' => (bool) env('AUTO_TRANSLATE', false),
+
+    'monthly_cost_limit' => env('TRANSLATION_MONTHLY_COST_LIMIT'),
 ];

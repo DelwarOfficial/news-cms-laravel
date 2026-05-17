@@ -29,11 +29,8 @@ Built with Laravel 12 | Tailwind CSS | Alpine.js
 - SEO + Sitemap Generation
 - REST API (v1)
 
-### Frontend
-- Clean News Homepage
-- Article Detail pages with SEO
-- Category pages
-- Facebook Comments
+### Frontend (separate repository)
+Frontend views, controllers, and routing live in the dedicated **[Dhaka Magazine UI](https://github.com/DelwarOfficial/news-cms-frontend)** repository, which reads from the same MySQL database via the CMS's public REST API (v1).
 
 ---
 
@@ -58,7 +55,7 @@ php artisan serve
 
 ## 📁 Project Structure
 
-Follows professional Laravel conventions with clear separation between Admin and Frontend.
+Strict separation between CMS (this repo) and Frontend UI (separate repo). Frontend reads via the public REST API only.
 
 ```text
 news-cms/
@@ -78,10 +75,6 @@ news-cms/
 │   │   │   │   └── WidgetController.php
 │   │   │   ├── Api/
 │   │   │   │   └── PostApiController.php
-│   │   │   └── Front/
-│   │   │       ├── CategoryController.php
-│   │   │       ├── HomeController.php
-│   │   │       └── PostController.php
 │   │   ├── Middleware/
 │   │   └── Requests/
 │   ├── Jobs/
@@ -131,14 +124,10 @@ news-cms/
 │       │   │   ├── create.blade.php
 │       │   │   └── index.blade.php
 │       │   └── dashboard.blade.php
-│       ├── front/
-│       │   ├── category.blade.php
-│       │   ├── home.blade.php
-│       │   └── post.blade.php
 │       └── components/
 │
 ├── routes/
-│   ├── web.php            ← Frontend routes
+│   ├── web.php            ← Auth, redirects, static
 │   ├── admin.php          ← Admin panel routes
 │   └── api.php            ← REST API routes
 │

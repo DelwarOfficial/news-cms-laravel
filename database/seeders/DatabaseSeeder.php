@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             FrontendLocationImportSeeder::class,
             SettingSeeder::class,
+            TranslationPromptSeeder::class,
+            AiProviderSeeder::class,
         ]);
 
         if (config('app.env') !== 'production' && env('SEED_DEMO_DATA', false)) {

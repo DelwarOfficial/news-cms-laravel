@@ -13,6 +13,7 @@
         "predis/predis": "^3.4",
         "spatie/laravel-backup": "^10.2",
         "spatie/laravel-permission": "^6.0",
+        "laravel/horizon": "^5.30",
         "spatie/laravel-sluggable": "^3.6",
         "symfony/html-sanitizer": "^7.0",
         "tonysm/rich-text-laravel": "^3.11"

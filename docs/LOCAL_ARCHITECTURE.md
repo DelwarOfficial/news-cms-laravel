@@ -20,16 +20,16 @@ The `D:\laragon\www\dhaka-magazine` shim is only for legacy Laragon URLs. Avoid 
 
 ## Local URLs
 
-- Frontend/news site: `/`
 - CMS login: `/login`
 - CMS dashboard: `/admin`
-- Public API: `/api/posts`, `/api/categories`, `/api/search`
+- Public REST API (v1): `/api/v1/posts`, `/api/v1/categories`
+- Frontend URLs: served by the separate frontend repo (news-cms-frontend)
 
-The CMS owns content, users, media, categories, placements, settings, and moderation. It must not own frontend layout decisions. Frontend rendering should continue to live in public-facing views/components and read only content-shaped data from CMS models/services.
+The CMS owns content, users, media, categories, placements, settings, and moderation. It does NOT render any frontend Blade views. The separate frontend repo reads content exclusively through the public REST API.
 
 ## Route boundary
 
-The public article catch-all route must stay last and must exclude reserved prefixes such as `admin`, `api`, `login`, `category`, `article`, and `post`. Otherwise admin URLs like `/admin/posts` are interpreted as article slugs and return 404 before the real CMS routes run.
+The article preview redirect (web.php) proxies to the external frontend URL configured in `FRONTEND_URL`. No catch-all frontend routes exist in this CMS repo.
 
 ## Redis, cache, session, and queue
 
