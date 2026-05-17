@@ -91,11 +91,10 @@
                             'is_sticky' => 'Sticky',
                             'is_photocard' => 'Photocard',
                             'show_author' => 'Show Author',
-                            'allow_comments' => 'Allow Comments',
                             'show_publish_date' => 'Show Publish Date',
                         ] as $field => $label)
                             <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">
-                                <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field, in_array($field, ['show_author', 'allow_comments', 'show_publish_date'], true))) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                <input type="checkbox" name="{{ $field }}" value="1" @checked(old($field, in_array($field, ['show_author', 'show_publish_date'], true))) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                                 <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
                             </label>
                         @endforeach

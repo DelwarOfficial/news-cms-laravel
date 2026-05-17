@@ -87,7 +87,6 @@ class CmsPostService
             'is_trending' => filter_var($data['is_trending'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'is_editors_pick' => filter_var($data['is_editors_pick'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'is_sticky' => filter_var($data['is_sticky'] ?? false, FILTER_VALIDATE_BOOLEAN),
-            'allow_comments' => filter_var($data['allow_comments'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'show_author' => filter_var($data['show_author'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'show_publish_date' => filter_var($data['show_publish_date'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'published_at' => $data['published_at'] ?? null,
@@ -141,7 +140,7 @@ class CmsPostService
             }
         }
 
-        foreach (['is_breaking','is_featured','is_trending','is_editors_pick','is_sticky','allow_comments','show_author','show_publish_date'] as $flag) {
+        foreach (['is_breaking','is_featured','is_trending','is_editors_pick','is_sticky','show_author','show_publish_date'] as $flag) {
             if (isset($data[$flag])) {
                 $updatable[$flag] = filter_var($data[$flag], FILTER_VALIDATE_BOOLEAN);
             }

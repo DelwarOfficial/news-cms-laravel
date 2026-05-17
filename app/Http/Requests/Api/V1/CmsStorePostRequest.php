@@ -48,7 +48,6 @@ class CmsStorePostRequest extends FormRequest
             'is_trending' => 'nullable|boolean',
             'is_editors_pick' => 'nullable|boolean',
             'is_sticky' => 'nullable|boolean',
-            'allow_comments' => 'nullable|boolean',
             'show_author' => 'nullable|boolean',
             'show_publish_date' => 'nullable|boolean',
             'published_at' => 'nullable|date',

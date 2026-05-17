@@ -107,7 +107,6 @@ class DemoNewsContentSeeder extends Seeder
                     'is_trending' => in_array($index, [1, 3, 5, 8, 12], true),
                     'is_editors_pick' => in_array($index, [2, 6, 9], true),
                     'view_count' => max(25, 500 - ($index * 13)),
-                    'allow_comments' => true,
                     'meta_title' => $article['meta_title'] ?? $article['title'],
                     'meta_title_bn' => $article['meta_title'] ?? $article['title'],
                     'meta_description' => $article['meta_description'] ?? ($article['excerpt'] ?? null),

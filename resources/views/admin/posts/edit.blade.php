@@ -98,7 +98,6 @@
                             'is_sticky' => 'Sticky',
                             'is_photocard' => 'Photocard',
                             'show_author' => 'Show Author',
-                            'allow_comments' => 'Allow Comments',
                             'show_publish_date' => 'Show Publish Date',
                         ] as $field => $label)
                             <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 cursor-pointer hover:bg-gray-50">

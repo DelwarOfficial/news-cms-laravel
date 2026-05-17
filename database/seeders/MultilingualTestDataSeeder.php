@@ -66,7 +66,6 @@ class MultilingualTestDataSeeder extends Seeder
                     'status' => 'published',
                     'published_at' => now()->subHours($index + 1),
                     'post_format' => 'standard',
-                    'allow_comments' => true,
                 ],
             );
         }

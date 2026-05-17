@@ -85,9 +85,7 @@ class PostManageController extends BaseApiController
             'is_editors_pick' => 'nullable|boolean',
             'is_sticky' => 'nullable|boolean',
             'is_photocard' => 'nullable|boolean',
-            'allow_comments' => 'nullable|boolean',
             'show_author' => 'nullable|boolean',
-            'show_publish_date' => 'nullable|boolean',
         ]);
 
         $userId = $request->get('api_key_owner') ?: 1;
@@ -123,7 +121,6 @@ class PostManageController extends BaseApiController
             'is_editors_pick' => $request->boolean('is_editors_pick', false),
             'is_sticky' => $request->boolean('is_sticky', false),
             'is_photocard' => $request->boolean('is_photocard', false),
-            'allow_comments' => $request->boolean('allow_comments', true),
             'show_author' => $request->boolean('show_author', true),
             'show_publish_date' => $request->boolean('show_publish_date', true),
             'published_at' => $validated['status'] === 'published'
@@ -188,7 +185,6 @@ class PostManageController extends BaseApiController
             'is_editors_pick' => 'nullable|boolean',
             'is_sticky' => 'nullable|boolean',
             'is_photocard' => 'nullable|boolean',
-            'allow_comments' => 'nullable|boolean',
             'show_author' => 'nullable|boolean',
             'show_publish_date' => 'nullable|boolean',
         ]);
@@ -205,7 +201,7 @@ class PostManageController extends BaseApiController
             $updateData['primary_category_id'] = $validated['category_id'];
         }
 
-        foreach (['is_breaking','is_featured','is_trending','is_editors_pick','is_sticky','is_photocard','allow_comments','show_author','show_publish_date'] as $boolField) {
+        foreach (['is_breaking','is_featured','is_trending','is_editors_pick','is_sticky','is_photocard','show_author','show_publish_date'] as $boolField) {
             if ($request->has($boolField)) {
                 $updateData[$boolField] = $request->boolean($boolField);
             }

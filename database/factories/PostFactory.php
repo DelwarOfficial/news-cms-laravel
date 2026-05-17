@@ -23,7 +23,6 @@ class PostFactory extends Factory
             'status' => 'published',
             'published_at' => now(),
             'post_format' => 'standard',
-            'allow_comments' => true,
             'show_author' => true,
             'show_publish_date' => true,
         ];

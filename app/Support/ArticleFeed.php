@@ -177,7 +177,6 @@ class ArticleFeed
             'date' => DateHelper::getBengaliDate($publishedAt),
             'show_author' => (bool) ($post->show_author ?? true),
             'show_publish_date' => (bool) ($post->show_publish_date ?? true),
-            'allow_comments' => (bool) ($post->allow_comments ?? true),
             'time_ago' => DateHelper::timeAgo($publishedAt),
             'timestamp' => DateHelper::timeAgo($publishedAt),
             'published_at' => $publishedAt,

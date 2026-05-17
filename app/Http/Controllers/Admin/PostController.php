@@ -257,7 +257,6 @@ class PostController extends Controller
             'is_editors_pick' => $post->is_editors_pick,
             'is_sticky' => $post->is_sticky,
             'is_photocard' => $post->is_photocard,
-            'allow_comments' => $post->allow_comments,
             'show_author' => $post->show_author,
             'show_publish_date' => $post->show_publish_date,
         ]);
@@ -352,7 +351,6 @@ class PostController extends Controller
             'is_editors_pick' => (bool) ($validated['is_editors_pick'] ?? false),
             'is_sticky' => (bool) ($validated['is_sticky'] ?? false),
             'is_photocard' => (bool) ($validated['is_photocard'] ?? false),
-            'allow_comments' => (bool) ($validated['allow_comments'] ?? false),
             'show_author' => (bool) ($validated['show_author'] ?? false),
             'show_publish_date' => (bool) ($validated['show_publish_date'] ?? false),
         ];

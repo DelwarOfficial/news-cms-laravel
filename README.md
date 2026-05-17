@@ -23,7 +23,6 @@ Built with Laravel 12 | Tailwind CSS | Alpine.js
 ### Core Modules
 - Posts, Categories, Tags (Full CRUD)
 - Media Library
-- Comments Moderation
 - Users & Roles (Permission system)
 - Settings Panel
 - SEO + Sitemap Generation
@@ -65,7 +64,6 @@ news-cms/
 │   │   ├── Controllers/
 │   │   │   ├── Admin/
 │   │   │   │   ├── AdvertisementController.php
-│   │   │   │   ├── CommentController.php
 │   │   │   │   ├── DashboardController.php
 │   │   │   │   ├── MediaController.php
 │   │   │   │   ├── PostController.php
@@ -82,7 +80,6 @@ news-cms/
 │   ├── Models/
 │   │   ├── Advertisement.php
 │   │   ├── Category.php
-│   │   ├── Comment.php
 │   │   ├── Post.php
 │   │   ├── Revision.php
 │   │   ├── Tag.php

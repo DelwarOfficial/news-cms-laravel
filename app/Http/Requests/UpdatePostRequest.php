@@ -59,7 +59,6 @@ class UpdatePostRequest extends FormRequest
             'is_editors_pick' => ['nullable', 'boolean'],
             'is_sticky' => ['nullable', 'boolean'],
             'is_photocard' => ['nullable', 'boolean'],
-            'allow_comments' => ['nullable', 'boolean'],
             'show_author' => ['nullable', 'boolean'],
             'show_publish_date' => ['nullable', 'boolean'],
         ];
