@@ -18,14 +18,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\SetAdminLocale::class,
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\RequestId::class,
             \App\Http\Middleware\IdentifyTenant::class,
         ]);
         $middleware->api(append: [
+            \App\Http\Middleware\RequestId::class,
             \App\Http\Middleware\IdentifyTenant::class,
         ]);
         $middleware->alias([
             'set.locale' => \App\Http\Middleware\SetLocale::class,
             'tenant' => \App\Http\Middleware\IdentifyTenant::class,
+            'request.id' => \App\Http\Middleware\RequestId::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
@@ -34,5 +37,17 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Auth\Access\AuthorizationException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'error' => 'Forbidden',
+                    'message' => $e->getMessage() ?: 'You are not allowed to perform this action.',
+                ], 403);
+            }
+
+            $fallback = url('/admin');
+            $target = url()->previous() ?: $fallback;
+
+            return redirect()->to($target)->with('error', $e->getMessage() ?: 'You are not allowed to perform this action.');
+        });
     })->create();

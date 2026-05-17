@@ -37,16 +37,24 @@ return new class extends Migration
                 $col = 'tenant_id';
 
                 if (! Schema::hasColumn($table, $col)) {
-                    $blueprint->unsignedBigInteger($col)
-                        ->nullable($config['nullable'] ?? true);
+                    $blueprint->unsignedBigInteger($col)->nullable($config['nullable'] ?? true);
+                }
 
+                // Best-effort idempotency: in dev environments this migration may be re-run after partial failures.
+                try {
                     $blueprint->foreign($col, "{$table}_tenant_id_foreign")
                         ->references('id')
                         ->on('tenants')
                         ->cascadeOnDelete();
+                } catch (\Throwable) {
+                    // Ignore if the FK already exists (or was created with a different name).
+                }
 
-                    if ($config['index'] ?? false) {
+                if ($config['index'] ?? false) {
+                    try {
                         $blueprint->index($col, "{$table}_tenant_id_index");
+                    } catch (\Throwable) {
+                        // Ignore if index already exists.
                     }
                 }
             });
@@ -60,8 +68,24 @@ return new class extends Migration
                 continue;
             }
 
-            Schema::table($table, function (Blueprint $table) {
-                $table->dropConstrainedForeignId('tenant_id');
+            Schema::table($table, function (Blueprint $blueprint) use ($table) {
+                if (! Schema::hasColumn($table, 'tenant_id')) {
+                    return;
+                }
+
+                try {
+                    $blueprint->dropForeign("{$table}_tenant_id_foreign");
+                } catch (\Throwable) {
+                    // Ignore if FK missing.
+                }
+
+                try {
+                    $blueprint->dropIndex("{$table}_tenant_id_index");
+                } catch (\Throwable) {
+                    // Ignore if index missing.
+                }
+
+                $blueprint->dropColumn('tenant_id');
             });
         }
     }

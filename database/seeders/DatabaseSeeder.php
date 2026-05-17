@@ -15,5 +15,12 @@ class DatabaseSeeder extends Seeder
             FrontendLocationImportSeeder::class,
             SettingSeeder::class,
         ]);
+
+        if (config('app.env') !== 'production' && env('SEED_DEMO_DATA', false)) {
+            $this->call([
+                DemoNewsContentSeeder::class,
+                MultilingualTestDataSeeder::class,
+            ]);
+        }
     }
 }

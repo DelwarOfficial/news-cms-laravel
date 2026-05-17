@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\ImageManager;
 
 class ProcessMediaUpload implements ShouldQueue
 {
@@ -27,6 +27,12 @@ class ProcessMediaUpload implements ShouldQueue
 
     public function handle(): void
     {
+        if (! class_exists(ImageManager::class)) {
+            // Production-safe: do not fail the upload pipeline if image processing deps are missing.
+            Log::warning('Skipping media processing: Intervention Image is not installed.');
+            return;
+        }
+
         if (! $this->isImage($this->media->file_type)) {
             Log::info("Skipping image processing for non-image media ID: {$this->media->id}");
             return;
@@ -41,7 +47,8 @@ class ProcessMediaUpload implements ShouldQueue
         }
 
         try {
-            $image = Image::read($disk->path($path));
+            $manager = ImageManager::withDriver(config('image.driver', 'gd'));
+            $image = $manager->read($disk->path($path));
             $originalExt = pathinfo($this->media->file_name, PATHINFO_EXTENSION);
             $baseName = pathinfo($this->media->file_name, PATHINFO_FILENAME);
             $directory = dirname($path);
@@ -51,7 +58,7 @@ class ProcessMediaUpload implements ShouldQueue
 
             $thumbnails = [];
             foreach (config('image.thumbnail_sizes', []) as $size => [$width, $height]) {
-                $thumbImage = Image::read($disk->path($path));
+                $thumbImage = $manager->read($disk->path($path));
                 $thumbImage->cover($width, $height);
                 $thumbPath = "{$directory}/{$baseName}_{$size}.{$originalExt}";
                 $thumbImage->save($disk->path($thumbPath));

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Support\Monitoring\HealthCheck;
 
 Route::get('/vendor/rich-text-laravel/{file}', function (string $file) {
     abort_if(str_contains($file, '..') || str_contains($file, '/'), 404);
@@ -38,3 +39,20 @@ Route::get('/article/{postId}/{slug}', function () {
 Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
+
+// Infrastructure health check for load balancers/uptime monitors.
+Route::get('/healthz', function () {
+    $token = config('monitoring.health_token');
+    if ($token && request()->header('X-Health-Token') !== $token) {
+        abort(404);
+    }
+
+    $result = HealthCheck::run();
+
+    return response()->json([
+        'status' => $result['ok'] ? 'ok' : 'degraded',
+        'checks' => $result['checks'],
+        'errors' => $result['errors'],
+        'request_id' => request()->attributes->get('request_id'),
+    ], $result['ok'] ? 200 : 503);
+});

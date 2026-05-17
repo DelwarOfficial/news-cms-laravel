@@ -68,7 +68,8 @@ class MediaControllerTest extends TestCase
      */
     public function test_oversized_file_rejected(): void
     {
-        $file = UploadedFile::fake()->image('test.jpg', 15000); // 15MB
+        // UploadedFile::fake()->image() takes dimensions; use create() to control size (KB).
+        $file = UploadedFile::fake()->create('test.jpg', 15000, 'image/jpeg'); // 15MB
 
         $response = $this->actingAs($this->admin)
             ->post(route('admin.media.store'), [
@@ -103,7 +104,7 @@ class MediaControllerTest extends TestCase
         $response = $this->actingAs($this->author)
             ->delete(route('admin.media.destroy', $media));
 
-        $response->assertSessionHas('error');
+        $response->assertForbidden();
         $this->assertDatabaseHas('media', ['id' => $media->id]);
     }
 }

@@ -97,6 +97,7 @@ class PublicApiTest extends TestCase
         $response = $this->postJson("/api/v1/posts/{$post->id}/view");
 
         $response->assertOk();
-        $this->assertEquals(1, $post->fresh()->view_count);
+        // ViewCounter increments in cache; DB sync is done by a scheduled command.
+        $response->assertJsonPath('data.views', 1);
     }
 }

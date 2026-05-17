@@ -32,6 +32,11 @@ class MediaPolicy
 
     public function delete(User $user, Media $media): bool
     {
-        return $user->can('media.manage');
+        // Editors/admins can manage any media; contributors/authors only their own.
+        if ($user->hasRole(['Super Admin', 'Admin', 'Editor'])) {
+            return $user->can('media.manage');
+        }
+
+        return (int) $media->user_id === (int) $user->id;
     }
 }

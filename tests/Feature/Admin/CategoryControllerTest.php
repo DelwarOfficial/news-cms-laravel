@@ -66,7 +66,7 @@ class CategoryControllerTest extends TestCase
         $child = Category::factory()->create(['parent_id' => $parent->id]);
 
         $response = $this->actingAs($this->admin)
-            ->post(route('admin.categories.update', $parent), [
+            ->put(route('admin.categories.update', $parent), [
                 'name' => $parent->name,
                 'parent_id' => $child->id,
             ]);

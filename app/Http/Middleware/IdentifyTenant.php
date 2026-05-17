@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class IdentifyTenant
@@ -32,6 +33,8 @@ class IdentifyTenant
             app()->instance('currentTenant', null);
             $request->attributes->set('tenant', null);
 
+            Log::withContext(['tenant_id' => null]);
+
             return $next($request);
         }
 
@@ -41,6 +44,11 @@ class IdentifyTenant
 
         app()->instance('currentTenant', $tenant);
         $request->attributes->set('tenant', $tenant);
+
+        Log::withContext([
+            'tenant_id' => $tenant->id,
+            'tenant_slug' => $tenant->slug,
+        ]);
 
         config([
             'app.url' => "https://{$tenant->subdomain}." . config('tenancy.central_domains.0'),

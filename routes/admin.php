@@ -21,7 +21,15 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->middleware('permission:users.manage');
     Route::get('roles/create', [\App\Http\Controllers\Admin\RoleController::class, 'create'])->middleware('permission:roles.create')->name('roles.create');
     Route::resource('roles', \App\Http\Controllers\Admin\RoleController::class)->except(['create', 'show'])->middleware('permission:roles.manage');
-    Route::resource('media', \App\Http\Controllers\Admin\MediaController::class)->only(['index', 'store', 'destroy'])->middleware('permission:media.manage');
+    // Media: allow authors to delete their own uploads via policy; keep listing gated by permission.
+    Route::get('media', [\App\Http\Controllers\Admin\MediaController::class, 'index'])
+        ->middleware('permission:media.manage')
+        ->name('media.index');
+    Route::post('media', [\App\Http\Controllers\Admin\MediaController::class, 'store'])
+        ->middleware('permission:media.manage')
+        ->name('media.store');
+    Route::delete('media/{media}', [\App\Http\Controllers\Admin\MediaController::class, 'destroy'])
+        ->name('media.destroy');
     Route::resource('tags', \App\Http\Controllers\Admin\TagController::class)->only(['index', 'create', 'store', 'destroy'])->middleware('permission:tags.manage');
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->middleware('permission:settings.manage')->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->middleware('permission:settings.manage')->name('settings.update');
