@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Widget;
+use App\Support\RichTextSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class WidgetController extends Controller
 {
+    public function __construct(
+        private readonly RichTextSanitizer $richTextSanitizer,
+    ) {
+    }
+
     protected $allowedTypes = ['text', 'featured_posts', 'recent_posts', 'categories', 'tags', 'newsletter', 'custom_html'];
     protected $allowedAreas = ['sidebar', 'footer_col_1', 'footer_col_2', 'footer_col_3', 'header'];
 
@@ -35,6 +41,10 @@ class WidgetController extends Controller
         ]);
 
         try {
+            $validated['content'] = $validated['content']
+                ? $this->richTextSanitizer->sanitize($validated['content'])
+                : null;
+
             Widget::create([
                 ...$validated,
                 'order' => $validated['order'] ?? Widget::where('area', $validated['area'])->max('order') + 1,
@@ -71,6 +81,10 @@ class WidgetController extends Controller
         ]);
 
         try {
+            $validated['content'] = isset($validated['content'])
+                ? $this->richTextSanitizer->sanitize($validated['content'])
+                : $widget->content;
+
             $widget->update($validated);
             return back()->with('success', 'Widget updated successfully!');
         } catch (\Exception $e) {

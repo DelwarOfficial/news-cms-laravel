@@ -32,7 +32,14 @@ class TranslatePostJob implements ShouldQueue
     public function handle(TranslationManager $manager): void
     {
         $driver = $manager->driver($this->preferredDriver);
-        $result = $driver->translate($this->post->content ?? '', 'bn', $this->targetLangCode);
+
+        $sourceText = implode("\n\nSEPARATOR\n\n", array_filter([
+            $this->post->title ?: $this->post->title_bn ?: $this->post->title_en,
+            $this->post->body_bn?->toPlainText(),
+            $this->post->summary_bn?->toPlainText(),
+        ]));
+
+        $result = $driver->translate($sourceText ?: '', 'bn', $this->targetLangCode);
 
         \DB::transaction(function () use ($result): void {
             PostTranslation::updateOrCreate(

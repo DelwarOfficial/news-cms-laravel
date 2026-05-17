@@ -12,13 +12,18 @@ class PostTranslation extends Model
 
     protected $fillable = [
         'post_id',
+        'language_id',
         'locale',
         'title',
         'slug',
         'summary',
         'body',
+        'content',
         'meta_title',
         'meta_description',
+        'status',
+        'translation_method',
+        'ai_provider',
     ];
 
     public function post(): BelongsTo

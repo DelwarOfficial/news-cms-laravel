@@ -322,10 +322,10 @@ class PostController extends Controller
             'slug_bn' => $this->uniqueSlug($validated['slug_bn'] ?? null, $titleBn, 'slug_bn', $post),
             'content' => $bodyBn ?: $bodyEn,
             'excerpt' => $excerpt,
-            'body_en' => $bodyEnRaw ? $bodyEn : null, // Let rich text handle existing
-            'body_bn' => $bodyBnRaw ? $bodyBn : null, // Let rich text handle existing
-            'summary_en' => $summaryEnRaw ? $summaryEn : null,
-            'summary_bn' => $summaryBnRaw ? $summaryBn : null,
+            'body_en' => $bodyEnRaw ? $bodyEn : $post?->body_en,
+            'body_bn' => $bodyBnRaw ? $bodyBn : $post?->body_bn,
+            'summary_en' => $summaryEnRaw ? $summaryEn : $post?->summary_en,
+            'summary_bn' => $summaryBnRaw ? $summaryBn : $post?->summary_bn,
             'featured_media_id' => $validated['featured_media_id'] ?? null,
             'featured_image' => $featuredImage,
             'featured_image_alt' => filled($validated['featured_image_alt'] ?? null) ? $validated['featured_image_alt'] : ($titleBn ?: $titleEn),

@@ -92,7 +92,13 @@ class MediaController extends Controller
 
         try {
             if ($media->file_path) {
+                $dir = dirname($media->file_path);
+                $base = pathinfo($media->file_name, PATHINFO_FILENAME);
                 Storage::disk('public')->delete($media->file_path);
+                Storage::disk('public')->delete("{$dir}/{$base}.webp");
+                foreach (['sm', 'md', 'lg'] as $suffix) {
+                    Storage::disk('public')->delete("{$dir}/{$base}-{$suffix}.webp");
+                }
             }
             $media->delete();
             return back()->with('success', 'File deleted successfully!');

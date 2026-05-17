@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Post;
+use App\Support\FrontendCache;
 use Illuminate\Console\Command;
 
 class PublishScheduledPosts extends Command
@@ -12,11 +13,24 @@ class PublishScheduledPosts extends Command
 
     public function handle(): int
     {
-        $count = Post::where('status', 'scheduled')
+        $ids = Post::where('status', 'scheduled')
             ->where('scheduled_at', '<=', now())
-            ->update(['status' => 'published', 'published_at' => now()]);
+            ->pluck('id');
 
-        $this->info("Published {$count} scheduled post(s).");
+        if ($ids->isEmpty()) {
+            $this->info('No scheduled posts to publish.');
+            return self::SUCCESS;
+        }
+
+        Post::whereIn('id', $ids)->update(['status' => 'published', 'published_at' => now()]);
+
+        foreach ($ids as $id) {
+            Post::forgetCached($id);
+        }
+
+        FrontendCache::flushContent();
+
+        $this->info("Published {$ids->count()} scheduled post(s): {$ids->implode(', ')}");
 
         return self::SUCCESS;
     }
