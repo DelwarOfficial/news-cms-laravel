@@ -42,6 +42,19 @@ class MediaController extends BaseApiController
         ]);
 
         $file = $request->file('file');
+
+        $allowedMimes = FileUploadSecurity::mediaMimes();
+        $realMime = mime_content_type($file->getRealPath());
+        if (!in_array($realMime, $allowedMimes, true)) {
+            return $this->error('Upload Rejected', 'File type mismatch detected.', 422);
+        }
+
+        $blockedExtensions = ['php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'pht', 'phar', 'inc', 'pl', 'py', 'sh', 'exe', 'bat', 'cmd', 'com', 'msi', 'scr', 'jar', 'cgi', 'htaccess'];
+        $originalExt = strtolower($file->getClientOriginalExtension());
+        if (in_array($originalExt, $blockedExtensions, true)) {
+            return $this->error('Upload Rejected', 'File extension is not allowed.', 422);
+        }
+
         $fileName = FileUploadSecurity::storageName($file);
         $path = $file->storeAs('media', $fileName, 'public');
 

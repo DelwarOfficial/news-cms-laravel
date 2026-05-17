@@ -136,7 +136,7 @@ Route::prefix('v1')->group(function () {
 // AUTH (Sanctum — admin login, brute-force protected)
 // ===========================================================================
 Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthApiController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('/login', [AuthApiController::class, 'login'])->middleware('throttle:5,15');
 });
 
 // ===========================================================================

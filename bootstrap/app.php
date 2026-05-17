@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->alias([
             'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'must.change.password' => \App\Http\Middleware\MustChangePassword::class,
             'tenant' => \App\Http\Middleware\IdentifyTenant::class,
             'request.id' => \App\Http\Middleware\RequestId::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,

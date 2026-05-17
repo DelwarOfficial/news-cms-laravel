@@ -5,7 +5,9 @@ use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\TranslationAdminController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'must.change.password'])->group(function () {
+    Route::get('password/change', [\App\Http\Controllers\Admin\PasswordController::class, 'changeForm'])->withoutMiddleware('must.change.password')->name('password.change');
+    Route::post('password/update', [\App\Http\Controllers\Admin\PasswordController::class, 'update'])->withoutMiddleware('must.change.password')->name('password.update');
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->middleware('permission:dashboard.view')->name('dashboard');
     Route::post('tinymce/upload', \App\Http\Controllers\Admin\TinyMceUploadController::class)
         ->middleware('permission:posts.create')

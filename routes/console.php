@@ -20,6 +20,9 @@ Schedule::command('cache:warm')
     ->name('cache-warm')
     ->onOneServer();
 
+// Publish scheduled posts every minute
+Schedule::command('posts:publish-scheduled')->everyMinute()->withoutOverlapping();
+
 // Scheduled database backups
 Schedule::call(function () {
     $enabled = \App\Models\Setting::where('key', 'backup_auto_enabled')->value('value');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AdPosition;
 use App\Http\Controllers\Controller;
 use App\Models\Advertisement;
 use App\Support\FileUploadSecurity;
@@ -11,14 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AdvertisementController extends Controller
 {
-    public const AD_POSITIONS = [
-        'category-top',
-        'category-in-feed',
-        'category-bottom',
-        'sidebar-rectangle-1',
-        'sidebar-half-page',
-        'sidebar-rectangle-2',
-    ];
+    public const AD_POSITIONS = AdPosition::labels();
     protected $allowedTypes = ['image', 'code'];
 
     public function index()

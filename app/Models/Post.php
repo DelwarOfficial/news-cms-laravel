@@ -30,7 +30,7 @@ class Post extends Model
     private static ?bool $translationTableReady = null;
 
     protected $fillable = [
-        'tenant_id', 'user_id', 'author_id', 'language_id', 'primary_category_id',
+        'tenant_id', 'author_id', 'language_id', 'primary_category_id',
         'division_id', 'district_id', 'upazila_id', 'shoulder',
         'title', 'title_en', 'title_bn', 'slug', 'slug_en', 'slug_bn',
         'excerpt', 'content', 'body_en', 'body_bn', 'summary_en', 'summary_bn',

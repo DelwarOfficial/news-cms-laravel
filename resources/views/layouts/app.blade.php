@@ -25,7 +25,7 @@
     <meta property="og:description" content="{{ $pageDescription }}">
     <meta property="og:url" content="{{ $pageCanonical }}">
     <meta property="og:image" content="{{ $pageImageUrl }}">
-    <meta property="og:site_name" content="Dhaka Magazine">
+    <meta property="og:site_name" content="{{ \App\Support\Settings::get('site_name', config('app.name')) }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $pageTitle }}">
     <meta name="twitter:description" content="{{ $pageDescription }}">

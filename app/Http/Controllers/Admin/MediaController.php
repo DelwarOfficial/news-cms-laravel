@@ -11,6 +11,7 @@ use App\Support\FileUploadSecurity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class MediaController extends Controller
 {
@@ -46,6 +47,19 @@ class MediaController extends Controller
 
         try {
             $file = $request->file('file');
+
+            $allowedMimes = FileUploadSecurity::mediaMimes();
+            $realMime = mime_content_type($file->getRealPath());
+            if (!in_array($realMime, $allowedMimes, true)) {
+                return back()->with('error', 'File type mismatch detected. Upload rejected.');
+            }
+
+            $blockedExtensions = ['php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'pht', 'phar', 'inc', 'pl', 'py', 'sh', 'exe', 'bat', 'cmd', 'com', 'msi', 'scr', 'jar', 'cgi', 'htaccess'];
+            $originalExt = strtolower($file->getClientOriginalExtension());
+            if (in_array($originalExt, $blockedExtensions, true)) {
+                return back()->with('error', 'File extension is not allowed.');
+            }
+
             $fileName = FileUploadSecurity::storageName($file);
             $path = $file->storeAs('media', $fileName, 'public');
 

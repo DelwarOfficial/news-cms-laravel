@@ -145,8 +145,7 @@ class SettingController extends Controller
             );
         }
 
-        Cache::forget('settings');
-        Cache::forget('cms_settings');
+        Cache::forget(['settings', 'cms_settings', 'cms_settings_v1']);
 
         return back()->with('success', 'Settings updated successfully!');
     }
@@ -187,8 +186,7 @@ class SettingController extends Controller
             }
         }
 
-        Cache::forget('settings');
-        Cache::forget('cms_settings');
+        Cache::forget(['settings', 'cms_settings', 'cms_settings_v1']);
 
         return back()->with('success', "Imported {$count} settings successfully.");
     }

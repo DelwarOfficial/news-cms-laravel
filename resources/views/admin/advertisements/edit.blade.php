@@ -15,8 +15,8 @@
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">Position</label>
             <select name="position" class="w-full border border-gray-200 px-4 py-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white" required>
-                @foreach($positions as $position)
-                    <option value="{{ $position }}" @selected(old('position', $advertisement->position) === $position)>{{ ucfirst(str_replace(['-', '_'], ' ', $position)) }}</option>
+                @foreach(\App\Enums\AdPosition::labels() as $value => $label)
+                    <option value="{{ $value }}" @selected(old('position', $advertisement->position ?? '') == $value)>{{ $label }}</option>
                 @endforeach
             </select>
         </div>

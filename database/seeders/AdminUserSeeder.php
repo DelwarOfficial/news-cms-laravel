@@ -15,6 +15,7 @@ class AdminUserSeeder extends Seeder
             'username' => 'admin',
             'password' => Hash::make('password123'),
             'email_verified_at' => now(),
+            'must_change_password' => true,
         ]);
         $admin->assignRole('Super Admin');
     }

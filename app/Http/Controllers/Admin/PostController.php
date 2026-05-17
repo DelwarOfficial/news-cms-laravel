@@ -112,10 +112,9 @@ class PostController extends Controller
 
         $postData = $this->preparePostData($validated, null, $request);
 
-        $post = Post::create([
-            ...$postData,
-            'user_id' => $user->id,
-        ]);
+        $post = new Post($postData);
+        $post->user_id = $user->id;
+        $post->save();
         
         $post->categories()->sync([$validated['category_id'] => ['is_primary' => true]]);
         $post->tags()->sync($validated['tag_ids'] ?? []);
@@ -224,8 +223,7 @@ class PostController extends Controller
     {
         $this->authorize('create', Post::class);
 
-        $clone = Post::create([
-            'user_id' => Auth::id(),
+        $clone = new Post([
             'author_id' => $post->author_id,
             'language_id' => $post->language_id,
             'title' => $post->title . ' (Clone)',
@@ -263,6 +261,8 @@ class PostController extends Controller
             'show_author' => $post->show_author,
             'show_publish_date' => $post->show_publish_date,
         ]);
+        $clone->user_id = Auth::id();
+        $clone->save();
 
         $post->load(['categories', 'tags']);
 
