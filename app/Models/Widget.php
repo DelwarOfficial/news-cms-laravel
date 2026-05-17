@@ -10,7 +10,7 @@ class Widget extends Model
 {
     use BelongsToTenant, HasFactory;
 
-    protected $fillable = ['tenant_id', 'area', 'type', 'title', 'config', 'order', 'is_active'];
+    protected $fillable = ['tenant_id', 'area', 'type', 'title', 'content', 'config', 'order', 'is_active'];
 
     protected $casts = [
         'config' => 'array',

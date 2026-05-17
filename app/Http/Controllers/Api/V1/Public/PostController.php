@@ -177,9 +177,12 @@ class PostController extends BaseApiController
         $post = Post::published()->findOrFail($id);
         app(ViewCounter::class)->increment($post->id);
 
-        foreach (array_filter([$post->slug, $post->slug_en, $post->slug_bn]) as $slug) {
-            Cache::forget('v1:post:' . app()->getLocale() . ":{$slug}");
+        foreach (['en', 'bn'] as $locale) {
+            foreach (array_filter([$post->slug, $post->slug_en, $post->slug_bn]) as $slug) {
+                Cache::forget("v1:post:{$locale}:{$slug}");
+            }
         }
+        Post::forgetCached($post);
 
         return $this->success(['views' => $post->view_count + app(ViewCounter::class)->get($post->id)]);
     }

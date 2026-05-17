@@ -482,21 +482,23 @@ class Post extends Model
 
     private function calculateReadingTime(): int
     {
-        $plainText = trim((string) ($this->content ?: $this->body ?: ''));
-
-        foreach (['body_en', 'body_bn'] as $field) {
-            if ($plainText !== '') {
-                continue;
-            }
-
+        $plainText = '';
+        foreach (['body_en', 'body_bn', 'summary_en', 'summary_bn'] as $field) {
             try {
                 $richText = $this->{$field};
-                $plainText = method_exists($richText, 'toPlainText')
-                    ? trim($richText->toPlainText())
-                    : trim((string) $richText);
+                if (is_object($richText) && method_exists($richText, 'toPlainText')) {
+                    $plainText = trim($richText->toPlainText());
+                } elseif (is_string($richText)) {
+                    $plainText = trim($richText);
+                }
             } catch (\Throwable) {
-                $plainText = '';
             }
+            if ($plainText !== '') {
+                break;
+            }
+        }
+        if ($plainText === '') {
+            $plainText = trim(strip_tags((string) $this->content));
         }
 
         $words = str_word_count(strip_tags($plainText));

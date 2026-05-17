@@ -13,19 +13,20 @@ class PublishScheduledPosts extends Command
 
     public function handle(): int
     {
-        $ids = Post::where('status', 'scheduled')
+        $posts = Post::where('status', 'scheduled')
             ->where('scheduled_at', '<=', now())
-            ->pluck('id');
+            ->get(['id', 'slug', 'slug_en', 'slug_bn']);
 
-        if ($ids->isEmpty()) {
+        if ($posts->isEmpty()) {
             $this->info('No scheduled posts to publish.');
             return self::SUCCESS;
         }
 
+        $ids = $posts->pluck('id');
         Post::whereIn('id', $ids)->update(['status' => 'published', 'published_at' => now()]);
 
-        foreach ($ids as $id) {
-            Post::forgetCached($id);
+        foreach ($posts as $post) {
+            Post::forgetCached($post);
         }
 
         FrontendCache::flushContent();

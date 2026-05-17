@@ -9,11 +9,17 @@ use App\Support\FileUploadSecurity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class AdvertisementController extends Controller
 {
-    public const AD_POSITIONS = AdPosition::labels();
+    protected array $positions = [];
     protected $allowedTypes = ['image', 'code'];
+
+    public function __construct()
+    {
+        $this->positions = AdPosition::labels();
+    }
 
     public function index()
     {
@@ -26,7 +32,7 @@ class AdvertisementController extends Controller
     {
         $this->authorize('create', Advertisement::class);
         
-        $positions = self::AD_POSITIONS;
+        $positions = $this->positions;
         $types = $this->allowedTypes;
         
         return view('admin.advertisements.create', compact('positions', 'types'));
@@ -38,7 +44,7 @@ class AdvertisementController extends Controller
         
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
+            'position' => ['required', Rule::enum(AdPosition::class)],
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
             'image' => ['required_if:type,image', 'nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'required_if:type,code|nullable|max:5000',
@@ -78,7 +84,7 @@ class AdvertisementController extends Controller
     {
         $this->authorize('update', $advertisement);
         
-        $positions = self::AD_POSITIONS;
+        $positions = $this->positions;
         $types = $this->allowedTypes;
         
         return view('admin.advertisements.edit', compact('advertisement', 'positions', 'types'));
@@ -90,7 +96,7 @@ class AdvertisementController extends Controller
         
         $validated = $request->validate([
             'title' => 'required|max:255',
-            'position' => 'required|in:' . implode(',', self::AD_POSITIONS),
+            'position' => ['required', Rule::enum(AdPosition::class)],
             'type' => 'required|in:' . implode(',', $this->allowedTypes),
             'image' => ['nullable', ...FileUploadSecurity::imageRules()],
             'code' => 'nullable|max:5000',

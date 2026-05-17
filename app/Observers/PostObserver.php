@@ -16,9 +16,7 @@ class PostObserver
 
     public function updated(Post $post): void
     {
-        $changed = $post->wasRecentlyCreated
-            ? array_keys($post->getDirty())
-            : array_keys($post->getChanges());
+        $changed = array_keys($post->getChanges());
 
         $trackedOnly = empty(array_diff($changed, ['view_count', 'updated_at', 'reading_time']));
 

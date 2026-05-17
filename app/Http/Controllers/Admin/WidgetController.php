@@ -41,9 +41,10 @@ class WidgetController extends Controller
         ]);
 
         try {
-            $validated['content'] = $validated['content']
+            $validated['content'] = isset($validated['content'])
                 ? $this->richTextSanitizer->sanitize($validated['content'])
                 : null;
+            $validated['is_active'] = $request->boolean('enabled');
 
             Widget::create([
                 ...$validated,
@@ -84,6 +85,7 @@ class WidgetController extends Controller
             $validated['content'] = isset($validated['content'])
                 ? $this->richTextSanitizer->sanitize($validated['content'])
                 : $widget->content;
+            $validated['is_active'] = $request->boolean('enabled');
 
             $widget->update($validated);
             return back()->with('success', 'Widget updated successfully!');
